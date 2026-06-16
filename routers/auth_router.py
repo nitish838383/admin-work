@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Form, Request
+from fastapi import APIRouter, Depends, HTTPException, Request,Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from fastapi import Form, HTTPException
 
 from database import get_db
 from models import Admin
@@ -125,12 +126,86 @@ def logout():
 
 # Forgot Password Page
 @router.get("/forgot-password")
-def forgot_password_page(
+def forgot_password(
     request: Request
 ):
     return templates.TemplateResponse(
-        "forgot_password.html",
-        {
-            "request": request
+        request=request,
+        name= "forgot_password.html"
+
+       
+       
+    )
+from fastapi import Form, Depends
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+
+from database import get_db
+from models import Admin
+from auth import hash_password
+
+
+@router.post("/reset-password")
+def reset_password(
+    email: str = Form(...),
+    new_password: str = Form(...),
+    confirm_password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Password match check
+    if new_password != confirm_password:
+        return {
+            "message": "Passwords do not match"
         }
+
+    # Admin find by email
+    admin = db.query(Admin).filter(
+        Admin.email == email
+    ).first()
+
+    if not admin:
+        return {
+            "message": "Admin email not found"
+        }
+
+    # Hash password
+    admin.password = hash_password(new_password)
+
+    # Save in DB
+    db.commit()
+
+    return RedirectResponse(
+        url="/auth/login",
+        status_code=303
+    )
+  
+
+
+
+
+
+
+@router.post("/reset-password")
+def reset_password(
+    email: str = Form(...),
+    new_password: str = Form(...),
+    confirm_password: str = Form(...),
+    db: Session = Depends(get_db)
+
+):
+    
+    admin = db.query(Admin).filter(
+        Admin.email == email
+    ).first()
+
+    if not admin:
+        return {"message": "Email not found"}
+
+    admin.password = hash_password(new_password)
+    print("Admin Found:", admin.email)
+    print("New Password:", new_password)
+    db.commit()
+    return RedirectResponse(
+        url="/auth/login-page",
+        status_code=303
     )
