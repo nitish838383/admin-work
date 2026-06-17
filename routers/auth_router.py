@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from fastapi import Form, HTTPException
-
+from auth import verify_password
 from database import get_db
 from models import Admin
 from schemas import LoginSchema
@@ -59,40 +59,23 @@ def login_page(request: Request):
         context={}
     )
 
-# Login Form Submit
 @router.post("/login-page")
-def login_page_submit(
-    email: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    admin = db.query(Admin).filter(
-        Admin.email == email
-    ).first()
+def login_form(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+
+    admin = db.query(Admin).filter(Admin.email == email).first()
 
     if not admin:
-        raise HTTPException(
-            status_code=404,
-            detail="Admin not found"
-        )
+        raise HTTPException(status_code=404, detail="Admin not found")
 
-    if password != admin.password:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid Password"
-        )
+    if not verify_password(password, admin.password):
+        raise HTTPException(status_code=401, detail="Invalid Password")
 
-    token = create_access_token(
-        {
-            "admin_id": admin.id,
-            "email": admin.email
-        }
-    )
+    token = create_access_token({
+        "admin_id": admin.id,
+        "email": admin.email
+    })
 
-    response = RedirectResponse(
-        url="/auth/dashboard",
-        status_code=302
-    )
+    response = RedirectResponse(url="/auth/dashboard", status_code=302)
 
     response.set_cookie(
         key="access_token",
