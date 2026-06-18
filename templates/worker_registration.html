@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Registration - SRG Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8fafc;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .form-container {
+            padding: 40px 35px;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.35rem;
+            margin: 30px 0 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input, select, textarea {
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 15px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            margin-top: 30px;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30,58,138,0.4);
+        }
+
+        .upload-box {
+            border: 2px dashed #94a3b8;
+            padding: 25px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-user-plus"></i> Worker Registration</h1>
+        <p>Join Our Trusted Service Provider Network</p>
+    </div>
+
+    <div class="form-container">
+        <form action="/worker/register" method="post" enctype="multipart/form-data">
+
+            <!-- Basic Information -->
+            <div class="section-title">Basic Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number *</label>
+                    <input type="tel" name="mobile" required>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="date_of_birth">
+                </div>
+            </div>
+
+            <!-- Address Information -->
+            <div class="section-title">Address Information</div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Full Address</label>
+                    <textarea name="address" placeholder="House No, Street, Locality"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" name="city">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" name="state" value="Uttar Pradesh">
+                </div>
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <input type="text" name="pincode">
+                </div>
+            </div>
+
+            <!-- Professional Information -->
+            <div class="section-title">Professional Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Category / Service Type</label>
+                    <select name="category_id">
+                        <option value="">Select Service</option>
+                        <option value="1">Web Development</option>
+                        <option value="2">Tally & GST</option>
+                        <option value="3">Python Expert</option>
+                        <option value="4">Graphic Designer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Experience (Years)</label>
+                    <input type="number" name="experience_years" placeholder="e.g. 3">
+                </div>
+                <div class="form-group full-width">
+                    <label>Skills (Comma Separated)</label>
+                    <textarea name="skills" placeholder="HTML, CSS, JavaScript, React..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label>About Yourself</label>
+                    <textarea name="about" placeholder="Brief introduction about your experience..."></textarea>
+                </div>
+            </div>
+
+            <!-- Document Verification -->
+            <div class="section-title">Document Verification</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Aadhaar Number</label>
+                    <input type="text" name="aadhaar_number" placeholder="1234 5678 9012">
+                </div>
+                <div class="form-group">
+                    <label>Profile Photo</label>
+                    <input type="file" name="profile_image" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Aadhaar Front</label>
+                    <input type="file" name="aadhaar_front" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Aadhaar Back</label>
+                    <input type="file" name="aadhaar_back" accept="image/*">
+                </div>
+            </div>
+
+            <button type="submit" class="btn">
+                <i class="fas fa-paper-plane"></i> Submit Registration Request
+            </button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

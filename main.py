@@ -5,6 +5,8 @@ from database import engine
 from models import Base
 
 from routers.auth_router import router as auth_router
+from routers.auth_router import router as worker_router
+
 
 # Create Tables
 Base.metadata.create_all(bind=engine)
@@ -21,6 +23,7 @@ templates = Jinja2Templates(
 
 # Include Router
 app.include_router(auth_router)
+app.include_router(worker_router)
 
 @app.get("/")
 def home():

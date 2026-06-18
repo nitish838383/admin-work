@@ -4,6 +4,8 @@ from sqlalchemy import String
 from sqlalchemy import TIMESTAMP
 from sqlalchemy.sql import func
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Text, Date, DateTime
+from datetime import datetime
 
 from database import Base
 
@@ -19,23 +21,30 @@ class Admin(Base):
         server_default=func.now()
     )
 
-from sqlalchemy import Column, Integer, String, Boolean
-# models.py
 
-from sqlalchemy import Column, Integer, String, Boolean
-from database import Base
+class Worker(Base):
+    __tablename__ = "workers"
 
-class User(Base):
-    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
 
-    id = Column(Integer, primary_key=True)
     name = Column(String(100))
     email = Column(String(100), unique=True)
+    mobile = Column(String(20), unique=True)
 
-    is_blocked = Column(Boolean, default=False)
-    is_active = Column(Boolean, default=True)
+    gender = Column(String(20))
+    date_of_birth = Column(Date)
 
-    verification_status = Column(
-        String(20),
-        default="Pending"
-    )
+    address = Column(Text)
+    city = Column(String(100))
+    state = Column(String(100))
+    pincode = Column(String(10))
+
+    experience_years = Column(Integer)
+
+    skills = Column(Text)
+    about = Column(Text)
+
+    aadhaar_number = Column(String(20))
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    

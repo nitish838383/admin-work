@@ -84,14 +84,25 @@ def login_form(email: str = Form(...), password: str = Form(...), db: Session = 
     )
 
     return response
+from fastapi import Request
+from fastapi.responses import RedirectResponse
 
 @router.get("/dashboard")
-def dashboard(request: Request):
+def dashboard(
+    request: Request
+):
+    token = request.cookies.get("access_token")
 
+    if not token:
+        return RedirectResponse(url="/auth/login", status_code=302)
+    
+    
     return templates.TemplateResponse(
         request=request,
-        name="dashboard.html",
-        context={}
+        name= "dashboard.html"
+
+       
+       
     )
 
 # Logout
@@ -148,3 +159,79 @@ def reset_password(
     db.commit()
 
     return RedirectResponse(url="/auth/login", status_code=303)
+
+
+from fastapi import APIRouter
+from fastapi import Request
+from fastapi import Form
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
+
+
+templates = Jinja2Templates(directory="templates")
+
+from fastapi import APIRouter, Request, Form, Depends
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+
+
+
+templates = Jinja2Templates(directory="templates")
+
+
+@router.get("/register")
+def worker_register_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="worker_registration.html",
+    )
+
+from fastapi import Form, Depends
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+
+@router.post("/register")
+def worker_register(
+    name: str = Form(...),
+    email: str = Form(...),
+    category_id: int = Form(...),
+    mobile: str = Form(...),
+    gender: str = Form(...),
+    date_of_birth: str = Form(...),
+    address: str = Form(...),
+    city: str = Form(...),
+    state: str = Form(...),
+    pincode: str = Form(...),
+    experience_years: int = Form(...),
+    skills: str = Form(...),
+    about: str = Form(...),
+    aadhaar_number: str = Form(...),
+    db: Session = Depends(get_db)
+):
+
+    worker = worker(
+        name=name,
+        email=email,
+        mobile=mobile,
+        gender=gender,
+        date_of_birth=date_of_birth,
+        address=address,
+        city=city,
+        state=state,
+        pincode=pincode,
+        category_id=category_id,
+        experience_years=experience_years,
+        skills=skills,
+        about=about,
+        aadhaar_number=aadhaar_number
+    )
+
+    db.add(worker)
+    db.commit()
+    db.refresh(worker)
+
+    return RedirectResponse(
+        url="/worker/register",
+        status_code=303
+    )
