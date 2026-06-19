@@ -8,6 +8,12 @@ from database import get_db
 from models import Admin
 from schemas import LoginSchema
 from auth import create_access_token
+from fastapi import Request
+from fastapi import APIRouter, Request, Form, Depends
+from auth import hash_password
+
+
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -84,8 +90,6 @@ def login_form(email: str = Form(...), password: str = Form(...), db: Session = 
     )
 
     return response
-from fastapi import Request
-from fastapi.responses import RedirectResponse
 
 @router.get("/dashboard")
 def dashboard(
@@ -130,13 +134,7 @@ def forgot_password(
        
        
     )
-from fastapi import Form, Depends
-from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
 
-from database import get_db
-from models import Admin
-from auth import hash_password
 
 @router.post("/reset-password")
 def reset_password(
@@ -161,19 +159,11 @@ def reset_password(
     return RedirectResponse(url="/auth/login", status_code=303)
 
 
-from fastapi import APIRouter
-from fastapi import Request
-from fastapi import Form
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
 
 
 templates = Jinja2Templates(directory="templates")
 
-from fastapi import APIRouter, Request, Form, Depends
-from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
+
 
 
 
@@ -187,9 +177,7 @@ def worker_register_page(request: Request):
         name="worker_registration.html",
     )
 
-from fastapi import Form, Depends
-from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
+
 
 @router.post("/register")
 def worker_register(
