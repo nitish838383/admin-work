@@ -11,6 +11,7 @@ from auth import create_access_token
 from fastapi import Request
 from fastapi import APIRouter, Request, Form, Depends
 from auth import hash_password
+from models import Worker
 
 
 
@@ -120,7 +121,10 @@ def dashboard(
 def logout():
     response = RedirectResponse(
         url="/auth/login",
-        status_code=302
+        status_code=302,
+        
+        
+        
     )
 
     response.delete_cookie("access_token")

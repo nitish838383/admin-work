@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 
 from database import engine
+from fastapi import Request
 from models import Base
 
 from routers.auth_router import router as auth_router
@@ -26,7 +27,14 @@ app.include_router(auth_router)
 app.include_router(worker_router)
 
 @app.get("/")
-def home():
-    return {
-        "message": "Admin Panel Running"
-    }
+def home(request: Request):
+    return  templates.TemplateResponse(
+        request = request,
+        name="index.html"
+
+
+
+    )
+        
+    
+

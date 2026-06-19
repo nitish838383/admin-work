@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRG Services - Hire Best Workers in Ghaziabad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+            background: rgba(30, 58, 138, 0.98);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 5%;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Mobile Menu */
+        .menu-btn {
+            display: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-btn { display: block; }
+            .nav-links {
+                position: absolute;
+                top: 75px;
+                left: 0;
+                width: 100%;
+                background: #1e3a8a;
+                flex-direction: column;
+                text-align: center;
+                padding: 20px 0;
+                display: none;
+            }
+            .nav-links.active { display: flex; }
+        }
+
+        /* Hero */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1581091226825-a6a6a2d6e5f5?ixlib=rb-4.0.3&auto=format&fit=crop&q=80');
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Services */
+        .services {
+            padding: 80px 20px;
+            background: #f8fafc;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.4rem;
+            margin-bottom: 50px;
+            color: var(--primary);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .service-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+        <form action="/" method="get" class="space-y-6">
+
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">SRG <span>Services</span></div>
+            
+            <div class="menu-btn" id="menuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <div class="nav-links" id="navLinks">
+                <a href="/auth/dashboard">Dashboard</a>
+                <a href="#services">Services</a>
+                <a href="#">How it Works</a>
+                <a href="#">Workers</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div style="max-width:900px; margin:auto; padding:0 20px;">
+            <h1>Hire Skilled Workers Near You</h1>
+            <p style="font-size:1.3rem; margin:20px 0;">Painter • Mistri • Tikedhar • Electrician • Plumber • Carpenter & More</p>
+            <a href="#services" style="background:white; color:#1e3a8a; padding:16px 40px; border-radius:50px; text-decoration:none; font-weight:600; display:inline-block;">Find Worker Now</a>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="services">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fas fa-paint-roller"></i>
+                <h3>Painter</h3>
+                <p>Home & Office Painting</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-hammer"></i>
+                <h3>Mistri (Mason)</h3>
+                <p>Construction & Repair Work</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-hard-hat"></i>
+                <h3>Tikedhar (Contractor)</h3>
+                <p>Full Building Work</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Electrician</h3>
+                <p>Wiring & Electrical Work</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-wrench"></i>
+                <h3>Plumber</h3>
+                <p>Water & Pipe Repair</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-chair"></i>
+                <h3>Carpenter</h3>
+                <p>Furniture & Wood Work</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Mobile Menu
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+
+</body>
+</html>
