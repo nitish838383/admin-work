@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Management - SRG Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .status-active { background:#d1fae5; color:#10b981; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div class="flex h-screen flex-col md:flex-row">
+
+    <!-- Sidebar -->
+    <div class="w-full md:w-72 bg-[#1e3a8a] text-white p-6">
+        <h1 class="text-2xl font-bold mb-10">SRG Admin</h1>
+        <nav class="space-y-2">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-700">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-700">
+                <i class="fas fa-briefcase"></i> Workers
+            </a>
+        </nav>
+    </div>
+<form action="/auth/register" method="post" class="space-y-6">
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6 overflow-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Worker Management</h1>
+            <button onclick="openWorkerForm()" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
+<a href="/auth/register"
+   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
+    <i class="fas fa-plus"></i> Add New Worker
+</a>            </button>
+        </div>
+
+        <div class="flex gap-4 mb-6">
+            <input type="text" id="searchInput" 
+                   class="flex-1 px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none"
+                   placeholder="Search workers...">
+            <button onclick="exportToExcel()" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
+                <i class="fas fa-download"></i> Export Excel
+            </button>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-5 text-left">ID</th>
+                        <th class="px-6 py-5 text-left">Name</th>
+                        <th class="px-6 py-5 text-left">Mobile</th>
+                        <th class="hidden md:table-cell px-6 py-5 text-left">Email</th>
+                        <th class="px-6 py-5 text-left">Skill</th>
+                        <th class="px-6 py-5 text-left">Experience</th>
+                        <th class="px-6 py-5 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Worker Registration Form Modal -->
+<div id="workerFormModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[95vh] overflow-auto">
+        <div class="p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Worker Registration Form</h2>
+                <button onclick="closeWorkerForm()" class="text-3xl text-gray-400 hover:text-gray-600">×</button>
+            </div>
+
+            <!-- Your Original Worker Form -->
+            <form id="workerRegForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Full Name *</label>
+                        <input type="text" id="name" class="w-full px-4 py-3 border rounded-2xl" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Mobile Number *</label>
+                        <input type="tel" id="mobile" class="w-full px-4 py-3 border rounded-2xl" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="email" class="w-full px-4 py-3 border rounded-2xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Gender</label>
+                        <select id="gender" class="w-full px-4 py-3 border rounded-2xl">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Date of Birth</label>
+                        <input type="date" id="date_of_birth" class="w-full px-4 py-3 border rounded-2xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Experience (Years)</label>
+                        <input type="number" id="experience_years" class="w-full px-4 py-3 border rounded-2xl">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium mb-2">Full Address</label>
+                    <textarea id="address" class="w-full px-4 py-3 border rounded-2xl" rows="3"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">City</label>
+                        <input type="text" id="city" class="w-full px-4 py-3 border rounded-2xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">State</label>
+                        <input type="text" id="state" class="w-full px-4 py-3 border rounded-2xl" value="Uttar Pradesh">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Pincode</label>
+                        <input type="text" id="pincode" class="w-full px-4 py-3 border rounded-2xl">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium mb-2">Skills</label>
+                    <textarea id="skills" class="w-full px-4 py-3 border rounded-2xl" rows="2"></textarea>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium mb-2">Aadhaar Number</label>
+                    <input type="text" id="aadhaar_number" class="w-full px-4 py-3 border rounded-2xl">
+                </div>
+
+                <div class="flex gap-4 mt-10">
+                    <button type="button" onclick="closeWorkerForm()" 
+                            class="flex-1 py-4 border border-gray-300 rounded-2xl font-medium">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="submitWorkerForm()" 
+                            class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-medium">
+                        Save Worker
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let workers = [];
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        workers.forEach((w, i) => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-gray-50";
+            tr.innerHTML = `
+                <td class="px-6 py-5">${w.id}</td>
+                <td class="px-6 py-5">${w.name}</td>
+                <td class="px-6 py-5">${w.mobile}</td>
+                <td class="hidden md:table-cell px-6 py-5">${w.email || '-'}</td>
+                <td class="hidden md:table-cell px-6 py-5">${w.skills ? w.skills.substring(0,20)+'...' : '-'}</td>
+                <td class="px-6 py-5">${w.experience_years || 0} yrs</td>
+                <td class="px-6 py-5">
+                    <span class="px-4 py-1 rounded-full text-sm status-active">Active</span>
+                </td>
+                <td class="px-6 py-5 text-center">
+                    <button onclick="deleteWorker(${i})" class="text-red-600">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openWorkerForm() {
+        document.getElementById('workerFormModal').classList.remove('hidden');
+        document.getElementById('workerRegForm').reset();
+    }
+
+    function closeWorkerForm() {
+        document.getElementById('workerFormModal').classList.add('hidden');
+    }
+
+    function submitWorkerForm() {
+        const name = document.getElementById('name').value.trim();
+        const mobile = document.getElementById('mobile').value.trim();
+
+        if (!name || !mobile) {
+            alert("Name and Mobile are required!");
+            return;
+        }
+
+        const newWorker = {
+            id: "W" + String(1000 + workers.length),
+            name: name,
+            mobile: mobile,
+            email: document.getElementById('email').value.trim(),
+            gender: document.getElementById('gender').value,
+            date_of_birth: document.getElementById('date_of_birth').value,
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value,
+            state: document.getElementById('state').value,
+            pincode: document.getElementById('pincode').value,
+            experience_years: document.getElementById('experience_years').value,
+            skills: document.getElementById('skills').value,
+            about: document.getElementById('about').value,
+            aadhaar_number: document.getElementById('aadhaar_number').value
+        };
+
+        workers.unshift(newWorker);
+        renderTable();
+        closeWorkerForm();
+        alert("Worker successfully added!");
+    }
+
+    function deleteWorker(index) {
+        if (confirm("Delete this worker?")) {
+            workers.splice(index, 1);
+            renderTable();
+        }
+    }
+
+    function exportToExcel() {
+        let csv = "ID,Name,Mobile,Email,Skill,Experience,Address,City,State,Pincode,Aadhaar\n";
+        workers.forEach(w => {
+            csv += `"${w.id}","${w.name}","${w.mobile}","${w.email || ''}","${w.skills || ''}","${w.experience_years || ''}","${w.address || ''}","${w.city || ''}","${w.state || ''}","${w.pincode || ''}","${w.aadhaar_number || ''}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `workers_list.csv`;
+        a.click();
+    }
+
+    // Search
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const term = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#tableBody tr');
+        rows.forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+        });
+    });
+
+   
+</script>
+
+</body>
+</html>

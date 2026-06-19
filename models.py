@@ -6,10 +6,11 @@ from sqlalchemy.sql import func
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy import Column, Integer, String, Text, Date, DateTime
 from datetime import datetime
-
 from database import Base
 
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 
+# admin
 class Admin(Base):
     __tablename__ = "admins"
 
@@ -21,7 +22,9 @@ class Admin(Base):
         server_default=func.now()
     )
 
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 
+# worker
 class Worker(Base):
     __tablename__ = "workers"
 

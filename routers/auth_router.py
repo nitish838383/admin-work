@@ -21,8 +21,8 @@ router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
-
-# API Login
+# -----------------------------------------------------------------------------------------------------------------------------------------------
+# post login page
 @router.post("/login_page")
 def login(
     request: LoginSchema,
@@ -55,8 +55,9 @@ def login(
         "access_token": token,
         "token_type": "bearer"
     }
+# -------------------------------------------------------------------------------------------------------------------------------
 
-
+# get login page
 @router.get("/login")
 def login_page(request: Request):
     return templates.TemplateResponse(
@@ -64,7 +65,9 @@ def login_page(request: Request):
         name="login.html",
         context={}
     )
+# ---------------------------------------------------------------------------------------------------------------------------------
 
+# post login-page password
 @router.post("/login-page")
 def login_form(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
 
@@ -91,6 +94,9 @@ def login_form(email: str = Form(...), password: str = Form(...), db: Session = 
 
     return response
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+
+# get dashboard
 @router.get("/dashboard")
 def dashboard(
     request: Request
@@ -105,11 +111,11 @@ def dashboard(
         request=request,
         name= "dashboard.html"
 
-       
-       
-    )
+        )
 
-# Logout
+# -------------------------------------------------------------------------------------------------------------------------------------------
+
+# get Logout
 @router.get("/logout")
 def logout():
     response = RedirectResponse(
@@ -120,7 +126,7 @@ def logout():
     response.delete_cookie("access_token")
 
     return response
-
+# ----------------------------------------------------------------------------------------------------------------------------------------
 
 # Forgot Password Page
 @router.get("/forgot-password")
@@ -135,7 +141,9 @@ def forgot_password(
        
     )
 
+# ----------------------------------------------------------------------------------------------------------------------------------
 
+# post reset-password
 @router.post("/reset-password")
 def reset_password(
     email: str = Form(...),
@@ -164,12 +172,11 @@ def reset_password(
 templates = Jinja2Templates(directory="templates")
 
 
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
-templates = Jinja2Templates(directory="templates")
-
-
+# get register
 @router.get("/register")
 def worker_register_page(request: Request):
     return templates.TemplateResponse(
@@ -177,8 +184,9 @@ def worker_register_page(request: Request):
         name="worker_registration.html",
     )
 
+# ----------------------------------------------------------------------------------------------------------------------------------------------
 
-
+# post register
 @router.post("/register")
 def worker_register(
     name: str = Form(...),
