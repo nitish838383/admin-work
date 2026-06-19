@@ -28,27 +28,25 @@
             </a>
         </nav>
     </div>
-<form action="/auth/register" method="post" class="space-y-6">
 
     <!-- Main Content -->
     <div class="flex-1 p-6 overflow-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold">Worker Management</h1>
-            <button onclick="openWorkerForm()" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
-<a href="/auth/register"
-   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <h1 class="text-3xl font-bold text-gray-800">Worker Management</h1>
+           <a href="/auth/register"
+   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2 font-medium">
     <i class="fas fa-plus"></i> Add New Worker
-</a>            </button>
+</a>
         </div>
 
-        <div class="flex gap-4 mb-6">
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
             <input type="text" id="searchInput" 
-                   class="flex-1 px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none"
-                   placeholder="Search workers...">
+                   class="flex-1 px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500"
+                   placeholder="Search by Name, Mobile, Email...">
+            
             <button onclick="exportToExcel()" 
                     class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
-                <i class="fas fa-download"></i> Export Excel
+                <i class="fas fa-download"></i> Download Excel
             </button>
         </div>
 
@@ -60,8 +58,9 @@
                         <th class="px-6 py-5 text-left">Name</th>
                         <th class="px-6 py-5 text-left">Mobile</th>
                         <th class="hidden md:table-cell px-6 py-5 text-left">Email</th>
-                        <th class="px-6 py-5 text-left">Skill</th>
+                        <th class="hidden md:table-cell px-6 py-5 text-left">Skill</th>
                         <th class="px-6 py-5 text-left">Experience</th>
+                        <th class="px-6 py-5 text-left">Status</th>
                         <th class="px-6 py-5 text-center">Action</th>
                     </tr>
                 </thead>
@@ -71,17 +70,16 @@
     </div>
 </div>
 
-<!-- Worker Registration Form Modal -->
-<div id="workerFormModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+<!-- Add Worker Modal -->
+<div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[95vh] overflow-auto">
         <div class="p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Worker Registration Form</h2>
-                <button onclick="closeWorkerForm()" class="text-3xl text-gray-400 hover:text-gray-600">×</button>
+                <button onclick="closeModal()" class="text-3xl text-gray-400 hover:text-gray-600">×</button>
             </div>
 
-            <!-- Your Original Worker Form -->
-            <form id="workerRegForm">
+            <form id="workerForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium mb-2">Full Name *</label>
@@ -144,11 +142,11 @@
                 </div>
 
                 <div class="flex gap-4 mt-10">
-                    <button type="button" onclick="closeWorkerForm()" 
+                    <button type="button" onclick="closeModal()" 
                             class="flex-1 py-4 border border-gray-300 rounded-2xl font-medium">
                         Cancel
                     </button>
-                    <button type="button" onclick="submitWorkerForm()" 
+                    <button type="button" onclick="saveWorker()" 
                             class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-medium">
                         Save Worker
                     </button>
@@ -159,27 +157,38 @@
 </div>
 
 <script>
-    let workers = [];
+    let workers = [];   // Empty array - no sample data
 
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
 
-        workers.forEach((w, i) => {
+        if (workers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                        No workers added yet.<br>Click "Add New Worker" to start.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        workers.forEach((w, index) => {
             const tr = document.createElement('tr');
             tr.className = "hover:bg-gray-50";
             tr.innerHTML = `
-                <td class="px-6 py-5">${w.id}</td>
+                <td class="px-6 py-5 font-medium">${w.id}</td>
                 <td class="px-6 py-5">${w.name}</td>
                 <td class="px-6 py-5">${w.mobile}</td>
                 <td class="hidden md:table-cell px-6 py-5">${w.email || '-'}</td>
-                <td class="hidden md:table-cell px-6 py-5">${w.skills ? w.skills.substring(0,20)+'...' : '-'}</td>
+                <td class="hidden md:table-cell px-6 py-5">${w.skills ? w.skills.substring(0,25)+'...' : '-'}</td>
                 <td class="px-6 py-5">${w.experience_years || 0} yrs</td>
                 <td class="px-6 py-5">
                     <span class="px-4 py-1 rounded-full text-sm status-active">Active</span>
                 </td>
                 <td class="px-6 py-5 text-center">
-                    <button onclick="deleteWorker(${i})" class="text-red-600">
+                    <button onclick="deleteWorker(${index})" class="text-red-600 hover:text-red-700">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
@@ -188,21 +197,18 @@
         });
     }
 
-    function openWorkerForm() {
-        document.getElementById('workerFormModal').classList.remove('hidden');
-        document.getElementById('workerRegForm').reset();
+   
+
+    function closeModal() {
+        document.getElementById('addModal').classList.add('hidden');
     }
 
-    function closeWorkerForm() {
-        document.getElementById('workerFormModal').classList.add('hidden');
-    }
-
-    function submitWorkerForm() {
+    function saveWorker() {
         const name = document.getElementById('name').value.trim();
         const mobile = document.getElementById('mobile').value.trim();
 
         if (!name || !mobile) {
-            alert("Name and Mobile are required!");
+            alert("Name and Mobile Number are required!");
             return;
         }
 
@@ -213,20 +219,19 @@
             email: document.getElementById('email').value.trim(),
             gender: document.getElementById('gender').value,
             date_of_birth: document.getElementById('date_of_birth').value,
-            address: document.getElementById('address').value,
+            address: document.getElementById('address').value.trim(),
             city: document.getElementById('city').value,
             state: document.getElementById('state').value,
             pincode: document.getElementById('pincode').value,
-            experience_years: document.getElementById('experience_years').value,
+            experience_years: document.getElementById('experience_years').value || 0,
             skills: document.getElementById('skills').value,
-            about: document.getElementById('about').value,
             aadhaar_number: document.getElementById('aadhaar_number').value
         };
 
         workers.unshift(newWorker);
         renderTable();
-        closeWorkerForm();
-        alert("Worker successfully added!");
+        closeModal();
+        alert("✅ Worker successfully added!");
     }
 
     function deleteWorker(index) {
@@ -237,6 +242,10 @@
     }
 
     function exportToExcel() {
+        if (workers.length === 0) {
+            alert("No data to export!");
+            return;
+        }
         let csv = "ID,Name,Mobile,Email,Skill,Experience,Address,City,State,Pincode,Aadhaar\n";
         workers.forEach(w => {
             csv += `"${w.id}","${w.name}","${w.mobile}","${w.email || ''}","${w.skills || ''}","${w.experience_years || ''}","${w.address || ''}","${w.city || ''}","${w.state || ''}","${w.pincode || ''}","${w.aadhaar_number || ''}"\n`;
@@ -246,11 +255,11 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `workers_list.csv`;
+        a.download = `workers_list_${new Date().toISOString().slice(0,10)}.csv`;
         a.click();
     }
 
-    // Search
+    // Search Functionality
     document.getElementById('searchInput').addEventListener('keyup', function() {
         const term = this.value.toLowerCase();
         const rows = document.querySelectorAll('#tableBody tr');
@@ -259,7 +268,8 @@
         });
     });
 
-   
+    // Start with empty table
+    window.onload = renderTable;
 </script>
 
 </body>

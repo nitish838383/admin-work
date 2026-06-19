@@ -228,6 +228,15 @@ def worker_register(
     db.refresh(worker)
 
     return RedirectResponse(
-        url="/worker/register",
+        url="/auth/register",
         status_code=303
+    )
+# ------------------------------------------------------------------------------------------------------------------
+
+# get worker-admin
+@router.get("/worker-admin")
+def worker_admin_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="worker_admin.html",
     )
