@@ -4,11 +4,12 @@ from sqlalchemy.orm import declarative_base
 from urllib.parse import quote_plus
 from sqlalchemy import create_engine
 
-password = quote_plus("nitish#gupta@2005")
 
-DATABASE_URL = f"mysql+pymysql://root:{password}@localhost/admin_panel"
-engine = create_engine(DATABASE_URL)
-
+DATABASE_URL = "postgresql+psycopg2://neondb_owner:npg_mycgN3qsTO9f@ep-plain-thunder-at7jyw40-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require"
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True
+)
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
