@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request,Form
+from fastapi import APIRouter, Depends, HTTPException, Request,Form,UploadFile, File, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -11,6 +11,12 @@ from auth import create_access_token
 from fastapi import Request
 from fastapi import APIRouter, Request, Form, Depends
 from auth import hash_password
+from fastapi.responses import RedirectResponse
+from datetime import datetime
+import os
+from uuid import uuid4
+
+
 
 
 
@@ -22,7 +28,6 @@ router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
-# -----------------------------------------------------------------------------------------------------------------------------------------------
 #
 # -------------------------------------------------------------------------------------------------------------------------------
 
@@ -165,32 +170,67 @@ def worker_register_page(request: Request):
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------
 
-# post register
+
+
+
+
+# ---------------- FILE SAVE FUNCTION ----------------
+def save_file(file: UploadFile, folder="uploads"):
+    if not file:
+        return None
+
+    os.makedirs(folder, exist_ok=True)
+
+    ext = file.filename.split(".")[-1]
+    filename = f"{uuid4()}.{ext}"
+    path = os.path.join(folder, filename)
+
+    with open(path, "wb") as buffer:
+        buffer.write(file.file.read())
+
+    return filename
+
+
+# ---------------- REGISTER ROUTE ----------------
 @router.post("/register")
 def worker_register(
     name: str = Form(...),
-    email: str = Form(...),
-    category_id: int = Form(...),
+    email: str = Form(None),
     mobile: str = Form(...),
-    gender: str = Form(...),
-    date_of_birth: str = Form(...),
-    address: str = Form(...),
-    city: str = Form(...),
-    state: str = Form(...),
-    pincode: str = Form(...),
-    experience_years: int = Form(...),
-    skills: str = Form(...),
-    about: str = Form(...),
-    aadhaar_number: str = Form(...),
+    gender: str = Form(None),
+    date_of_birth: str = Form(None),
+    address: str = Form(None),
+    city: str = Form(None),
+    state: str = Form(None),
+    pincode: str = Form(None),
+    category_id: int = Form(None),
+    experience_years: int = Form(0),
+    skills: str = Form(None),
+    about: str = Form(None),
+    aadhaar_number: str = Form(None),
+
+    profile_image: UploadFile = File(None),
+    aadhaar_front: UploadFile = File(None),
+    aadhaar_back: UploadFile = File(None),
+
     db: Session = Depends(get_db)
 ):
 
-    worker = worker(
+    # ---------------- DOB FIX ----------------
+    dob = None
+    if date_of_birth:
+        try:
+            dob = datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+        except ValueError:
+            dob = datetime.strptime(date_of_birth, "%d-%m-%Y").date()
+
+    # ---------------- CREATE WORKER ----------------
+    worker = Worker(
         name=name,
         email=email,
         mobile=mobile,
         gender=gender,
-        date_of_birth=date_of_birth,
+        date_of_birth=dob,
         address=address,
         city=city,
         state=state,
@@ -199,7 +239,11 @@ def worker_register(
         experience_years=experience_years,
         skills=skills,
         about=about,
-        aadhaar_number=aadhaar_number
+        aadhaar_number=aadhaar_number,
+        status="Pending",
+        profile_image=save_file(profile_image),
+        aadhaar_front=save_file(aadhaar_front),
+        aadhaar_back=save_file(aadhaar_back)
     )
 
     db.add(worker)
@@ -207,15 +251,63 @@ def worker_register(
     db.refresh(worker)
 
     return RedirectResponse(
-        url="/auth/register",
+        url="/auth/worker-admin",
         status_code=303
     )
-# ------------------------------------------------------------------------------------------------------------------
+
+    # ------------------------------------------------------------------------------------------------------------
 
 # get worker-admin
+from models import Worker
+
 @router.get("/worker-admin")
-def worker_admin_page(request: Request):
+def worker_admin_page(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    workers = db.query(Worker).order_by(Worker.id.asc()).all()
     return templates.TemplateResponse(
         request=request,
         name="worker_admin.html",
+        context={
+            "workers": workers
+        }
+    )
+
+
+@router.get("/worker/{worker_id}/approve")
+def approve_worker(
+    worker_id: int,
+    db: Session = Depends(get_db)
+):
+    worker = db.query(Worker).filter(
+        Worker.id == worker_id
+    ).first()
+
+    if worker:
+        worker.status = "Approved"
+        db.commit()
+
+    return RedirectResponse(
+        url="/auth/worker-admin",
+        status_code=303
+    )
+
+
+@router.get("/worker/{worker_id}/reject")
+def reject_worker(
+    worker_id: int,
+    db: Session = Depends(get_db)
+):
+    worker = db.query(Worker).filter(
+        Worker.id == worker_id
+    ).first()
+
+    if worker:
+        worker.status = "Rejected"
+        db.commit()
+
+    return RedirectResponse(
+        url="/auth/worker-admin",
+        status_code=303
     )

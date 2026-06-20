@@ -24,15 +24,15 @@ class Admin(Base):
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------
 
-# worker
+# 
 class Worker(Base):
     __tablename__ = "workers"
 
     id = Column(Integer, primary_key=True, index=True)
 
-    name = Column(String(100))
+    name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True)
-    mobile = Column(String(20), unique=True)
+    mobile = Column(String(20), unique=True, nullable=False)
 
     gender = Column(String(20))
     date_of_birth = Column(Date)
@@ -42,12 +42,17 @@ class Worker(Base):
     state = Column(String(100))
     pincode = Column(String(10))
 
-    experience_years = Column(Integer)
+    category_id = Column(Integer)
+
+    experience_years = Column(Integer, default=0)
 
     skills = Column(Text)
     about = Column(Text)
 
-    aadhaar_number = Column(String(20))
+    aadhaar_number = Column(String(20), unique=True)
+    status = Column(String(20), default="Pending")
+    profile_image = Column(String(255))
+    aadhaar_front = Column(String(255))
+    aadhaar_back = Column(String(255))
 
     created_at = Column(DateTime, default=datetime.utcnow)
-    
