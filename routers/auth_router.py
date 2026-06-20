@@ -23,39 +23,7 @@ router = APIRouter(
     tags=["Authentication"]
 )
 # -----------------------------------------------------------------------------------------------------------------------------------------------
-# post login page
-@router.post("/login_page")
-def login(
-    request: LoginSchema,
-    db: Session = Depends(get_db)
-):
-    admin = db.query(Admin).filter(
-        Admin.email == request.email
-    ).first()
-
-    if not admin:
-        raise HTTPException(
-            status_code=404,
-            detail="Admin not found"
-        )
-
-    if request.password != admin.password:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid Password"
-        )
-
-    token = create_access_token(
-        {
-            "admin_id": admin.id,
-            "email": admin.email
-        }
-    )
-
-    return {
-        "access_token": token,
-        "token_type": "bearer"
-    }
+#
 # -------------------------------------------------------------------------------------------------------------------------------
 
 # get login page
@@ -68,10 +36,12 @@ def login_page(request: Request):
     )
 # ---------------------------------------------------------------------------------------------------------------------------------
 
-# post login-page password
 @router.post("/login-page")
-def login_form(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-
+def login_form(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
     admin = db.query(Admin).filter(Admin.email == email).first()
 
     if not admin:
@@ -85,12 +55,17 @@ def login_form(email: str = Form(...), password: str = Form(...), db: Session = 
         "email": admin.email
     })
 
-    response = RedirectResponse(url="/auth/dashboard", status_code=302)
+    response = RedirectResponse(
+        url="/auth/dashboard",
+        status_code=302
+    )
 
     response.set_cookie(
         key="access_token",
         value=token,
-        httponly=True
+        httponly=True,
+        secure=True,
+        samesite="lax"
     )
 
     return response
