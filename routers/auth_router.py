@@ -311,3 +311,48 @@ def reject_worker(
         url="/auth/worker-admin",
         status_code=303
     )
+
+@router.get("/worker/{worker_id}/delete")
+def delete_worker(
+    worker_id: int,
+    db: Session = Depends(get_db)
+):
+    worker = db.query(Worker).filter(
+        Worker.id == worker_id
+    ).first()
+
+    if worker:
+        db.delete(worker)
+        db.commit()
+
+    return RedirectResponse(
+        url="/auth/worker-admin",
+        status_code=303
+    )
+
+@router.post("/worker/{worker_id}/edit")
+def edit_worker(
+    worker_id: int,
+    name: str = Form(...),
+    mobile: str = Form(...),
+    email: str = Form(...),
+    skills: str = Form(...),
+    experience_years: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    worker = db.query(Worker).filter(
+        Worker.id == worker_id
+    ).first()
+
+    worker.name = name
+    worker.mobile = mobile
+    worker.email = email
+    worker.skills = skills
+    worker.experience_years = experience_years
+
+    db.commit()
+
+    return RedirectResponse(
+        url="/auth/worker-admin",
+        status_code=303
+    )
