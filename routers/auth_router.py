@@ -462,3 +462,18 @@ def reject_customer(
         url="/auth/all-customers",
         status_code=303
     )
+
+@router.get("/services")
+def service(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="services.html"
+
+    )
+
+@router.get("/contact")
+def Contact(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="contact.html"
+    )

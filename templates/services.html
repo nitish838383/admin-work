@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services - SRG Services Ghaziabad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .service-card {
+            transition: all 0.4s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <form action="/auth/services" method="get" class="space-y-6">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">S</div>
+                <h1 class="text-3xl font-bold text-gray-800">SRG <span class="text-blue-600">Services</span></h1>
+            </div>
+
+            <div class="hidden md:flex items-center gap-8 text-gray-700 font-medium">
+                <a href="index.html" class="hover:text-blue-600">Home</a>
+                <a href="auth/service" class="text-blue-600 font-semibold">Services</a>
+                <a href="#" class="hover:text-blue-600">How it Works</a>
+                <a href="#" class="hover:text-blue-600">Workers</a>
+                <a href="/contact" class="hover:text-blue-600">Contact</a>
+            </div>
+
+            <a href="/auth/register" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-blue-700">Post Requirement</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-20">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h1 class="text-5xl font-bold mb-4">Our Professional Services</h1>
+            <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+                Ghaziabad's most trusted platform for hiring skilled workers
+            </p>
+        </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <div class="service-card bg-white border border-gray-100 rounded-3xl p-8">
+                    <div class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-paint-roller text-4xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3">Painter</h3>
+                    <p class="text-gray-600 mb-6">Interior & Exterior painting, wall finishing, wallpaper, and decorative work.</p>
+                    <span class="text-blue-600 font-medium">Starting from ₹8/sq.ft</span>
+                </div>
+
+                <div class="service-card bg-white border border-gray-100 rounded-3xl p-8">
+                    <div class="w-20 h-20 bg-amber-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-hammer text-4xl text-amber-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3">Mistri (Mason)</h3>
+                    <p class="text-gray-600 mb-6">Construction, brick work, plastering, flooring and repair work.</p>
+                    <span class="text-blue-600 font-medium">Starting from ₹450/day</span>
+                </div>
+
+                <div class="service-card bg-white border border-gray-100 rounded-3xl p-8">
+                    <div class="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-hard-hat text-4xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3">Tikedhar / Contractor</h3>
+                    <p class="text-gray-600 mb-6">Complete building construction, renovation and civil projects.</p>
+                    <span class="text-blue-600 font-medium">Project based</span>
+                </div>
+
+                <div class="service-card bg-white border border-gray-100 rounded-3xl p-8">
+                    <div class="w-20 h-20 bg-yellow-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-bolt text-4xl text-yellow-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3">Electrician</h3>
+                    <p class="text-gray-600 mb-6">Wiring, fan installation, inverter setup, switch board fitting.</p>
+                    <span class="text-blue-600 font-medium">Starting from ₹350/call</span>
+                </div>
+
+                <div class="service-card bg-white border border-gray-100 rounded-3xl p-8">
+                    <div class="w-20 h-20 bg-cyan-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-wrench text-4xl text-cyan-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3">Plumber</h3>
+                    <p class="text-gray-600 mb-6">Water leakage repair, pipe fitting, bathroom fitting, motor installation.</p>
+                    <span class="text-blue-600 font-medium">Starting from ₹300/call</span>
+                </div>
+
+                <div class="service-card bg-white border border-gray-100 rounded-3xl p-8">
+                    <div class="w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-chair text-4xl text-emerald-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3">Carpenter</h3>
+                    <p class="text-gray-600 mb-6">Furniture making, door-window repair, wooden flooring & polish.</p>
+                    <span class="text-blue-600 font-medium">Starting from ₹400/day</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="bg-blue-600 py-16 text-white">
+        <div class="max-w-4xl mx-auto text-center px-6">
+            <h2 class="text-4xl font-bold mb-4">Ready to Hire a Worker?</h2>
+            <p class="text-xl mb-8">Post your requirement and get quotes from verified workers within minutes</p>
+            <a href="/auth/register" 
+               class="inline-block bg-white text-blue-600 px-12 py-4 rounded-3xl text-xl font-semibold hover:bg-gray-100 transition">
+                Post Requirement Now →
+            </a>
+        </div>
+    </section>
+
+</body>
+</html>
