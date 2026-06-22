@@ -76,23 +76,47 @@ def login_form(
     return response
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------
-
 # get dashboard
+from models import User, Worker, Booking
+import requests
+
 @router.get("/dashboard")
 def dashboard(
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db)
 ):
     token = request.cookies.get("access_token")
 
     if not token:
-        return RedirectResponse(url="/auth/login", status_code=302)
-    
-    
+        return RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+
+    # External API se customers data
+    response = requests.get(
+        "https://mistripoint-backend-1.onrender.com/auth/all-customers"
+    )
+
+    data = response.json()
+
+    total_customers = data["total_customers"]
+
+    # Apni DB ka data
+    total_users = db.query(User).count()
+    total_workers = db.query(Worker).count()
+    total_bookings = db.query(Booking).count()
+
     return templates.TemplateResponse(
         request=request,
-        name= "dashboard.html"
-
-        )
+        name="dashboard.html",
+        context={
+            "total_users": total_users,
+            "total_workers": total_workers,
+            "total_bookings": total_bookings,
+            "total_customers": total_customers
+        }
+    )
 
 # -------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -355,4 +379,44 @@ def edit_worker(
     return RedirectResponse(
         url="/auth/worker-admin",
         status_code=303
+    )
+
+@router.get("/users")
+def users_page(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    users = db.query(User).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="users.html",
+        context={
+            "users": users
+        }
+    )
+from models import AllCustomer
+import requests
+
+@router.get("/all-customers")
+def all_customers(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    response = requests.get(
+        "https://mistripoint-backend-1.onrender.com/auth/all-customers"
+    )
+
+    data = response.json()
+
+    total_customers = data["total_customers"]
+    customers = data["customers"]
+
+    return templates.TemplateResponse(
+        request=request,
+        name="All_customers.html",
+        context={
+            "customers": customers,
+            "total_customers": total_customers
+        }
     )

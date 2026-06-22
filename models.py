@@ -56,3 +56,40 @@ class Worker(Base):
     aadhaar_back = Column(String(255))
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+from sqlalchemy import Column, Integer, String
+from database import Base
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True)
+    mobile = Column(String(20), unique=True)
+
+class Booking(Base):
+    __tablename__ = "bookings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer)
+    worker_id = Column(Integer)
+    status = Column(String(50))
+
+
+from sqlalchemy import Column, Integer, String
+from database import Base
+
+class AllCustomer(Base):
+    __tablename__ = "all_customers"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    first_name = Column(String(100))
+    last_name = Column(String(100))
+
+    phone = Column(String(20), unique=True)
+
+    city = Column(String(100))
+    address = Column(String(255))
+    pincode = Column(String(20))   

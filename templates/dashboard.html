@@ -40,8 +40,8 @@
             <a href="#" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
                 <i class="bi bi-calendar-check"></i> Bookings
             </a>
-            <a href="#" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
-                <i class="bi bi-grid"></i> Categories
+            <a href="all-customers" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
+                <i class="bi bi-grid"></i> Customers_View
             </a>
             <a href="#" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
                 <i class="bi bi-star"></i> Reviews
@@ -68,20 +68,40 @@
             </div>
         </header>
 
-        <div class="p-6 md:p-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                <div class="stat-card bg-white rounded-3xl p-6 shadow">
-                    <p class="text-slate-500 text-sm">Total Users</p>
-                    <h2 id="total-users" class="text-4xl md:text-5xl font-bold mt-4">...</h2>
-                    <p class="text-emerald-600 text-sm mt-3">↑ Live Count</p>
-                </div>
-                <div class="stat-card bg-white rounded-3xl p-6 shadow">
-                    <p class="text-slate-500 text-sm">Total Workers</p>
-                    <h2 id="total-workers" class="text-4xl md:text-5xl font-bold mt-4">...</h2>
-                    <p class="text-emerald-600 text-sm mt-3">↑ Live Count</p>
-                </div>
-            </div>
+       <div class="p-6 md:p-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+
+        <div class="stat-card bg-white rounded-3xl p-6 shadow">
+            <p class="text-slate-500 text-sm">Total Users</p>
+            <h2 class="text-4xl md:text-5xl font-bold mt-4">
+                {{ total_users }}
+            </h2>
+            <p class="text-emerald-600 text-sm mt-3">↑ Live Count</p>
         </div>
+
+        <div class="stat-card bg-white rounded-3xl p-6 shadow">
+            <p class="text-slate-500 text-sm">Total Workers</p>
+            <h2 class="text-4xl md:text-5xl font-bold mt-4">
+                {{ total_workers }}
+            </h2>
+            <p class="text-emerald-600 text-sm mt-3">↑ Live Count</p>
+        </div>
+
+        <div class="stat-card bg-white rounded-3xl p-6 shadow">
+            <p class="text-slate-500 text-sm">Total Bookings</p>
+            <h2 class="text-4xl md:text-5xl font-bold mt-4">
+                {{ total_bookings }}
+            </h2>
+            <p class="text-emerald-600 text-sm mt-3">↑ Live Count</p>
+        </div>
+       <div class="stat-card bg-white rounded-3xl p-6 shadow">
+            <p class="text-slate-500 text-sm">Total Customers</p>
+            <h2 class="text-4xl md:text-5xl font-bold mt-4">
+                {{ total_customers }}
+            </h2>
+            <p class="text-emerald-600 text-sm mt-3">↑ Live Count</p>
+        </div>
+
     </div>
 </div>
 
@@ -90,21 +110,7 @@
         document.getElementById('sidebar').classList.toggle('active');
     }
 
-    // Database se data automatically fetch karne ka function
-    async function fetchLiveStats() {
-        try {
-            const response = await fetch('/api/stats'); // Backend API endpoint
-            const data = await response.json();
-            
-            // HTML numbers ko update karna
-            document.getElementById('total-users').innerText = data.totalUsers;
-            document.getElementById('total-workers').innerText = data.totalWorkers;
-        } catch (error) {
-            console.error("Data fetch karne me error aayi:", error);
-            document.getElementById('total-users').innerText = "Error";
-            document.getElementById('total-workers').innerText = "Error";
-        }
-    }
+   
 
     // Page load hote hi function run hoga
     window.addEventListener('DOMContentLoaded', fetchLiveStats);

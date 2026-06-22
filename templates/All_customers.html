@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Customers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
+
+<div class="p-8">
+
+    <div class="bg-white rounded-3xl shadow p-6 mb-6">
+        <h1 class="text-3xl font-bold">All Customers</h1>
+
+        <div class="mt-4">
+            <span class="text-lg font-semibold">
+                Total Users:
+            </span>
+
+            <span class="bg-blue-600 text-white px-4 py-2 rounded-xl">
+                {{ total_customers }}
+            </span>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-slate-900 text-white">
+                <tr>
+                    <th class="p-4 text-left">ID</th>
+                    <th class="p-4 text-left">First Name</th>
+                    <th class="p-4 text-left">Last Name</th>
+                    <th class="p-4 text-left">Phone</th>
+                    <th class="p-4 text-left">City</th>
+                    <th class="p-4 text-left">Address</th>
+                    <th class="p-4 text-left">Pincode</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for customer in customers %}
+                <td class="p-4">{{ customer["id"] }}</td>
+                <td class="p-4">{{ customer["first_name"] or "-" }}</td>
+                <td class="p-4">{{ customer["last_name"] or "-" }}</td>
+                <td class="p-4">{{ customer["phone"] }}</td>
+                <td class="p-4">{{ customer["city"] or "-" }}</td>
+                <td class="p-4">{{ customer["address"] or "-" }}</td>
+                <td class="p-4">{{ customer["pincode"] or "-" }}</td>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
