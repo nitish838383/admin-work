@@ -3,57 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Customers</title>
+    <title>All Customers - SRG Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+   
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        th, td {
+            white-space: nowrap;
+        }
+        .action-btn { transition: all 0.2s; }
+    </style>
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-100 min-h-screen">
 
-<div class="p-8">
+<div class="p-4 md:p-8 max-w-7xl mx-auto">
 
+    <!-- Header -->
     <div class="bg-white rounded-3xl shadow p-6 mb-6">
-        <h1 class="text-3xl font-bold">All Customers</h1>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">All Customers</h1>
+                <p class="text-slate-500 mt-1">Total Customers: 
+                    <span class="bg-blue-600 text-white px-4 py-1.5 rounded-xl font-semibold">
+                        {{ total_customers }}
+                    </span>
+                </p>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="exportToExcel()" 
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
+                    <i class="fas fa-download"></i> Download Excel
+                </button>
+            </div>
+        </div>
 
-        <div class="mt-4">
-            <span class="text-lg font-semibold">
-                Total Users:
-            </span>
-
-            <span class="bg-blue-600 text-white px-4 py-2 rounded-xl">
-                {{ total_customers }}
-            </span>
+        <!-- Search -->
+        <div class="mt-6">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                <input type="text" id="searchInput"
+                       class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500"
+                       placeholder="Search by name, phone or city...">
+            </div>
         </div>
     </div>
 
+    <!-- Table -->
     <div class="bg-white rounded-3xl shadow overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-slate-900 text-white">
-                <tr>
-                    <th class="p-4 text-left">ID</th>
-                    <th class="p-4 text-left">First Name</th>
-                    <th class="p-4 text-left">Last Name</th>
-                    <th class="p-4 text-left">Phone</th>
-                    <th class="p-4 text-left">City</th>
-                    <th class="p-4 text-left">Address</th>
-                    <th class="p-4 text-left">Pincode</th>
-                </tr>
-            </thead>
+        <div class="table-container">
+            <table class="w-full min-w-[1100px]">
+                <thead class="bg-slate-900 text-white sticky top-0">
+                    <tr>
+                        <th class="p-5 text-left">ID</th>
+                        <th class="p-5 text-left">First Name</th>
+                        <th class="p-5 text-left">Last Name</th>
+                        <th class="p-5 text-left">Phone</th>
+                        <th class="p-5 text-left">City</th>
+                        <th class="p-5 text-left">Address</th>
+                        <th class="p-5 text-left">Pincode</th>
+                        <th class="p-5 text-center">Actions</th>
+                        <th class="p-5 text-left">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y" id="tableBody">
+                    {% for customer in customers %}
+                    <tr class="hover:bg-slate-50" id="row-{{ customer['id'] }}">
+                        <td class="p-5">{{ customer["id"] }}</td>
+                        <td class="p-5">{{ customer["first_name"] or "-" }}</td>
+                        <td class="p-5">{{ customer["last_name"] or "-" }}</td>
+                        <td class="p-5">{{ customer["phone"] }}</td>
+                        <td class="p-5">{{ customer["city"] or "-" }}</td>
+                        <td class="p-5">{{ customer["address"] or "-" }}</td>
+                        <td class="p-5">{{ customer["pincode"] or "-" }}</td>
+                        <td class="p-5 text-center space-x-2">
+    <a href="/auth/customer_approved/{{ customer['id'] }}/approve"
+       class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg">
+        Approve
+    </a>
 
-            <tbody>
-                {% for customer in customers %}
-                <td class="p-4">{{ customer["id"] }}</td>
-                <td class="p-4">{{ customer["first_name"] or "-" }}</td>
-                <td class="p-4">{{ customer["last_name"] or "-" }}</td>
-                <td class="p-4">{{ customer["phone"] }}</td>
-                <td class="p-4">{{ customer["city"] or "-" }}</td>
-                <td class="p-4">{{ customer["address"] or "-" }}</td>
-                <td class="p-4">{{ customer["pincode"] or "-" }}</td>
-                {% endfor %}
-            </tbody>
+    <a href="/auth/customer_rejected/{{ customer['id'] }}/reject"
+       class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg">
+        Reject
+    </a>
+</td>
+<td class="p-5">
+    {% if customer["status"] == "Approved" %}
+        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+            Approved
+        </span>
+    {% elif customer["status"] == "Rejected" %}
+        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full">
+            Rejected
+        </span>
+    {% else %}
+        <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+            Active
+        </span>
+    {% endif %}
+</td>
 
-        </table>
-    </div>
-
+</tr>
+{% endfor %}
+</tbody>
+</table>
 </div>
+</div>
+</div>
+<script>
+    // Search Functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const term = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#tableBody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    });
+
+    // Placeholder Functions
+    function editCustomer(id) {
+        alert(`Editing Customer ID: ${id}`);
+        // window.location.href = `/customer/${id}/edit`;
+    }
+
+    function exportToExcel() {
+        alert("📥 Downloading Customers Data as Excel...");
+        // Full CSV logic can be added here
+    }
+</script>
 
 </body>
 </html>

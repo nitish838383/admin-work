@@ -395,6 +395,8 @@ def users_page(
             "users": users
         }
     )
+
+
 from models import AllCustomer
 import requests
 
@@ -419,4 +421,44 @@ def all_customers(
             "customers": customers,
             "total_customers": total_customers
         }
+    )
+
+
+@router.get("/customer_approved/{customer_id}/approve")
+def approve_customer(
+    customer_id: int,
+    db: Session = Depends(get_db)
+):
+    customer = db.query(AllCustomer).filter(
+        AllCustomer.id == customer_id
+    ).first()
+
+    if customer:
+        customer.status = "Approved"
+        db.commit()
+
+    return RedirectResponse(
+        url="/auth/all-customers",
+        status_code=303
+    )
+
+
+from models import AllCustomer
+
+@router.get("/customer_rejected/{customer_id}/reject")
+def reject_customer(
+    customer_id: int,
+    db: Session = Depends(get_db)
+):
+    customer = db.query(AllCustomer).filter(
+        AllCustomer.id == customer_id
+    ).first()
+
+    if customer:
+        customer.status = "Rejected"
+        db.commit()
+
+    return RedirectResponse(
+        url="/auth/all-customers",
+        status_code=303
     )

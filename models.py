@@ -92,4 +92,5 @@ class AllCustomer(Base):
 
     city = Column(String(100))
     address = Column(String(255))
-    pincode = Column(String(20))   
+    pincode = Column(String(20))  
+    status = Column(String(20), default="Pending") 
