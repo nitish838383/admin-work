@@ -298,7 +298,9 @@ def worker_admin_page(
         }
     )
 
+# _____________________________________________________________________________________________________________________________________
 
+# -worker approved
 @router.get("/worker/{worker_id}/approve")
 def approve_worker(
     worker_id: int,
@@ -317,7 +319,9 @@ def approve_worker(
         status_code=303
     )
 
+# _____________________________________________________________________________________________________________________________________________
 
+# worker reject
 @router.get("/worker/{worker_id}/reject")
 def reject_worker(
     worker_id: int,
@@ -336,6 +340,10 @@ def reject_worker(
         status_code=303
     )
 
+
+# __________________________________________________________________________________________________________________________________________
+
+# worker delete
 @router.get("/worker/{worker_id}/delete")
 def delete_worker(
     worker_id: int,
@@ -353,6 +361,10 @@ def delete_worker(
         url="/auth/worker-admin",
         status_code=303
     )
+
+# __________________________________________________________________________________________________________________________________
+
+# worker edit
 
 @router.post("/worker/{worker_id}/edit")
 def edit_worker(
@@ -381,6 +393,9 @@ def edit_worker(
         status_code=303
     )
 
+# __________________________________________________________________________________________________________________________________________
+# users detail
+
 @router.get("/users")
 def users_page(
     request: Request,
@@ -396,7 +411,8 @@ def users_page(
         }
     )
 
-
+# _____________________________________________________________________________________________________________________________________
+# all_customers detail
 from models import AllCustomer
 import requests
 
@@ -423,7 +439,8 @@ def all_customers(
         }
     )
 
-
+# _________________________________________________________________________________________________________________________________________
+# customer appproved
 @router.get("/customer_approved/{customer_id}/approve")
 def approve_customer(
     customer_id: int,
@@ -442,7 +459,8 @@ def approve_customer(
         status_code=303
     )
 
-
+# __________________________________________________________________________________________________________________________________________
+# customer reject
 from models import AllCustomer
 
 @router.get("/customer_rejected/{customer_id}/reject")
@@ -463,6 +481,8 @@ def reject_customer(
         status_code=303
     )
 
+# _________________________________________________________________________________________________________________________________________
+# services
 @router.get("/services")
 def service(request:Request):
     return templates.TemplateResponse(
@@ -471,6 +491,8 @@ def service(request:Request):
 
     )
 
+# _____________________________________________________________________________________________________________________________________________________
+# contact
 @router.get("/contact")
 def Contact(request:Request):
     return templates.TemplateResponse(
