@@ -3,31 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🥈 LabourMitra Admin Dashboard</title>
+    <title>SRG Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <style>
-        body { 
-            font-family: 'Poppins', sans-serif; 
-        }
-        .sidebar { 
-            transition: all 0.3s ease; 
-        }
+        body { font-family: 'Poppins', sans-serif; }
+        .sidebar { transition: all 0.3s ease; }
         @media (max-width: 768px) {
-            .sidebar { 
-                transform: translateX(-100%); 
-            }
-            .sidebar.active { 
-                transform: translateX(0); 
-            }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
         }
         .stat-card {
             transition: all 0.3s ease;
         }
         .stat-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
         }
         .sidebar-link {
             transition: all 0.2s ease;
@@ -101,21 +93,19 @@
                     <i class="bi bi-bell text-2xl"></i>
                     <span class="absolute top-1 right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">8</span>
                 </button>
-                
                 <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-3xl shadow">
                     <img src="https://i.pravatar.cc/128?u=admin" class="w-9 h-9 rounded-2xl object-cover" alt="">
                     <div class="hidden md:block">
                         <p class="font-medium">Super Admin</p>
-                        <p class="text-xs text-slate-500">admin@LabourMitraplatform.com</p>
+                        <p class="text-xs text-slate-500">admin@srgplatform.com</p>
                     </div>
                 </div>
             </div>
         </header>
 
         <div class="p-6 md:p-8">
+            <!-- Stats Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-
-                <!-- Total Users -->
                 <div class="stat-card bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-3xl p-6 shadow-lg">
                     <div class="flex justify-between items-start">
                         <div>
@@ -127,7 +117,6 @@
                     <p class="text-blue-100 text-sm mt-4">↑ Live Count</p>
                 </div>
 
-                <!-- Total Workers -->
                 <div class="stat-card bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-3xl p-6 shadow-lg">
                     <div class="flex justify-between items-start">
                         <div>
@@ -139,7 +128,6 @@
                     <p class="text-amber-100 text-sm mt-4">↑ Live Count</p>
                 </div>
 
-                <!-- Total Bookings -->
                 <div class="stat-card bg-gradient-to-br from-purple-500 to-violet-600 text-white rounded-3xl p-6 shadow-lg">
                     <div class="flex justify-between items-start">
                         <div>
@@ -151,7 +139,6 @@
                     <p class="text-purple-100 text-sm mt-4">↑ Live Count</p>
                 </div>
 
-                <!-- Total Customers -->
                 <div class="stat-card bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-3xl p-6 shadow-lg">
                     <div class="flex justify-between items-start">
                         <div>
@@ -162,7 +149,37 @@
                     </div>
                     <p class="text-teal-100 text-sm mt-4">↑ Live Count</p>
                 </div>
+            </div>
 
+            <!-- Quick Actions -->
+            <div class="mt-10">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Quick Actions</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    <a href="all-customers" class="quick-action bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
+                        <i class="bi bi-person-plus text-3xl"></i>
+                        <span class="font-semibold text-lg">+ Customers</span>
+                    </a>
+                    <a href="worker-admin" class="quick-action bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
+                        <i class="bi bi-person-workspace text-3xl"></i>
+                        <span class="font-semibold text-lg">+ Workers</span>
+                    </a>
+                    <a href="#" class="quick-action bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
+                        <i class="bi bi-calendar-check text-3xl"></i>
+                        <span class="font-semibold text-lg">+ Bookings</span>
+                    </a>
+                    <a href="#" class="quick-action bg-gradient-to-br from-purple-500 to-violet-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
+                        <i class="bi bi-star text-3xl"></i>
+                        <span class="font-semibold text-lg">+ Reviews</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity Chart (Sabse Niche) -->
+            <div class="mt-12 bg-white rounded-3xl shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Recent Activity (Last 7 Days)</h2>
+                </div>
+                <canvas id="activityChart" height="110"></canvas>
             </div>
         </div>
     </div>
@@ -172,6 +189,39 @@
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
     }
+
+    // Recent Activity Chart
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'New Bookings',
+                    data: [12, 19, 15, 25, 22, 30, 28],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+                    x: { grid: { color: '#e2e8f0' } }
+                }
+            }
+        });
+    });
 </script>
 
 </body>
