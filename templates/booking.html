@@ -1,291 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create 🥈 LabourMitra Booking</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Segoe UI,sans-serif;
-}
-
-body{
-    background:#f1f5f9;
-    padding:30px;
-}
-
-.container{
-    max-width:1100px;
-    margin:auto;
-}
-
-.page-title{
-    font-size:32px;
-    font-weight:700;
-    color:#0f172a;
-    margin-bottom:25px;
-}
-
-.card{
-    background:#fff;
-    border-radius:15px;
-    padding:25px;
-    margin-bottom:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
-}
-
-.card h2{
-    margin-bottom:20px;
-    color:#1e293b;
-    font-size:22px;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:15px;
-}
-
-.form-group{
-    display:flex;
-    flex-direction:column;
-}
-
-label{
-    margin-bottom:8px;
-    font-size:14px;
-    color:#475569;
-    font-weight:600;
-}
-
-input,
-select,
-textarea{
-    width:100%;
-    padding:12px;
-    border:1px solid #cbd5e1;
-    border-radius:10px;
-    font-size:15px;
-}
-
-input:focus,
-select:focus,
-textarea:focus{
-    outline:none;
-    border-color:#2563eb;
-}
-
-textarea{
-    resize:none;
-}
-
-.summary{
-    background:#eff6ff;
-    border-left:5px solid #2563eb;
-}
-
-.summary p{
-    margin:10px 0;
-    font-size:15px;
-}
-
-.btn{
-    width:100%;
-    background:#2563eb;
-    color:white;
-    border:none;
-    padding:15px;
-    border-radius:12px;
-    font-size:18px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.btn:hover{
-    background:#1d4ed8;
-}
-
-.upload-box{
-    border:2px dashed #cbd5e1;
-    padding:20px;
-    text-align:center;
-    border-radius:12px;
-}
-
-.badge{
-    display:inline-block;
-    padding:6px 12px;
-    border-radius:20px;
-    background:#dcfce7;
-    color:#166534;
-    font-size:13px;
-    margin-top:10px;
-}
-
-@media(max-width:768px){
-    body{
-        padding:15px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Workers - SRG Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .worker-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .worker-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+        }
+        .filter-active {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+    </style>
 </head>
+<body class="bg-gray-50">
 
-<body>
+<div class="max-w-7xl mx-auto px-4 py-8">
 
-<div class="container">
+    <div class="flex flex-col lg:flex-row gap-8">
 
-    <h1 class="page-title">
-        <i class="bi bi-calendar-check"></i>
-        Create New Booking
-    </h1>
+        <!-- Advanced Filters -->
+        <div class="w-full lg:w-80 bg-white rounded-3xl shadow-lg p-6 h-fit sticky top-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-bold text-2xl">Filters</h2>
+                <button onclick="resetFilters()" class="text-blue-600 text-sm font-medium hover:underline">Reset All</button>
+            </div>
 
-    <form action="/bookings/create" method="post">
-
-        <!-- Customer Details -->
-        <div class="card">
-            <h2>Customer Information</h2>
-
-            <div class="grid">
-                <div class="form-group">
-                    <label>Customer Name</label>
-                    <input type="text" name="customer_name" required>
+            <div class="mb-8">
+                <h3 class="font-semibold mb-4 text-gray-700">Category</h3>
+                <div class="space-y-3" id="categoryFilters">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" value="Plumber" class="w-5 h-5 accent-blue-600" onchange="filterWorkers()">
+                        <span class="text-gray-700 group-hover:text-blue-600">Plumber</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" value="Mistri" class="w-5 h-5 accent-blue-600" onchange="filterWorkers()">
+                        <span class="text-gray-700 group-hover:text-blue-600">Mistri (Mason)</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" value="Electrician" class="w-5 h-5 accent-blue-600" checked onchange="filterWorkers()">
+                        <span class="text-gray-700 group-hover:text-blue-600">Electrician</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" value="Painter" class="w-5 h-5 accent-blue-600" onchange="filterWorkers()">
+                        <span class="text-gray-700 group-hover:text-blue-600">Painter</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" value="Carpenter" class="w-5 h-5 accent-blue-600" onchange="filterWorkers()">
+                        <span class="text-gray-700 group-hover:text-blue-600">Carpenter</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" value="Tikedhar" class="w-5 h-5 accent-blue-600" onchange="filterWorkers()">
+                        <span class="text-gray-700 group-hover:text-blue-600">Tikedhar</span>
+                    </label>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label>Mobile Number</label>
-                    <input type="text" name="mobile" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email">
-                </div>
-
-                <div class="form-group">
-                    <label>Alternate Mobile</label>
-                    <input type="text" name="alternate_mobile">
+            <div>
+                <h3 class="font-semibold mb-4 text-gray-700">Experience</h3>
+                <input type="range" min="0" max="15" value="5" class="w-full accent-blue-600" oninput="filterWorkers()">
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0 Year</span>
+                    <span>15+ Years</span>
                 </div>
             </div>
         </div>
 
-        <!-- Service Details -->
-        <div class="card">
-            <h2>Service Details</h2>
-
-            <div class="grid">
-
-                <div class="form-group">
-                    <label>Category</label>
-                    <select name="category_id">
-                        <option>Select Category</option>
-                        <option>Electrician</option>
-                        <option>Plumber</option>
-                        <option>Painter</option>
-                        <option>Carpenter</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Booking Date</label>
-                    <input type="date" name="service_date">
-                </div>
-
-                <div class="form-group">
-                    <label>Booking Time</label>
-                    <input type="time" name="service_time">
-                </div>
-
-                <div class="form-group">
-                    <label>Urgent Service</label>
-                    <select name="urgent">
-                        <option>No</option>
-                        <option>Yes</option>
-                    </select>
-                </div>
-
+        <!-- Main Content -->
+        <div class="flex-1">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Available Workers <span class="text-blue-600 text-2xl" id="resultCount">(12)</span></h1>
+                
+                <select onchange="filterWorkers()" class="border border-gray-300 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500">
+                    <option value="relevance">Sort by: Relevance</option>
+                    <option value="rating">Sort by: Rating</option>
+                    <option value="experience">Sort by: Experience</option>
+                    <option value="price-low">Price: Low to High</option>
+                </select>
             </div>
 
-            <br>
-
-            <div class="form-group">
-                <label>Problem Description</label>
-                <textarea rows="5" name="description"></textarea>
-            </div>
-
-        </div>
-
-        <!-- Address -->
-        <div class="card">
-            <h2>Service Address</h2>
-
-            <div class="form-group">
-                <label>Full Address</label>
-                <textarea rows="3" name="address"></textarea>
-            </div>
-
-            <br>
-
-            <div class="grid">
-
-                <div class="form-group">
-                    <label>City</label>
-                    <input type="text" name="city">
+            <!-- Workers Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="workersGrid">
+                <!-- Cards will be populated by JS or Jinja -->
+                <!-- Example Card 1 -->
+                <div class="worker-card bg-white rounded-3xl shadow overflow-hidden" data-category="Plumber">
+                    <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-xl">Rahul Sharma</h3>
+                                <p class="text-blue-600 font-medium">Plumber</p>
+                            </div>
+                            <span class="text-green-600 font-medium">4.8 ★</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">6 Years • Ghaziabad</p>
+                        <div class="mt-5 flex justify-between items-end">
+                            <div>
+                                <p class="text-xs text-gray-500">From</p>
+                                <p class="text-2xl font-bold text-emerald-600">₹350</p>
+                            </div>
+                            <button onclick="bookWorker(this)" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl text-sm font-medium">Book Now</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>State</label>
-                    <input type="text" name="state">
-                </div>
-
-                <div class="form-group">
-                    <label>Pincode</label>
-                    <input type="text" name="pincode">
-                </div>
-
+                <!-- More cards can be added similarly with data-category attribute -->
             </div>
         </div>
-
-        <!-- Upload -->
-        <div class="card">
-            <h2>Upload Work Images</h2>
-
-            <div class="upload-box">
-                <i class="bi bi-cloud-upload fs-1"></i>
-                <br><br>
-                <input type="file" name="image">
-            </div>
-        </div>
-
-        <!-- Summary -->
-        <div class="card summary">
-            <h2>Booking Summary</h2>
-
-            <p><strong>Status:</strong> Pending</p>
-            <p><strong>Worker:</strong> Not Assigned</p>
-            <p><strong>Payment:</strong> Pending</p>
-
-            <span class="badge">
-                Booking will be reviewed by Admin
-            </span>
-        </div>
-
-        <button type="submit" class="btn">
-            Create Booking
-        </button>
-
-    </form>
-
+    </div>
 </div>
+
+<script>
+    function filterWorkers() {
+        const searchTerm = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : '';
+        const selectedCategories = Array.from(document.querySelectorAll('#categoryFilters input:checked')).map(cb => cb.value);
+        
+        const cards = document.querySelectorAll('.worker-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const category = card.getAttribute('data-category');
+            const text = card.textContent.toLowerCase();
+            
+            const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+            const matchesSearch = text.includes(searchTerm);
+
+            if (matchesCategory && matchesSearch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        document.getElementById('resultCount').textContent = `(${visibleCount})`;
+    }
+
+    function bookWorker(btn) {
+        btn.innerHTML = '✅ Requested';
+        btn.disabled = true;
+        btn.classList.add('!bg-green-600');
+        
+        setTimeout(() => {
+            alert("Booking request sent successfully! The worker will contact you soon.");
+        }, 600);
+    }
+
+    function resetFilters() {
+        document.querySelectorAll('#categoryFilters input').forEach(cb => cb.checked = false);
+        filterWorkers();
+    }
+
+    // Initialize
+    window.onload = () => {
+        filterWorkers();
+    };
+</script>
 
 </body>
 </html>
-
-
-

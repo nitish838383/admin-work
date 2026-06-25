@@ -68,13 +68,7 @@ class User(Base):
     email = Column(String(100), unique=True)
     mobile = Column(String(20), unique=True)
 
-class Booking(Base):
-    __tablename__ = "bookings"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer)
-    worker_id = Column(Integer)
-    status = Column(String(50))
 
 
 from sqlalchemy import Column, Integer, String
@@ -94,3 +88,48 @@ class AllCustomer(Base):
     address = Column(String(255))
     pincode = Column(String(20))  
     status = Column(String(20), default="Pending") 
+
+class Booking(Base):
+    __tablename__ = "bookings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    customer_name = Column(String(225))
+    worker_name = Column(String(255))
+    service_name = Column(String(225))
+    booking_date = Column(String(20))
+    slot = Column(String(50))
+
+    quantity = Column(Integer)
+    state= Column(String(225))
+
+    address = Column(String(255))
+    city = Column(String(100))
+    pincode = Column(String(20))
+
+    amount = Column(Integer)
+
+    payment_method = Column(String(50))
+    payment_status = Column(String(20), default="Pending")
+
+    status = Column(String(20), default="Pending")
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Payment(Base):
+    __tablename__ = "payments"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    booking_id = Column(Integer)
+
+    amount = Column(Integer)
+
+    payment_method = Column(String(50))
+
+    payment_status = Column(String(20), default="Pending")
+
+class Category(Base):
+    __tablename__ = "category"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), unique=True)

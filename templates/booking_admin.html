@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings - SRG Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .table-container { overflow-x: auto; }
+        .action-btn { transition: all 0.2s; }
+        .action-btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-slate-100">
+
+<div class="p-4 md:p-8 max-w-7xl mx-auto">
+
+    <!-- Header -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">All Bookings</h1>
+                <p class="text-slate-500">Manage customer bookings and assignments</p>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="bg-emerald-50 text-emerald-700 px-6 py-3 rounded-2xl text-center">
+                    <p class="text-sm">Total Bookings</p>
+                    <p class="text-3xl font-bold">{{ total_bookings }}</p>
+                </div>
+                
+                <button onclick="exportBookings()" 
+                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2 font-medium">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="mt-6 max-w-lg">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                <input type="text" id="searchInput"
+                       class="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500"
+                       placeholder="Search by customer, worker or booking ID...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+        <div class="table-container">
+            <table class="w-full min-w-[1300px]" id="bookingsTable">
+                <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white sticky top-0">
+                    <tr>
+                        <th class="px-6 py-5 text-left">Booking ID</th>
+                        <th class="px-6 py-5 text-left">Customer</th>
+                        <th class="px-6 py-5 text-left">Worker</th>
+                        <th class="px-6 py-5 text-left">Service</th>
+                        <th class="px-6 py-5 text-left">Date</th>
+                        <th class="px-6 py-5 text-left">Slot</th>
+                        <th class="px-6 py-5 text-left">Address</th>
+                        <th class="px-6 py-5 text-left">Amount</th>
+                        <th class="px-6 py-5 text-center">Payment</th>
+                        <th class="px-6 py-5 text-center">Status</th>
+                        <th class="px-6 py-5 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y" id="tableBody">
+                    {% for booking in bookings %}
+                    <tr class="hover:bg-slate-50 transition-all" id="row-{{ booking.id }}">
+                        <td class="px-6 py-5 font-medium">#{{ booking.id }}</td>
+                        <td class="px-6 py-5">{{ booking.customer_name }}</td>
+                        <td class="px-6 py-5">
+                            {{ booking.worker_name or '<span class="text-amber-500 font-medium">Not Assigned</span>' }}
+                        </td>
+                        <td class="px-6 py-5">{{ booking.category_name }}</td>
+                        <td class="px-6 py-5">{{ booking.booking_date }}</td>
+                        <td class="px-6 py-5">{{ booking.slot }}</td>
+                        <td class="px-6 py-5 text-sm text-slate-600">{{ booking.address|truncate(35) }}</td>
+                        <td class="px-6 py-5 font-semibold text-emerald-600">₹{{ booking.amount }}</td>
+                        <td class="px-6 py-5 text-center">
+                            {% if booking.payment_status == "Paid" %}
+                                <span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">Paid</span>
+                            {% else %}
+                                <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            {% if booking.status == "Completed" %}
+                                <span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">Completed</span>
+                            {% elif booking.status == "Cancelled" %}
+                                <span class="bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">Cancelled</span>
+                            {% else %}
+                                <span class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-medium">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-5 text-center space-x-2">
+                            <a href="/auth/booking/{{ booking.id }}/assign" class="action-btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm">Assign</a>
+                            <a href="/auth/booking/{{ booking.id }}/complete" class="action-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-sm">Complete</a>
+                            <a href="/auth/booking/{{ booking.id }}/cancel" class="action-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Cancel</a>
+                            <a href="/auth/booking/{{ booking.id }}/delete" onclick="return confirm('Delete this booking?')" class="action-btn bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search Functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const term = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#tableBody tr');
+        rows.forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+        });
+    });
+
+    // Export to Excel
+    function exportBookings() {
+        alert("📥 Bookings data is being downloaded...");
+        // Full CSV export logic can be added here
+    }
+</script>
+
+</body>
+</html>

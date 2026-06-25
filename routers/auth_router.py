@@ -15,6 +15,7 @@ from fastapi.responses import RedirectResponse
 from datetime import datetime
 import os
 from uuid import uuid4
+from schemas import BookingCreate
 
 
 
@@ -499,3 +500,105 @@ def Contact(request:Request):
         request=request,
         name="contact.html"
     )
+
+
+# ___________________________________________________________________________________________________________________________________________
+@router.get("/categories")
+def get_categories(db: Session = Depends(get_db)):
+    return db.query(Category).all()
+
+from schemas import CategoryCreate
+from models import Category
+
+@router.post("/categories")
+def create_category(
+    category: CategoryCreate,
+    db: Session = Depends(get_db)
+):
+    new_category = Category(
+        name=category.name
+    )
+
+    db.add(new_category)
+    db.commit()
+    db.refresh(new_category)
+
+    return {
+        "message": "Category Created Successfully",
+        "category": new_category
+    }
+
+
+from models import Booking
+
+@router.get("/all-bookings")
+def all_bookings(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+
+    bookings = db.query(Booking).all()
+    total_bookings=len(bookings)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="booking_admin.html",
+        context={
+            "request": request,
+            "bookings": bookings,
+            "total_bookings":total_bookings,
+        }
+        
+    )
+
+
+@router.post("/create-booking")
+def create_booking(
+    booking: BookingCreate,
+    db: Session = Depends(get_db)
+):
+
+    new_booking = Booking(
+
+        customer_name=booking.customer_name,
+        worker_name=booking.worker_name,
+        service_name=booking.service_name,
+        booking_date=booking.booking_date,
+        slot=booking.slot,
+
+        quantity=booking.quantity,
+        state=booking.state,
+
+        address=booking.address,
+        city=booking.city,
+        pincode=booking.pincode,
+
+        amount=booking.amount,
+
+        payment_method=booking.payment_method,
+        payment_status="Pending",
+        status="Pending"
+    )
+
+    db.add(new_booking)
+    db.commit()
+    db.refresh(new_booking)
+
+    return {
+        "message": "Booking Created Successfully",
+        "booking": new_booking
+    }
+
+
+
+@router.post("/payment")
+def payment(
+    booking_id:int,
+    amount:int
+):
+
+    return {
+        "booking_id":booking_id,
+        "amount":amount,
+        "status":"Success"
+    }
