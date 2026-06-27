@@ -8,14 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         body { font-family: 'Poppins', sans-serif; }
-        .sidebar-link:hover, .sidebar-link.active {
-            background-color: #1e40af;
-            color: white;
+        
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -1rem;
+            padding: 0 1rem;
         }
-        @media (max-width: 768px) {
-            .table-container {
-                overflow-x: auto;
-            }
+        
+        table {
+            min-width: 900px; /* Ye important hai mobile scroll ke liye */
+            width: 100%;
+        }
+        
+        th, td {
+            white-space: nowrap;
+            padding: 16px 12px;
         }
     </style>
 </head>
@@ -40,7 +48,7 @@
     <div class="flex-1 overflow-auto">
 
         <!-- Top Bar -->
-        <div class="bg-white shadow p-5 flex justify-between items-center">
+        <div class="bg-white shadow p-5 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-4">
                 <button onclick="toggleSidebar()" class="md:hidden text-3xl">
                     <i class="fas fa-bars"></i>
@@ -82,9 +90,9 @@
             </div>
 
             <!-- Workers Table -->
-            <div class="bg-white rounded-3xl shadow overflow-hidden table-container">
-                <table class="w-full min-w-[800px]">
-                    <thead class="bg-gray-50">
+            <div class="bg-white rounded-3xl shadow table-wrapper">
+                <table class="w-full">
+                    <thead class="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th class="px-6 py-5 text-left">ID</th>
                             <th class="px-6 py-5 text-left">Name</th>
@@ -100,7 +108,7 @@
                         {% for w in workers %}
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-5">{{ w.id }}</td>
-                            <td class="px-6 py-5">{{ w.name }}</td>
+                            <td class="px-6 py-5 font-medium">{{ w.name }}</td>
                             <td class="px-6 py-5">{{ w.mobile }}</td>
                             <td class="px-6 py-5">{{ w.email }}</td>
                             <td class="px-6 py-5">{{ w.skills }}</td>
@@ -108,8 +116,8 @@
                             <td class="px-6 py-5">
                                 <span class="px-4 py-1 rounded-full text-sm bg-green-100 text-green-700">Active</span>
                             </td>
-                            <td class="px-6 py-5 text-center">
-                                <a href="/auth/worker/{{ w.id }}/edit" class="text-blue-600 mx-2 hover:underline">Edit</a>
+                            <td class="px-6 py-5 text-center whitespace-nowrap">
+                                <a href="/auth/worker/{{ w.id }}/edit" class="text-blue-600 hover:underline mx-2">Edit</a>
                                 <a href="/auth/worker/{{ w.id }}/delete" class="text-red-600 hover:underline">Delete</a>
                             </td>
                         </tr>
@@ -123,12 +131,11 @@
 
 <script>
     function toggleSidebar() {
-        // You can implement sidebar toggle logic if needed
-        alert("Sidebar toggle for mobile coming soon");
+        alert("Mobile sidebar toggle (aap chahein to full sidebar bana sakte hain)");
     }
 
     function exportToExcel() {
-        alert("Downloading Worker List as Excel...");
+        alert("Downloading Excel file...");
     }
 </script>
 
