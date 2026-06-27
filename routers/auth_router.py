@@ -109,13 +109,12 @@ def dashboard(
     data_workers= workers_response.json()
 
     total_customers = data_customers["total_customers"]
-    total_workers = len("data_workers")
+    total_workers = len(data_workers)
 
     
 
     # Apni DB ka data
     total_users = db.query(User).count()
-    total_workers = db.query(Worker).count()
     total_bookings = db.query(Booking).count()
 
     return templates.TemplateResponse(
@@ -312,6 +311,7 @@ def worker_admin_page(
         request=request,
         name="worker_admin.html",
         context={
+            "request":request,
             "workers": workers,
             "total_workers": total_workers
         }
