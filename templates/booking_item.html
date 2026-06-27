@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Booking - SRG Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .form-card {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+
+<div class="max-w-4xl mx-auto px-4">
+    <div class="bg-white rounded-3xl shadow-xl p-8 md:p-12 form-card">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800">Create New Booking</h1>
+            <p class="text-gray-500 mt-2">Fill the details to book a worker</p>
+        </div>
+
+        <form action="/auth/create-booking" method="post" class="space-y-8">
+
+            <!-- Customer & Worker -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Customer Name *</label>
+                    <input type="text" name="customer_name" required
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Worker Name *</label>
+                    <input type="text" id="worker_name" name="worker_name" required
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <!-- Service -->
+            <div>
+                <label class="block text-sm font-semibold mb-2">Service *</label>
+                <input type="text" id="service_name" name="service_name" required
+                       placeholder="e.g. Home Painting, Plumbing Repair"
+                       class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+            </div>
+
+            <!-- Date & Slot -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Booking Date *</label>
+                    <input type="date" name="booking_date" required
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Time Slot</label>
+                    <input type="text" name="slot" placeholder="10:00 AM - 01:00 PM"
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div>
+                <label class="block text-sm font-semibold mb-2">Full Address *</label>
+                <textarea name="address" rows="3" required
+                          class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500"></textarea>
+            </div>
+
+            <!-- City, State, Pincode -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">City *</label>
+                    <input type="text" name="city" required
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">State *</label>
+                    <input type="text" name="state" value="Uttar Pradesh" required
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Pincode *</label>
+                    <input type="text" name="pincode" required
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <!-- Amount & Payment -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Amount (₹) *</label>
+                    <input type="number" name="amount" required
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Payment Method</label>
+                    <select name="payment_method" required
+                            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                        <option value="">Select Payment Method</option>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Card">Card / Online</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-5 rounded-2xl text-lg transition">
+                <i class="fas fa-check-circle mr-2"></i>
+                Create Booking
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Pre-fill from URL parameters
+    document.addEventListener("DOMContentLoaded", function() {
+        const params = new URLSearchParams(window.location.search);
+        
+        if (params.get("worker_name")) {
+            document.getElementById("worker_name").value = params.get("worker_name");
+        }
+        if (params.get("service_name")) {
+            document.getElementById("service_name").value = params.get("service_name");
+        }
+        if (params.get("amount")) {
+            document.querySelector("input[name='amount']").value = params.get("amount");
+        }
+    });
+</script>
+
+</body>
+</html>

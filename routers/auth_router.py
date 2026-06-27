@@ -95,13 +95,23 @@ def dashboard(
         )
 
     # External API se customers data
-    response = requests.get(
+    customers_response = requests.get(
         "https://mistripoint-backend-1.onrender.com/auth/all-customers"
     )
+    workers_response = requests.get(
+      "https://mistripoint-1.onrender.com/worker-profiles"
+    )
 
-    data = response.json()
+    print("workers_response",workers_response)
 
-    total_customers = data["total_customers"]
+
+    data_customers = customers_response.json()
+    data_workers= workers_response.json()
+
+    total_customers = data_customers["total_customers"]
+    total_workers = len("data_workers")
+
+    
 
     # Apni DB ka data
     total_users = db.query(User).count()
@@ -284,18 +294,26 @@ def worker_register(
 
 # get worker-admin
 from models import Worker
-
 @router.get("/worker-admin")
 def worker_admin_page(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    workers = db.query(Worker).order_by(Worker.id.asc()).all()
+    response = requests.get(
+        "https://mistripoint-1.onrender.com/worker-profiles"
+    )
+
+    data = response.json()
+
+    workers = data          
+    total_workers = len(workers)
+
     return templates.TemplateResponse(
         request=request,
         name="worker_admin.html",
         context={
-            "workers": workers
+            "workers": workers,
+            "total_workers": total_workers
         }
     )
 
@@ -529,7 +547,27 @@ def create_category(
     }
 
 
+
+
 from models import Booking
+
+# booking items page
+@router.get("/booking")
+def book_item(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="booking.html"
+    )
+
+# booking items page
+@router.get("/booking_items")
+def book_item_view(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="booking_item.html"
+    )
+
+
 
 @router.get("/all-bookings")
 def all_bookings(
@@ -591,14 +629,3 @@ def create_booking(
 
 
 
-@router.post("/payment")
-def payment(
-    booking_id:int,
-    amount:int
-):
-
-    return {
-        "booking_id":booking_id,
-        "amount":amount,
-        "status":"Success"
-    }
