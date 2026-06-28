@@ -3,163 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🥈 LabourMitra Services - Hire Best Workers in Ghaziabad</title>
+    <title>SRG Services - Hire Skilled Workers</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        
-        .hero {
-            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), 
-                        url('https://images.unsplash.com/photo-1581091226825-a6a6a2d6e5f5?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') center/cover no-repeat;
-            height: 100vh;
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+            background: rgba(30, 58, 138, 0.98);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 5%;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: auto;
             display: flex;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .service-card {
-            transition: all 0.4s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
         }
 
-        .nav-link {
-            position: relative;
+        .nav-links {
+            display: flex;
+            gap: 30px;
         }
-        .nav-link:after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background-color: #3b82f6;
-            transition: width 0.3s ease;
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
         }
-        .nav-link:hover:after {
-            width: 100%;
+
+        /* Mobile Menu */
+        .menu-btn {
+            display: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-btn { display: block; }
+            .nav-links {
+                position: absolute;
+                top: 75px;
+                left: 0;
+                width: 100%;
+                background: #1e3a8a;
+                flex-direction: column;
+                text-align: center;
+                padding: 20px 0;
+                display: none;
+            }
+            .nav-links.active { display: flex; }
+        }
+
+        /* Hero */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1581091226825-a6a6a2d6e5f5?ixlib=rb-4.0.3&auto=format&fit=crop&q=80');
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Services */
+        .services {
+            padding: 100px 20px;
+            background: #f8fafc;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--primary);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: 0.4s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 60px 20px 30px;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 9999;
+        }
+
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.15);
+        }
+
+        .fab-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .fab-call {
+            background: #34A853;
+            color: white;
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
 
     <!-- Navbar -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">S</div>
-                <h1 class="text-3xl font-bold text-gray-800">🥈 LabourMitra <span class="text-blue-600">Services</span></h1>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">SRG <span>Services</span></div>
+            
+            <div class="menu-btn" id="menuBtn">
+                <i class="fas fa-bars"></i>
             </div>
 
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center gap-8 text-gray-700 font-medium">
-                <a href="#" class="nav-link">Booking</a>
-                <a href="services.html" class="nav-link">Services</a>
-                <a href="#" class="nav-link">How it Works</a>
-                <a href="#" class="nav-link">Workers</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <a href="/auth/login" class="hidden md:block px-6 py-2.5 border border-blue-600 text-blue-600 rounded-2xl font-medium hover:bg-blue-50">Login</a>
-                <a href="#" onclick="showPostRequirement()" 
-                   class="px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-medium hover:bg-blue-700">
-                    Post Requirement
-                </a>
-                <button class="md:hidden text-3xl text-gray-700" id="menuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
-            <div class="flex flex-col py-4 px-6 space-y-4 text-gray-700 font-medium">
-                <a href="#" class="py-2">Booking</a>
-                <a href="services.html" class="py-2">Services</a>
-                <a href="#" class="py-2">How it Works</a>
-                <a href="#" class="py-2">Workers</a>
-                <a href="contact.html" class="py-2">Contact</a>
-                <a href="/auth/login" class="py-2">Login</a>
+            <div class="nav-links" id="navLinks">
+                <a href="#">Home</a>
+                <a href="#services">Services</a>
+                <a href="#">How it Works</a>
+                <a href="#">Find Workers</a>
+                <a href="#contact">Contact</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero text-white">
-        <div class="max-w-4xl mx-auto text-center px-6">
-            <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
-                Ghaziabad's Most Trusted <br>
-                <span class="text-blue-400">Worker Hiring Platform</span>
-            </h1>
-            <p class="text-xl md:text-2xl mb-10 text-gray-200">
-                Painter • Mistri • Electrician • Plumber • Carpenter • Tikedhar & More
-            </p>
-            
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="#services" 
-                   class="bg-white text-blue-700 px-10 py-4 rounded-3xl font-semibold text-lg hover:bg-gray-100 transition">
-                    Browse Services
-                </a>
-                <a href="#" onclick="showPostRequirement()" 
-                   class="border-2 border-white text-white px-10 py-4 rounded-3xl font-semibold text-lg hover:bg-white hover:text-blue-700 transition">
-                    Hire Worker Now
-                </a>
+    <!-- Hero -->
+    <section class="hero">
+        <div style="max-width:900px; margin:auto; padding:0 20px;">
+            <h1>Hire Expert Workers Near You</h1>
+            <p class="text-xl mt-4">Painter • Mistri • Tikedhar • Electrician • Plumber • Carpenter</p>
+            <div class="mt-8">
+                <a href="#services" class="inline-block bg-white text-[#1e3a8a] px-8 py-4 rounded-3xl font-semibold text-lg">Browse Services</a>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800">Our Professional Services</h2>
-                <p class="text-slate-600 mt-3 text-lg">Expert workers available at your doorstep</p>
+    <!-- Services -->
+    <section id="services" class="services">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fas fa-paint-roller text-5xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-semibold">Painter</h3>
+                <p class="text-gray-600">Home, Office & Building Painting</p>
             </div>
+            <div class="service-card">
+                <i class="fas fa-hammer text-5xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-semibold">Mistri (Mason)</h3>
+                <p class="text-gray-600">Construction & Repair Work</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-hard-hat text-5xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-semibold">Tikedhar (Contractor)</h3>
+                <p class="text-gray-600">Full Building Work</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-bolt text-5xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-semibold">Electrician</h3>
+                <p class="text-gray-600">Wiring & Electrical Repair</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-wrench text-5xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-semibold">Plumber</h3>
+                <p class="text-gray-600">Water & Pipe Repair</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-chair text-5xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-semibold">Carpenter</h3>
+                <p class="text-gray-600">Furniture & Wood Work</p>
+            </div>
+        </div>
+    </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Service Cards (same as before) -->
-                <div class="service-card bg-white p-8 rounded-3xl shadow">
-                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fas fa-paint-roller text-3xl text-blue-600"></i>
-                    </div>
-                    <h3 class="text-2xl font-semibold mb-3">Painter</h3>
-                    <p class="text-gray-600">Home, office & interior painting with premium quality</p>
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-grid">
+            <div>
+                <h3 class="text-xl font-bold mb-4">SRG Services</h3>
+                <p>Hire trusted skilled workers in Ghaziabad & nearby areas.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                <p class="flex items-center gap-2"><i class="fas fa-phone"></i> +91 98765 43210</p>
+                <p class="flex items-center gap-2"><i class="fas fa-envelope"></i> info@srgservices.com</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold mb-4">Our Location</h3>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.5!2d77.408!3d28.6139!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5e1f2d2e0e7%3A0x5f5b5b5b5b5b5b5b!2sGhaziabad%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1720000000000"
+                        width="100%" 
+                        height="320" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
                 </div>
-                <!-- Repeat other service cards... -->
             </div>
         </div>
-    </section>
+        <p class="text-center mt-12 text-sm opacity-70">© 2026 SRG Services. All Rights Reserved.</p>
+    </footer>
 
-    <!-- CTA -->
-    <section class="bg-blue-600 py-20 text-white">
-        <div class="max-w-4xl mx-auto text-center px-6">
-            <h2 class="text-4xl font-bold mb-6">Need a Worker Right Now?</h2>
-            <p class="text-xl mb-8">Post your requirement and get multiple quotes within minutes</p>
-            <a href="#" onclick="showPostRequirement()" 
-               class="inline-block bg-white text-blue-600 px-12 py-4 rounded-3xl text-xl font-semibold hover:bg-gray-100 transition">
-                Post Your Requirement →
-            </a>
-        </div>
-    </section>
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <!-- WhatsApp -->
+        <a href="https://wa.me/919876543210" target="_blank" 
+           class="fab fab-whatsapp" title="Chat on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        
+        <!-- Call -->
+        <a href="tel:+919876543210" 
+           class="fab fab-call" title="Call Now">
+            <i class="fas fa-phone"></i>
+        </a>
+    </div>
 
     <script>
-        // Mobile Menu Toggle
+        // Mobile Menu
         const menuBtn = document.getElementById('menuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
+        const navLinks = document.getElementById('navLinks');
 
         menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+            navLinks.classList.toggle('active');
         });
-
-        // Post Requirement Locked Message
-        function showPostRequirement() {
-            alert("🚧 Post Requirement Feature Coming Soon!\n\nWe are working hard to launch this feature.");
-        }
     </script>
+
 </body>
 </html>
