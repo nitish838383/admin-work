@@ -96,6 +96,7 @@ class Booking(Base):
     customer_name = Column(String(225))
     worker_name = Column(String(255))
     service_name = Column(String(225))
+    service_selection_name =Column(String(225))
     booking_date = Column(String(20))
     slot = Column(String(50))
 
@@ -133,3 +134,39 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), unique=True)
+
+from sqlalchemy import Column, Integer, String
+from database import Base
+
+class Skill(Base):
+    __tablename__ = "skills"
+
+    id = Column(Integer, primary_key=True, index=True)
+    skill_name = Column(String(100), unique=True, nullable=False)
+
+
+class WorkerKYC(Base):
+    __tablename__ = "worker_kyc"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    
+
+    aadhaar_number = Column(String)
+    pan_number = Column(String)
+
+    account_holder_name = Column(String)
+    account_number = Column(String)
+    bank_name = Column(String)
+    ifsc_code = Column(String)
+
+    aadhaar_front = Column(String)
+    aadhaar_back = Column(String)
+    pan_card_image = Column(String)
+    passbook_image = Column(String)
+    selfie_image = Column(String)
+
+    kyc_status = Column(String, default="Pending")
+
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)

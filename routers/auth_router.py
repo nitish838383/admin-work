@@ -102,17 +102,28 @@ def dashboard(
       "https://mistripoint-1.onrender.com/worker-profiles"
     )
 
+    skills_response = requests.get(
+      "https://mistripoint-1.onrender.com/skills"
+    )
+
+    kycs_response = requests.get(
+      "https://mistripoint-1.onrender.com/worker-kyc"
+    )
+
+    
+
     print("workers_response",workers_response)
 
 
     data_customers = customers_response.json()
     data_workers= workers_response.json()
+    data_skills = skills_response.json()
+    data_kycs = kycs_response.json()
 
     total_customers = data_customers["total_customers"]
     total_workers = len(data_workers)
-
-    
-
+    total_skills = len(data_skills)
+    total_kyc_workers = len(data_kycs["data"])   
     # Apni DB ka data
     total_users = db.query(User).count()
     total_bookings = db.query(Booking).count()
@@ -124,7 +135,9 @@ def dashboard(
             "total_users": total_users,
             "total_workers": total_workers,
             "total_bookings": total_bookings,
-            "total_customers": total_customers
+            "total_customers": total_customers,
+            "total_skills": total_skills,
+            "total_kyc_workers":total_kyc_workers
         }
     )
 
@@ -552,19 +565,19 @@ def create_category(
 from models import Booking
 
 # booking items page
-@router.get("/booking")
-def book_item(request:Request):
+@router.get("/booking-summary")
+def book_summary(request:Request):
     return templates.TemplateResponse(
         request=request,
-        name="booking.html"
+        name="booking_summary.html"
     )
 
 # booking items page
-@router.get("/booking_items")
-def book_item_view(request:Request):
+@router.get("/worker_list")
+def worker_item_view(request:Request):
     return templates.TemplateResponse(
         request=request,
-        name="booking_item.html"
+        name="worker_list.html"
     )
 
 
@@ -601,6 +614,7 @@ def create_booking(
         customer_name=booking.customer_name,
         worker_name=booking.worker_name,
         service_name=booking.service_name,
+        service_selection_name=booking.service_selection_name,
         booking_date=booking.booking_date,
         slot=booking.slot,
 
@@ -627,5 +641,91 @@ def create_booking(
         "booking": new_booking
     }
 
+# ______________________________________________________________________________________________________________________________________
+
+@router.get("/service-selection")
+def service_selection_name(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="service-selection.html"
+    )
+
+@router.get("/payment")
+def payment_view_page(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="payment.html"
+
+    )
 
 
+@router.get("/all-skills")
+def all_skills(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+   response = requests.get(
+       "https://mistripoint-1.onrender.com/skills"
+    )
+   
+   data = response.json()
+   total_skills = len(data)
+   skills = data
+   return templates.TemplateResponse(
+        request=request,
+        name="skills.html",
+        context={
+            "request": request,
+            "skills": skills,
+            "total_skills":total_skills,
+        }
+        
+    )
+
+@router.get("/kyc-admin")
+def kyc_admin(
+    request: Request
+):
+    response = requests.get(
+        "https://mistripoint-1.onrender.com/worker-kyc"
+
+    )
+
+    data = response.json()
+    kycs=data["data"]
+
+    total_kyc_workers = len(data)
+   
+
+    return templates.TemplateResponse(
+        request=request,
+        name="kyc_admin.html",
+        context={
+            "request": request,
+            "kycs": kycs,
+            "total_kyc_workers": total_kyc_workers,
+        }
+    )
+
+@router.get("/kyc/{worker_id}/approve")
+def approve_kyc(worker_id: int):
+
+    requests.put(
+        f"https://mistripoint-1.onrender.com/kyc/{worker_id}/approve"
+    )
+
+    return RedirectResponse(
+        "/auth/kyc-admin",
+        status_code=302
+    )
+@router.get("/kyc/{worker_id}/reject")
+def reject_kyc(worker_id: int):
+
+    requests.put(
+        f"https://mistripoint-1.onrender.com/kyc/{worker_id}/reject"
+    )
+
+    return RedirectResponse(
+        "/auth/kyc-admin",
+        status_code=302
+    )

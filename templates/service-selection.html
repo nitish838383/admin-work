@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Selection</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #f5f5f5; padding: 15px; }
+    .container { max-width: 400px; margin: 0 auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .header { background: #4f46e5; color: white; padding: 18px; text-align: center; margin: -20px -20px 20px -20px; border-radius: 12px 12px 0 0; }
+    
+    .worker-info { 
+      background: #f8f9fa; 
+      padding: 15px; 
+      border-radius: 10px; 
+      margin-bottom: 20px; 
+      text-align: center;
+    }
+    .service-item { 
+      padding: 14px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      margin: 10px 0; 
+      cursor: pointer;
+    }
+    .service-item.selected { 
+      background: #e0e7ff; 
+      border-color: #4f46e5; 
+    }
+    .quantity { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 20px; 
+      font-size: 24px; 
+      margin: 25px 0; 
+    }
+    .qty-btn {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: white;
+    }
+    .error {
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 10px 0;
+      display: none;
+    }
+    button:disabled {
+      background: #9e9e9e;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Service Selection</div>
+
+    <!-- Selected Worker Info -->
+    <div class="worker-info" id="workerInfo">
+      <strong id="workerName">Loading...</strong><br>
+      <span id="workerCategory"></span> | 
+      <span id="workerPrice" style="color:green; font-weight:bold;"></span>
+    </div>
+
+    <h3>Select Services</h3>
+    <div class="service-item selected" onclick="toggleService(this)">Wall Painting</div>
+    <div class="service-item" onclick="toggleService(this)">Texture Painting</div>
+    <div class="service-item" onclick="toggleService(this)">Putty Work</div>
+    <div class="service-item" onclick="toggleService(this)">Exterior Painting</div>
+
+    <div style="text-align:center; margin:25px 0;">
+      <strong>Quantity</strong><br><br>
+      <div class="quantity">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <span id="qty">1</span>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+    </div>
+
+    <div id="errorMsg" class="error"></div>
+
+    <p><strong>Price per unit:</strong> ₹<span id="unitPrice">350</span></p>
+    <p><strong>Total Amount:</strong> ₹<span id="totalAmount">350</span></p>
+
+    <button id="continueBtn" onclick="continueToSummary()" 
+            style="width:100%; padding:16px; background:#4f46e5; color:white; border:none; border-radius:10px; font-size:17px; margin-top:20px;">
+      Continue to Summary
+    </button>
+  </div>
+
+  <script>
+    let quantity = 1;
+    let pricePerUnit = 350;
+    const MAX_QUANTITY = 20;   // You can change this limit
+    const MIN_QUANTITY = 1;
+
+    function loadWorkerData() {
+      const name = localStorage.getItem('selectedWorker') || "Rahul Sharma";
+      const category = localStorage.getItem('selectedCategory') || "Painter";
+      const price = parseInt(localStorage.getItem('pricePerUnit')) || 350;
+
+      document.getElementById('workerName').textContent = name;
+      document.getElementById('workerCategory').textContent = category;
+      document.getElementById('workerPrice').textContent = `₹${price}`;
+      
+      pricePerUnit = price;
+      document.getElementById('unitPrice').textContent = price;
+      updateTotal();
+    }
+
+    function toggleService(el) {
+      el.classList.toggle('selected');
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('errorMsg');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+      
+      // Auto hide after 3 seconds
+      setTimeout(() => {
+        errorEl.style.display = 'none';
+      }, 3000);
+    }
+
+    function changeQty(n) {
+      let newQty = quantity + n;
+      
+      if (newQty < MIN_QUANTITY) {
+        showError(`Minimum quantity is ${MIN_QUANTITY}`);
+        return;
+      }
+      if (newQty > MAX_QUANTITY) {
+        showError(`Maximum quantity allowed is ${MAX_QUANTITY}`);
+        return;
+      }
+
+      quantity = newQty;
+      document.getElementById('qty').textContent = quantity;
+      updateTotal();
+    }
+
+    function updateTotal() {
+      document.getElementById('totalAmount').textContent = quantity * pricePerUnit;
+    }
+
+    function continueToSummary() {
+      // Final validation before proceeding
+      if (quantity < MIN_QUANTITY || quantity > MAX_QUANTITY) {
+        showError(`Quantity must be between ${MIN_QUANTITY} and ${MAX_QUANTITY}`);
+        return;
+      }
+
+      localStorage.setItem('quantity', quantity);
+      localStorage.setItem('totalAmount', quantity * pricePerUnit);
+      window.location.href = '/auth/booking-summary';
+    }
+
+    // Initialize
+    window.onload = loadWorkerData;
+  </script>
+</body>
+</html>

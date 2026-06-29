@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Management - SRG Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .table-container { overflow-x: auto; }
+        .action-btn {
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div class="max-w-7xl mx-auto p-6">
+
+    <!-- Header -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">All Skills</h1>
+                <p class="text-gray-500">Manage all service skills & categories</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="bg-emerald-100 px-6 py-3 rounded-2xl text-center">
+                    <p class="text-sm text-emerald-600">Total Skills</p>
+                    <p class="text-3xl font-bold text-emerald-700">{{ total_skills }}</p>
+                </div>
+                <a href="/auth/add-skill" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2">
+                    <i class="fas fa-plus"></i> Add Skill
+                </a>
+            </div>
+        </div>
+
+        <!-- Search & Category Filter -->
+        <div class="mt-6 flex flex-col md:flex-row gap-4">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
+                <input type="text" id="searchInput"
+                       placeholder="Search Skill..."
+                       class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500">
+            </div>
+
+            <!-- Category Filter Dropdown -->
+            <select id="categoryFilter" onchange="filterSkills()" 
+                    class="w-full md:w-64 px-5 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500">
+                <option value="">All Categories</option>
+                <option value="Web Development">Web Development</option>
+                <option value="Tally & GST">Tally & GST</option>
+                <option value="Python">Python Programming</option>
+                <option value="Graphic Design">Graphic Designing</option>
+                <option value="Basic Computer">Basic Computer</option>
+                <option value="Electrician">Electrician</option>
+                <option value="Plumber">Plumber</option>
+                <option value="Painter">Painter</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+        <div class="table-container">
+            <table class="w-full">
+                <thead class="bg-slate-800 text-white">
+                    <tr>
+                        <th class="px-6 py-5 text-left">ID</th>
+                        <th class="px-6 py-5 text-left">Skill Name</th>
+                        <th class="px-6 py-5 text-left">Category</th>
+                        <th class="px-6 py-5 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y">
+                    {% for skill in skills %}
+                    <tr class="hover:bg-slate-50 border-b" data-category="{{ skill.category }}">
+                        <td class="px-6 py-5 font-medium">{{ skill.id }}</td>
+                        <td class="px-6 py-5">{{ skill.skill_name }}</td>
+                        <td class="px-6 py-5">{{ skill.category }}</td>
+                        <td class="px-6 py-5 text-center space-x-3">
+                            <a href="/auth/all-skills/{{skill.id}}/edit" 
+                               class="action-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="/auth/skill/{{skill.id}}/delete" 
+                               onclick="return confirm('Delete this skill?')"
+                               class="action-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live Search + Category Filter
+    function filterSkills() {
+        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+        const selectedCategory = document.getElementById("categoryFilter").value;
+
+        let rows = document.querySelectorAll("#tableBody tr");
+
+        rows.forEach(row => {
+            const rowText = row.textContent.toLowerCase();
+            const rowCategory = row.getAttribute("data-category");
+
+            const matchSearch = rowText.includes(searchTerm);
+            const matchCategory = selectedCategory === "" || rowCategory === selectedCategory;
+
+            row.style.display = (matchSearch && matchCategory) ? "" : "none";
+        });
+    }
+
+    // Live Search on typing
+    document.getElementById("searchInput").addEventListener("keyup", filterSkills);
+</script>
+
+</body>
+</html>

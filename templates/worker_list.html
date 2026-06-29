@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workers List</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #f5f5f5; padding: 15px; }
+    .container { max-width: 400px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .header { background: #4f46e5; color: white; padding: 18px; text-align: center; font-size: 18px; }
+    
+    .filter-bar { 
+      padding: 15px; 
+      background: #f8f9fa; 
+      border-bottom: 1px solid #eee; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px;
+    }
+    input, select {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .worker-card { 
+      padding: 18px; 
+      display: flex; 
+      align-items: center; 
+      gap: 15px; 
+      border-bottom: 1px solid #eee; 
+      cursor: pointer;
+    }
+    .worker-card:last-child { border-bottom: none; }
+    .worker-card.hidden { display: none; }
+    
+    .worker-info { flex: 1; }
+    .price { color: green; font-weight: bold; }
+    .book-btn { 
+      padding: 10px 18px; 
+      background: #4f46e5; 
+      color: white; 
+      border: none; 
+      border-radius: 8px; 
+      font-size: 14px;
+    }
+    .no-result { 
+      padding: 30px 20px; 
+      text-align: center; 
+      color: #666; 
+      font-size: 16px; 
+      display: none; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Workers List</div>
+    
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search by name or profession..." onkeyup="applyFilters()">
+      
+      <div style="display: flex; gap: 8px;">
+        <select id="categoryFilter" onchange="applyFilters()" style="flex: 1;">
+          <option value="all">All Categories</option>
+          <option value="Painter">Painter</option>
+          <option value="Plumber">Plumber</option>
+          <option value="Electrician">Electrician</option>
+          <option value="Carpenter">Carpenter</option>
+          <option value="AC Technician">AC Technician</option>
+        </select>
+
+        <select id="sortSelect" onchange="applyFilters()" style="flex: 1;">
+          <option value="default">Sort by Default</option>
+          <option value="low">Price: Low to High</option>
+          <option value="high">Price: High to Low</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="workersList">
+      <div class="worker-card" data-name="Rahul Sharma" data-category="Painter" data-price="350">
+        <div class="worker-info">
+          <strong>Rahul Sharma</strong><br>
+          Painter<br>
+          <span class="price">₹350</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Rahul Sharma', 'Painter', 350)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Amit Kumar" data-category="Painter" data-price="380">
+        <div class="worker-info">
+          <strong>Amit Kumar</strong><br>
+          Painter<br>
+          <span class="price">₹380</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Amit Kumar', 'Painter', 380)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Suresh Patel" data-category="Plumber" data-price="450">
+        <div class="worker-info">
+          <strong>Suresh Patel</strong><br>
+          Plumber<br>
+          <span class="price">₹450</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Suresh Patel', 'Plumber', 450)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Ramesh Singh" data-category="Electrician" data-price="400">
+        <div class="worker-info">
+          <strong>Ramesh Singh</strong><br>
+          Electrician<br>
+          <span class="price">₹400</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Ramesh Singh', 'Electrician', 400)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Vikash Yadav" data-category="Carpenter" data-price="420">
+        <div class="worker-info">
+          <strong>Vikash Yadav</strong><br>
+          Carpenter<br>
+          <span class="price">₹420</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Vikash Yadav', 'Carpenter', 420)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Manoj Gupta" data-category="Painter" data-price="320">
+        <div class="worker-info">
+          <strong>Manoj Gupta</strong><br>
+          Painter<br>
+          <span class="price">₹320</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Manoj Gupta', 'Painter', 320)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Rajesh Sharma" data-category="AC Technician" data-price="500">
+        <div class="worker-info">
+          <strong>Rajesh Sharma</strong><br>
+          AC Technician<br>
+          <span class="price">₹500</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Rajesh Sharma', 'AC Technician', 500)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Deepak Verma" data-category="Painter" data-price="360">
+        <div class="worker-info">
+          <strong>Deepak Verma</strong><br>
+          Painter<br>
+          <span class="price">₹360</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Deepak Verma', 'Painter', 360)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Santosh Kumar" data-category="Plumber" data-price="430">
+        <div class="worker-info">
+          <strong>Santosh Kumar</strong><br>
+          Plumber<br>
+          <span class="price">₹430</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Santosh Kumar', 'Plumber', 430)">Book Now</button>
+      </div>
+
+      <div class="worker-card" data-name="Arjun Reddy" data-category="Electrician" data-price="390">
+        <div class="worker-info">
+          <strong>Arjun Reddy</strong><br>
+          Electrician<br>
+          <span class="price">₹390</span>
+        </div>
+        <button class="book-btn" onclick="bookWorker('Arjun Reddy', 'Electrician', 390)">Book Now</button>
+      </div>
+    </div>
+
+    <div id="noResult" class="no-result">No worker found</div>
+  </div>
+
+  <script>
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const sortValue = document.getElementById('sortSelect').value;
+
+      const workers = Array.from(document.querySelectorAll('.worker-card'));
+      let visibleCount = 0;
+
+      // Filter logic
+      const filteredWorkers = workers.filter(worker => {
+        const name = worker.getAttribute('data-name').toLowerCase();
+        const category = worker.getAttribute('data-category');
+        
+        const matchesSearch = name.includes(searchTerm) || category.toLowerCase().includes(searchTerm);
+        const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
+        
+        return matchesSearch && matchesCategory;
+      });
+
+      // Sort logic
+      filteredWorkers.sort((a, b) => {
+        const priceA = parseInt(a.getAttribute('data-price'));
+        const priceB = parseInt(b.getAttribute('data-price'));
+        if (sortValue === 'low') return priceA - priceB;
+        if (sortValue === 'high') return priceB - priceA;
+        return 0;
+      });
+
+      // Re-render
+      const list = document.getElementById('workersList');
+      list.innerHTML = '';
+
+      filteredWorkers.forEach(worker => {
+        list.appendChild(worker);
+        visibleCount++;
+      });
+
+      document.getElementById('noResult').style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    function bookWorker(name, category, price) {
+      localStorage.setItem('selectedWorker', name);
+      localStorage.setItem('selectedCategory', category);
+      localStorage.setItem('pricePerUnit', price);
+      window.location.href = '/auth/service-selection';
+    }
+
+    // Focus on search when page loads
+    window.onload = () => {
+      document.getElementById('searchInput').focus();
+    };
+  </script>
+</body>
+</html>

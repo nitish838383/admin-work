@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Summary</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #f5f5f5; padding: 15px; }
+    .container { 
+      max-width: 400px; 
+      margin: 0 auto; 
+      background: white; 
+      border-radius: 12px; 
+      padding: 20px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    }
+    .header { 
+      background: #4f46e5; 
+      color: white; 
+      padding: 18px; 
+      text-align: center; 
+      margin: -20px -20px 25px -20px; 
+      border-radius: 12px 12px 0 0; 
+    }
+    .summary-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+    .label { color: #555; }
+    .value { font-weight: bold; }
+    .total {
+      font-size: 20px;
+      color: #4f46e5;
+      margin: 20px 0;
+      padding: 15px;
+      background: #f0f0ff;
+      border-radius: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Booking Summary</div>
+
+    <div class="summary-item">
+      <span class="label">Worker</span>
+      <span class="value" id="workerName">Rahul Sharma</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Category</span>
+      <span class="value" id="workerCategory">Painter</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Service</span>
+      <span class="value">Wall Painting</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Quantity</span>
+      <span class="value" id="quantity">1</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Price Per Unit</span>
+      <span class="value" id="pricePerUnit">₹350</span>
+    </div>
+
+    <div class="total">
+      <strong>Total Amount: ₹<span id="totalAmount">350</span></strong>
+    </div>
+
+    <div class="summary-item">
+      <span class="label">Booking Date</span>
+      <input type="date" id="bookingDate" style="padding:8px; border:1px solid #ddd; border-radius:8px;">
+    </div>
+
+    <button onclick="goToPayment()" 
+            style="width:100%; padding:16px; background:#4f46e5; color:white; border:none; border-radius:10px; font-size:17px; margin-top:25px;">
+      Confirm Booking
+    </button>
+  </div>
+
+  <script>
+    function loadSummary() {
+      const workerName = localStorage.getItem('selectedWorker') || "Rahul Sharma";
+      const category = localStorage.getItem('selectedCategory') || "Painter";
+      const quantity = localStorage.getItem('quantity') || 1;
+      const total = localStorage.getItem('totalAmount') || 350;
+      const price = localStorage.getItem('pricePerUnit') || 350;
+
+      document.getElementById('workerName').textContent = workerName;
+      document.getElementById('workerCategory').textContent = category;
+      document.getElementById('quantity').textContent = quantity;
+      document.getElementById('pricePerUnit').textContent = `₹${price}`;
+      document.getElementById('totalAmount').textContent = total;
+
+      // Set today's date by default
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('bookingDate').value = today;
+    }
+
+    function goToPayment() {
+      const bookingDate = document.getElementById('bookingDate').value;
+      if (!bookingDate) {
+        alert("Please select a booking date");
+        return;
+      }
+      
+      localStorage.setItem('bookingDate', bookingDate);
+      window.location.href = '/auth/payment';
+    }
+
+    // Load data when page opens
+    window.onload = loadSummary;
+  </script>
+</body>
+</html>

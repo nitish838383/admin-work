@@ -13,8 +13,7 @@ from routers.auth_router import router as worker_router
 Base.metadata.create_all(bind=engine)
 
 # Create App
-app = FastAPI(
-    title="Admin Panel API"
+app = FastAPI(docs_url=None
 )
 
 # Templates
