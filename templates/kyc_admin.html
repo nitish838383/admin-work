@@ -1,330 +1,168 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KYC Management</title>
+    <title>KYC Management - SRG Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
-```
-<script src="https://cdn.tailwindcss.com"></script>
-
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
-<style>
-
-body{
-    font-family:'Poppins',sans-serif;
-    background:#f8fafc;
-}
-
-.dashboard-card{
-    background:white;
-    border-radius:24px;
-    padding:24px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.count-card{
-    background:linear-gradient(135deg,#2563eb,#4f46e5);
-    color:white;
-    min-width:160px;
-    transition:.3s;
-}
-
-.count-card:hover{
-    transform:translateY(-4px);
-}
-
-.search-box{
-    transition:.3s;
-}
-
-.search-box:focus{
-    border-color:#2563eb;
-    box-shadow:0 0 0 4px rgba(37,99,235,.15);
-}
-
-.table-wrapper{
-    background:white;
-    border-radius:24px;
-    overflow:hidden;
-    box-shadow:0 15px 35px rgba(0,0,0,.08);
-    border:1px solid #e2e8f0;
-}
-
-table thead{
-    background:linear-gradient(135deg,#0f172a,#1e293b);
-}
-
-table thead th{
-    color:white;
-    font-weight:600;
-    letter-spacing:.5px;
-}
-
-tbody tr{
-    transition:.25s;
-}
-
-tbody tr:hover{
-    background:#eff6ff;
-}
-
-.status-approved{
-    background:#dcfce7;
-    color:#15803d;
-    padding:8px 16px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:600;
-}
-
-.status-pending{
-    background:#fef3c7;
-    color:#92400e;
-    padding:8px 16px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:600;
-}
-
-.status-rejected{
-    background:#fee2e2;
-    color:#b91c1c;
-    padding:8px 16px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:600;
-}
-
-.doc-btn{
-    color:white;
-    padding:6px 12px;
-    border-radius:10px;
-    font-size:12px;
-    font-weight:600;
-    transition:.3s;
-}
-
-.doc-btn:hover{
-    transform:translateY(-2px);
-    opacity:.9;
-}
-
-.action-btn{
-    width:42px;
-    height:42px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:12px;
-    color:white;
-    transition:.3s;
-    box-shadow:0 4px 10px rgba(0,0,0,.15);
-}
-
-.action-btn:hover{
-    transform:translateY(-3px);
-}
-
-.approve-btn{
-    background:#22c55e;
-}
-
-.approve-btn:hover{
-    background:#16a34a;
-}
-
-.reject-btn{
-    background:#ef4444;
-}
-
-.reject-btn:hover{
-    background:#dc2626;
-}
-
-::-webkit-scrollbar{
-    height:8px;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#94a3b8;
-    border-radius:10px;
-}
-
-</style>
-```
-
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .dashboard-card {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .table-wrapper {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+        .status-approved {
+            background:#dcfce7;
+            color:#15803d;
+        }
+        .status-pending {
+            background:#fef3c7;
+            color:#92400e;
+        }
+        .status-rejected {
+            background:#fee2e2;
+            color:#b91c1c;
+        }
+        .action-btn {
+            transition: all 0.3s;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1e3a8a;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-
-<body>
+<body class="bg-gray-50">
 
 <div class="max-w-7xl mx-auto p-6">
 
-```
-<!-- Header -->
-<div class="dashboard-card mb-8">
-
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800">
-                KYC Management
-            </h1>
-
-            <p class="text-gray-500">
-                Manage worker KYC requests
-            </p>
+    <!-- Header -->
+    <div class="dashboard-card bg-white rounded-3xl p-6 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">KYC Management</h1>
+                <p class="text-gray-500">Manage worker KYC requests & verification</p>
+            </div>
+            <div class="bg-emerald-100 px-6 py-3 rounded-2xl text-center">
+                <p class="text-sm text-emerald-600">Total KYC</p>
+                <p class="text-3xl font-bold text-emerald-700">{{ kycs|length }}</p>
+            </div>
         </div>
 
-        <div class="count-card px-6 py-3 rounded-2xl text-center">
-            <p class="text-sm opacity-90">Total KYC</p>
-            <p class="text-3xl font-bold">
-                {{ kycs|length }}
-            </p>
-        </div>
-
-    </div>
-
-    <!-- Search -->
-    <div class="mt-6">
-
-        <div class="relative">
-
+        <!-- Search -->
+        <div class="mt-6 relative">
             <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search Worker ID, Name, Bank..."
-                class="search-box w-full pl-12 pr-4 py-3 border border-gray-300 rounded-3xl">
-
+            <input type="text" id="searchInput"
+                   placeholder="Search Worker ID, Name, Bank..."
+                   class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500">
         </div>
-
     </div>
 
-</div>
-
-<!-- Table -->
-<div class="table-wrapper">
-
-    <div class="overflow-x-auto">
-
-        <table class="w-full">
-
-            <thead>
-
-                <tr>
-                    <th class="px-6 py-5 text-left">ID</th>
-                    <th class="px-6 py-5 text-left">Worker ID</th>
-                    <th class="px-6 py-5 text-left">Account Holder</th>
-                    <th class="px-6 py-5 text-left">Bank</th>
-                    <th class="px-6 py-5 text-left">Account No</th>
-                    <th class="px-6 py-5 text-left">IFSC</th>
-                    <th class="px-6 py-5 text-left">Documents</th>
-                    <th class="px-6 py-5 text-center">Status</th>
-                    <th class="px-6 py-5 text-center">Actions</th>
-                </tr>
-
-            </thead>
-
-            <tbody id="tableBody" class="divide-y">
-
-            {% for kyc in kycs %}
-
-                <tr>
-
-                    <td class="px-6 py-5">{{ kyc.id }}</td>
-                    <td class="px-6 py-5">{{ kyc.worker_id }}</td>
-                    <td class="px-6 py-5">{{ kyc.account_holder_name }}</td>
-                    <td class="px-6 py-5">{{ kyc.bank_name }}</td>
-                    <td class="px-6 py-5">{{ kyc.account_number }}</td>
-                    <td class="px-6 py-5">{{ kyc.ifsc_code }}</td>
-
-                    <td class="px-6 py-5">
-
-                        <div class="flex gap-2 flex-wrap">
-
-                            <a href="/uploads/{{ kyc.aadhaar_front }}"
-                               target="_blank"
-                               class="doc-btn bg-blue-500">
-                                Aadhaar
-                            </a>
-
-                            <a href="/uploads/{{ kyc.pan_card_image }}"
-                               target="_blank"
-                               class="doc-btn bg-purple-500">
-                                PAN
-                            </a>
-
-                            <a href="/uploads/{{ kyc.selfie_image }}"
-                               target="_blank"
-                               class="doc-btn bg-green-500">
-                                Selfie
-                            </a>
-
-                        </div>
-
-                    </td>
-
-                    <td class="px-6 py-5 text-center">
-
-                        {% if kyc.kyc_status == "Approved" %}
-
-                            <span class="status-approved">
-                                Approved
-                            </span>
-
-                        {% elif kyc.kyc_status == "Rejected" %}
-
-                            <span class="status-rejected">
-                                Rejected
-                            </span>
-
-                        {% else %}
-
-                            <span class="status-pending">
-                                Pending
-                            </span>
-
-                        {% endif %}
-
-                    </td>
-
-                    <td class="px-6 py-5">
-
-                        <div class="flex justify-center gap-2">
-
-                            <a href="/auth/kyc/{{ kyc.id }}/approve"
-                               class="action-btn approve-btn">
-                                <i class="fas fa-check"></i>
-                            </a>
-
-                            <a href="/auth/kyc/{{ kyc.id }}/reject"
-                               class="action-btn reject-btn">
-                                <i class="fas fa-times"></i>
-                            </a>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden flex justify-center py-12">
+        <div class="spinner"></div>
     </div>
 
+    <!-- KYC Table -->
+    <div id="tableContainer" class="table-wrapper bg-white rounded-3xl shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-slate-800 text-white">
+                    <tr>
+                        <th class="px-6 py-5 text-left">ID</th>
+                        <th class="px-6 py-5 text-left">Worker ID</th>
+                        <th class="px-6 py-5 text-left">Account Holder</th>
+                        <th class="px-6 py-5 text-left">Bank</th>
+                        <th class="px-6 py-5 text-left">Account No</th>
+                        <th class="px-6 py-5 text-left">IFSC</th>
+                        <th class="px-6 py-5 text-left">Documents</th>
+                        <th class="px-6 py-5 text-center">Status</th>
+                        <th class="px-6 py-5 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y">
+                    {% for kyc in kycs %}
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-5 font-medium">{{ kyc.id }}</td>
+                        <td class="px-6 py-5">{{ kyc.worker_id }}</td>
+                        <td class="px-6 py-5">{{ kyc.account_holder_name }}</td>
+                        <td class="px-6 py-5">{{ kyc.bank_name }}</td>
+                        <td class="px-6 py-5">{{ kyc.account_number }}</td>
+                        <td class="px-6 py-5">{{ kyc.ifsc_code }}</td>
+                        <td class="px-6 py-5">
+                            <div class="flex gap-2 flex-wrap">
+                                <a href="/uploads/{{ kyc.aadhaar_front }}" target="_blank" 
+                                   class="px-4 py-2 bg-blue-500 text-white text-xs rounded-xl hover:bg-blue-600">Aadhaar</a>
+                                <a href="/uploads/{{ kyc.pan_card_image }}" target="_blank" 
+                                   class="px-4 py-2 bg-purple-500 text-white text-xs rounded-xl hover:bg-purple-600">PAN</a>
+                                <a href="/uploads/{{ kyc.selfie_image }}" target="_blank" 
+                                   class="px-4 py-2 bg-green-500 text-white text-xs rounded-xl hover:bg-green-600">Selfie</a>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            {% if kyc.kyc_status == "Approved" %}
+                                <span class="status-approved px-4 py-1 rounded-full text-sm">Approved</span>
+                            {% elif kyc.kyc_status == "Rejected" %}
+                                <span class="status-rejected px-4 py-1 rounded-full text-sm">Rejected</span>
+                            {% else %}
+                                <span class="status-pending px-4 py-1 rounded-full text-sm">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            <div class="flex justify-center gap-3">
+                                <a href="/auth/kyc/{{ kyc.id }}/approve" class="action-btn bg-green-500 text-white px-4 py-2 rounded-xl">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="/auth/kyc/{{ kyc.id }}/reject" class="action-btn bg-red-500 text-white px-4 py-2 rounded-xl">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-```
 
-</div>
+<script>
+    // Live Search
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        const spinner = document.getElementById("loadingSpinner");
+        const tableContainer = document.getElementById("tableContainer");
+
+        spinner.classList.remove('hidden');
+        tableContainer.classList.add('hidden');
+
+        setTimeout(() => {
+            let value = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#tableBody tr");
+
+            rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(value) ? "" : "none";
+            });
+
+            spinner.classList.add('hidden');
+            tableContainer.classList.remove('hidden');
+        }, 300);
+    });
+</script>
 
 </body>
 </html>

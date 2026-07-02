@@ -170,3 +170,15 @@ class WorkerKYC(Base):
 
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+
+
+from sqlalchemy import Column, Integer, String, ForeignKey
+from database import Base
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    worker_id = Column(Integer, ForeignKey("workers.id"))
+    title = Column(String(255))
+    message = Column(String(500))

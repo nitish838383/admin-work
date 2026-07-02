@@ -110,20 +110,27 @@ def dashboard(
       "https://mistripoint-1.onrender.com/worker-kyc"
     )
 
+    notification_response = requests.get(
+      "https://mistripoint-1.onrender.com/notifications/9"
+    )
     
-
-    print("workers_response",workers_response)
-
-
+    
+    
+    
     data_customers = customers_response.json()
-    data_workers= workers_response.json()
+    data_workers = workers_response.json()
     data_skills = skills_response.json()
     data_kycs = kycs_response.json()
+    data_notifications = notification_response.json()
 
     total_customers = data_customers["total_customers"]
+
+    
+    
     total_workers = len(data_workers)
     total_skills = len(data_skills)
-    total_kyc_workers = len(data_kycs["data"])   
+    total_kyc_workers = len(data_kycs["data"])
+    total_notifications = len(data_notifications)
     # Apni DB ka data
     total_users = db.query(User).count()
     total_bookings = db.query(Booking).count()
@@ -137,7 +144,9 @@ def dashboard(
             "total_bookings": total_bookings,
             "total_customers": total_customers,
             "total_skills": total_skills,
-            "total_kyc_workers":total_kyc_workers
+            "total_kyc_workers":total_kyc_workers,
+            "total_notifications":total_notifications,
+            
         }
     )
 
@@ -728,4 +737,54 @@ def reject_kyc(worker_id: int):
     return RedirectResponse(
         "/auth/kyc-admin",
         status_code=302
+    )
+
+
+
+from models import Notification
+from schemas import NotificationCreate
+
+
+
+@router.post("/notifications")
+def create_notification(
+    notification: NotificationCreate,
+    db: Session = Depends(get_db)
+):
+    new_notification = Notification(
+        worker_id=notification.worker_id,
+        title=notification.title,
+        message=notification.message
+    )
+
+    db.add(new_notification)
+    db.commit()
+    db.refresh(new_notification)
+
+    return {
+        "message": "Notification Created Successfully",
+        "notification": new_notification
+    }
+
+
+@router.get("/notification-admin")
+def notification_admin(request: Request):
+
+    response = requests.get(
+        "https://mistripoint-1.onrender.com/notifications/9"
+    )
+
+    data = response.json()
+
+    notifications = data["data"]      
+    total_notifications = len(notifications)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="notification_admin.html",
+        context={
+            "request": request,
+            "notifications": notifications,
+            "total_notifications": total_notifications
+        }
     )

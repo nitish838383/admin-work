@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Notifications</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body class="bg-slate-100">
+
+<div class="max-w-7xl mx-auto p-8">
+
+    <!-- Header -->
+
+    <div class="bg-white rounded-2xl shadow p-6 mb-6 flex justify-between items-center">
+
+        <div>
+
+            <h1 class="text-3xl font-bold">
+                Notifications
+            </h1>
+
+            <p class="text-gray-500">
+                Manage Worker Notifications
+            </p>
+
+        </div>
+
+        <div class="bg-blue-100 px-6 py-3 rounded-xl">
+
+            <p class="text-sm text-blue-600">
+                Total Notifications
+            </p>
+
+            <h2 class="text-3xl font-bold text-blue-700">
+                {{ total_notifications }}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- Search -->
+
+    <div class="mb-5">
+
+        <input
+        id="searchInput"
+        type="text"
+        placeholder="Search Notification..."
+        class="w-full border rounded-xl px-5 py-3">
+
+    </div>
+
+    <!-- Table -->
+
+    <div class="bg-white rounded-2xl shadow overflow-hidden">
+
+        <table class="w-full">
+
+            <thead class="bg-slate-800 text-white">
+
+            <tr>
+
+                <th class="p-4 text-left">ID</th>
+
+                <th class="p-4 text-left">Worker ID</th>
+
+                <th class="p-4 text-left">Title</th>
+
+                <th class="p-4 text-left">Message</th>
+
+                <th class="p-4 text-left">Date</th>
+
+                <th class="p-4 text-center">Action</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody id="tableBody">
+
+            {% for notification in notifications %}
+
+            <tr class="border-b hover:bg-slate-50">
+
+                <td class="p-4">
+                    {{ notification.id }}
+                </td>
+
+                <td class="p-4">
+                    {{ notification.worker_id }}
+                </td>
+
+                <td class="p-4 font-semibold">
+                    {{ notification.title }}
+                </td>
+
+                <td class="p-4">
+                    {{ notification.message }}
+                </td>
+
+                <td class="p-4">
+                    {{ notification.created_at }}
+                </td>
+
+                <td class="p-4 text-center">
+
+                    <a href="/auth/delete-notification/{{ notification.id }}"
+                       class="bg-red-500 text-white px-4 py-2 rounded-lg">
+
+                        <i class="fa fa-trash"></i>
+
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("searchInput").addEventListener("keyup",function(){
+
+let value=this.value.toLowerCase();
+
+let rows=document.querySelectorAll("#tableBody tr");
+
+rows.forEach(row=>{
+
+row.style.display=row.innerText.toLowerCase().includes(value)
+?"":"none";
+
+});
+
+});
+
+</script>
+
+</body>
+</html>

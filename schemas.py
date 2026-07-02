@@ -88,3 +88,10 @@ class KycResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
+
+from pydantic import BaseModel
+
+class NotificationCreate(BaseModel):
+    worker_id: int
+    title: str
+    message: str

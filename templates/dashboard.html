@@ -1,244 +1,695 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SRG Admin Dashboard</title>
+    <title>MistriPoint Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .sidebar { transition: all 0.3s ease; }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: 234 179 8;
         }
-        .stat-card {
-            transition: all 0.3s ease;
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
         }
-        .stat-card:hover {
-            transform: translateY(-10px);
-        }
+        
         .sidebar-link {
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
+        
         .sidebar-link:hover {
-            background-color: #1e2937;
-            transform: translateX(8px);
+            background-color: #f3f4f6;
         }
-        .sidebar-link.active {
-            background-color: #3b82f6;
-            color: white;
+        
+        .dark .sidebar-link:hover {
+            background-color: #374151;
+        }
+        
+        .card-hover {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        
+        .table-row {
+            transition: all 0.2s;
+        }
+        
+        .modal {
+            animation: modalPop 0.3s ease;
+        }
+        
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
-<body class="bg-slate-100">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                <div class="w-10 h-10 bg-yellow-500 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">M</div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">MistriPoint</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+                </div>
+            </div>
 
-<div class="flex h-screen overflow-hidden">
+            <!-- Navigation -->
+            <div class="flex-1 overflow-y-auto py-6 px-4">
+                <nav class="space-y-1">
+                    <a href="#" onclick="navigateTo('dashboard')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400" id="nav-dashboard">
+                        <i class="fas fa-home w-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="all-customers" onclick="navigateTo('customers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-customers">
+                        <i class="fas fa-users w-5"></i>
+                        <span>Customers</span>
+                    </a>
+                    <a href="register" onclick="navigateTo('workers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-workers">
+                        <i class="fas fa-hard-hat w-5"></i>
+                        <span>Workers</span>
+                    </a>
+                    <a href="all-bookings" onclick="navigateTo('bookings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-bookings">
+                        <i class="fas fa-calendar-check w-5"></i>
+                        <span>Bookings</span>
+                    </a>
+                    <a href="#" onclick="navigateTo('payments')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-payments">
+                        <i class="fas fa-money-bill-wave w-5"></i>
+                        <span>Payments</span>
+                    </a>
+                    <a href="kyc-admin" onclick="navigateTo('kyc')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-kyc">
+                        <i class="fas fa-id-card w-5"></i>
+                        <span>Worker KYC</span>
+                    </a>
+                    <a href="all-skills" onclick="navigateTo('skills')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-skills">
+                        <i class="fas fa-tools w-5"></i>
+                        <span>Skills</span>
+                    </a>
+                    <a href="#" onclick="navigateTo('categories')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-categories">
+                        <i class="fas fa-layer-group w-5"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="notification-admin" onclick="navigateTo('notifications')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-notifications">
+                        <i class="fas fa-bell w-5"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="#" onclick="navigateTo('reviews')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-reviews">
+                        <i class="fas fa-star w-5"></i>
+                        <span>Reviews</span>
+                    </a>
+                    <a href="#" onclick="navigateTo('reports')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-reports">
+                        <i class="fas fa-chart-bar w-5"></i>
+                        <span>Reports</span>
+                    </a>
+                    <a href="#" onclick="navigateTo('settings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-settings">
+                        <i class="fas fa-cog w-5"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" onclick="navigateTo('admins')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-admins">
+                        <i class="fas fa-user-shield w-5"></i>
+                        <span>Admins</span>
+                    </a>
+                </nav>
+            </div>
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar w-72 bg-slate-900 text-white flex flex-col fixed md:relative h-full z-50">
-        <div class="p-6 border-b border-slate-700 flex justify-between items-center">
-            <h1 class="text-3xl font-bold tracking-tight">SRG <span class="text-blue-400">Admin</span></h1>
-            <button onclick="toggleSidebar()" class="md:hidden text-3xl">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-        
-        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <a href="#" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl active">
-                <i class="bi bi-speedometer2 text-xl"></i> Dashboard
-            </a>
-            <a href="kyc-admin" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
-                <i class="bi bi-people text-xl"></i> Worker_kyc
-            </a>
-            <a href="worker-admin" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
-                <i class="bi bi-person-workspace text-xl"></i> Workers
-            </a>
-            <a href="all-bookings" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
-                <i class="bi bi-calendar-check text-xl"></i> Bookings
-            </a>
-            <a href="all-customers" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
-                <i class="bi bi-grid text-xl"></i> Customers
-            </a>
-            <a href="#" class="sidebar-link flex items-center gap-3 px-5 py-4 rounded-2xl">
-                <i class="bi bi-star text-xl"></i> Reviews
-            </a>
-        </nav>
-
-        <div class="p-4 border-t border-slate-700 mt-auto">
-            <form action="/auth/logout" method="get">
-                <button type="submit" class="w-full flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 text-white px-5 py-4 rounded-2xl font-medium transition">
-                    <i class="bi bi-box-arrow-right"></i>
+            <!-- Logout -->
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl font-medium">
+                    <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </button>
-            </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Header -->
+            <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-8 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="relative w-96">
+                        <input type="text" id="global-search" 
+                               class="w-full bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-yellow-400 rounded-3xl py-3 pl-12 pr-4 text-sm focus:outline-none"
+                               placeholder="Search customers, workers, bookings...">
+                        <i class="fas fa-search absolute left-5 top-3.5 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="text-xl">
+                        <i id="theme-icon" class="fas fa-moon"></i>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button onclick="showNotifications()" class="relative text-xl">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">7</span>
+                    </button>
+
+                    <!-- Profile -->
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileMenu()">
+                        <div class="text-right">
+                            <p class="font-semibold text-sm">Rahul Sharma</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Super Admin</p>
+                        </div>
+                        <div class="w-9 h-9 bg-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold">RS</div>
+                    </div>
+                </div>
+            </header>
+<<!-- Content Area -->
+<div class="flex-1 overflow-auto p-8" id="main-content">
+
+    <!-- Dashboard Section -->
+    <div id="section-dashboard">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h1 class="text-4xl font-bold">Dashboard</h1>
+                <p class="text-gray-500 dark:text-gray-400">Welcome back, Rahul! Here's what's happening today.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="exportReport()" class="px-6 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-3xl flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <i class="fas fa-download"></i>
+                    <span>Export Report</span>
+                </button>
+                <button onclick="refreshDashboard()" class="px-6 py-3 bg-yellow-500 text-white rounded-3xl flex items-center gap-2 hover:bg-yellow-600">
+                    <i class="fas fa-sync"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Customers</p>
+                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_customers }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-users text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+                    <i class="fas fa-arrow-up"></i> +12% this month
+                </p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Workers</p>
+                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_workers }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-hard-hat text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+                    <i class="fas fa-arrow-up"></i> +8% this month
+                </p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total KYC Workers</p>
+                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_kyc_workers }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-id-card text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+                    <i class="fas fa-arrow-up"></i> +8% this month
+                </p>
+            </div>
+
+            
+           <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+    <div class="flex justify-between">
+        <div>
+            <p class="text-sm text-gray-500">Total Notifications</p>
+            <h2 class="text-4xl md:text-5xl font-bold mt-3">
+                {{ total_notifications }}
+            </h2>
+        </div>
+
+        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
+            <i class="fas fa-bell text-2xl"></i>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 overflow-auto">
-        <header class="bg-white px-6 md:px-8 py-5 flex justify-between items-center shadow-sm sticky top-0 z-40">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="md:hidden text-3xl text-slate-700">
-                    <i class="bi bi-list"></i>
-                </button>
-                <h1 class="text-xl md:text-2xl font-semibold text-slate-800">Dashboard Overview</h1>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <button class="relative p-3 hover:bg-slate-100 rounded-2xl transition">
-                    <i class="bi bi-bell text-2xl"></i>
-                    <span class="absolute top-1 right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">8</span>
-                </button>
-                <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-3xl shadow">
-                    <img src="https://i.pravatar.cc/128?u=admin" class="w-9 h-9 rounded-2xl object-cover" alt="">
-                    <div class="hidden md:block">
-                        <p class="font-medium">Super Admin</p>
-                        <p class="text-xs text-slate-500">admin@srgplatform.com</p>
-                    </div>
-                </div>
-            </div>
-        </header>
+    <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+        <i class="fas fa-arrow-up"></i>
+        +23% this month
+    </p>
+</div>
 
-        <div class="p-6 md:p-8">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                <div class="stat-card bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-3xl p-6 shadow-lg">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Total kyc-workers</p>
-                            <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_kyc_workers }}</h2>
-                        </div>
-                        <i class="bi bi-people text-5xl opacity-75"></i>
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Skills</p>
+                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_skills }}</h2>
                     </div>
-                    <p class="text-blue-100 text-sm mt-4">↑ Live Count</p>
-                </div>
-
-                <div class="stat-card bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-3xl p-6 shadow-lg">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-amber-100 text-sm font-medium">Total Workers</p>
-                            <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_workers }}</h2>
-                        </div>
-                        <i class="bi bi-person-workspace text-5xl opacity-75"></i>
+                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-tools text-2xl"></i>
                     </div>
-                    <p class="text-amber-100 text-sm mt-4">↑ Live Count</p>
                 </div>
-
-                <div class="stat-card bg-gradient-to-br from-purple-500 to-violet-600 text-white rounded-3xl p-6 shadow-lg">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-purple-100 text-sm font-medium">Total Bookings</p>
-                            <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_bookings }}</h2>
-                        </div>
-                        <i class="bi bi-calendar-check text-5xl opacity-75"></i>
-                    </div>
-                    <p class="text-purple-100 text-sm mt-4">↑ Live Count</p>
-                </div>
-
-                <div class="stat-card bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-3xl p-6 shadow-lg">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-teal-100 text-sm font-medium">Total Customers</p>
-                            <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_customers }}</h2>
-                        </div>
-                        <i class="bi bi-grid text-5xl opacity-75"></i>
-                    </div>
-                    <p class="text-teal-100 text-sm mt-4">↑ Live Count</p>
-                </div>
-            </div>
-            
-                <div class="stat-card bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-3xl p-6 shadow-lg">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-teal-100 text-sm font-medium">Total Skills</p>
-                            <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_skills }}</h2>
-                        </div>
-                        <i class="bi bi-grid text-5xl opacity-75"></i>
-                    </div>
-                    <p class="text-teal-100 text-sm mt-4">↑ Live Count</p>
-                </div>
+                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+                    <i class="fas fa-arrow-up"></i> +15% this month
+                </p>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="mt-10">
-                <h2 class="text-2xl font-bold text-slate-800 mb-6">Quick Actions</h2>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    <a href="all-customers" class="quick-action bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
-                        <i class="bi bi-person-plus text-3xl"></i>
-                        <span class="font-semibold text-lg">+ Customers</span>
-                    </a>
-                    <a href="register" class="quick-action bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
-                        <i class="bi bi-person-workspace text-3xl"></i>
-                        <span class="font-semibold text-lg">+ Workers</span>
-                    </a>
-                    <a href="all-bookings" class="quick-action bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
-                        <i class="bi bi-calendar-check text-3xl"></i>
-                        <span class="font-semibold text-lg">+ Bookings</span>
-                    </a>
-                    <a href="all-skills" class="quick-action bg-gradient-to-br from-purple-500 to-violet-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
-                        <i class="bi bi-star text-3xl"></i>
-                        <span class="font-semibold text-lg">+ Skills</span>
-                    </a>
-                    <a href="#" class="quick-action bg-gradient-to-br from-purple-500 to-violet-600 text-white rounded-3xl p-6 flex items-center gap-4 shadow-lg hover:shadow-xl">
-                        <i class="bi bi-star text-3xl"></i>
-                        <span class="font-semibold text-lg">+ Reviews</span>
-                    </a>
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Bookings</p>
+                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_bookings }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-2xl"></i>
+                    </div>
                 </div>
+                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+                    <i class="fas fa-arrow-up"></i> +23% this month
+                </p>
             </div>
 
-            <!-- Recent Activity Chart (Sabse Niche) -->
-            <div class="mt-12 bg-white rounded-3xl shadow p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-slate-800">Recent Activity (Last 7 Days)</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Revenue</p>
+                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_revenue }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-rupee-sign text-2xl"></i>
+                    </div>
                 </div>
-                <canvas id="activityChart" height="110"></canvas>
+                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+                    <i class="fas fa-arrow-up"></i> +18% this month
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6">
+                <h3 class="font-semibold mb-4">Revenue Trend (Last 30 Days)</h3>
+                <canvas id="revenueChart" height="120"></canvas>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6">
+                <h3 class="font-semibold mb-4">Bookings Status</h3>
+                <canvas id="bookingsChart" height="120"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="bg-white rounded-3xl shadow-lg p-6 mt-8">
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Recent Bookings</h2>
+
+        <a href="/auth/all-bookings"
+           class="text-blue-600 hover:underline">
+            View All
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full">
+
+            <thead class="bg-slate-100">
+
+            <tr>
+                <th class="p-4 text-left">ID</th>
+                <th class="p-4 text-left">Customer</th>
+                <th class="p-4 text-left">Worker</th>
+                <th class="p-4 text-left">Service</th>
+                <th class="p-4 text-left">Amount</th>
+                <th class="p-4 text-left">Status</th>
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for booking in recent_bookings %}
+
+            <tr class="border-b hover:bg-gray-50">
+
+                <td class="p-4">
+                    #{{ booking.id }}
+                </td>
+
+                <td class="p-4">
+                    {{ booking.customer_name }}
+                </td>
+
+                <td class="p-4">
+                    {{ booking.worker_name }}
+                </td>
+
+                <td class="p-4">
+                    {{ booking.service_name }}
+                </td>
+
+                <td class="p-4 font-semibold text-green-600">
+                    ₹{{ booking.amount }}
+                </td>
+
+                <td class="p-4">
+
+                    {% if booking.status=="Completed" %}
+
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+                        Completed
+                    </span>
+
+                    {% elif booking.status=="Pending" %}
+
+                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
+                        Pending
+                    </span>
+
+                    {% else %}
+
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">
+                        {{ booking.status }}
+                    </span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- ------------------------------------------------------------------------------------------- -->
+
+ <div class="bg-white rounded-3xl shadow-lg p-6 mt-8">
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Recent Customers</h2>
+
+        <a href="/auth/all-customers"
+           class="text-blue-600 hover:underline">
+            View All
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full">
+            <thead>
+                <tr class="border-b text-left text-sm font-semibold text-gray-600">
+                    <th class="py-4 px-3">ID</th>
+                    <th class="py-4 px-3">Customer Name</th>
+                    <th class="py-4 px-3">Phone</th>
+                    <th class="py-4 px-3">City</th>
+                    <th class="py-4 px-3">Address</th>
+                    <th class="py-4 px-3">Pincode</th>
+                    <th class="py-4 px-3">Status</th>
+                    <th class="py-4 px-3 text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+{% for customer in customers %}
+
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+
+    <td class="py-4 px-3">
+        #{{ customer.id }}
+    </td>
+
+    <td class="py-4 px-3 font-medium">
+        {{ customer.full_name }}
+    </td>
+
+    <td class="py-4 px-3">
+        {{ customer.phone }}
+    </td>
+
+    <td class="py-4 px-3">
+        {{ customer.city }}
+    </td>
+
+    <td class="py-4 px-3">
+        {{ customer.address }}
+    </td>
+
+    <td class="py-4 px-3">
+        {{ customer.pincode }}
+    </td>
+
+    <td class="py-4 px-3">
+
+        {% if customer.status == "Active" %}
+
+        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+            Active
+        </span>
+
+        {% else %}
+
+        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs">
+            Inactive
+        </span>
+
+        {% endif %}
+
+    </td>
+
+    <td class="py-4 px-3 text-center">
+
+        <a href="/auth/customer/{{ customer.id }}"
+           class="text-blue-600 hover:text-blue-800 mr-3">
+            <i class="fas fa-eye"></i>
+        </a>
+
+        <a href="/auth/customer/{{ customer.id }}/edit"
+           class="text-yellow-500 hover:text-yellow-600 mr-3">
+            <i class="fas fa-edit"></i>
+        </a>
+
+        <a href="/auth/customer/{{ customer.id }}/delete"
+           onclick="return confirm('Delete this customer?')"
+           class="text-red-600 hover:text-red-700">
+            <i class="fas fa-trash"></i>
+        </a>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+    
+    <!-- --------------------------------------------------------------------------------------------------------------------------- -->
+   
+
+                    
+
+</div>
+<!-- Notification Modal -->
+<div id="notification-modal" class="hidden fixed inset-0 bg-black/50 flex items-start justify-end pt-20 pr-8 z-50">
+    <div class="bg-white dark:bg-gray-800 w-96 rounded-3xl shadow-2xl modal">
+        <div class="p-6 border-b">
+            <h3 class="font-semibold">Notifications</h3>
+        </div>
+        <div class="max-h-96 overflow-auto">
+            <div class="p-5 border-b hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                <p class="font-medium">New booking request</p>
+                <p class="text-sm text-gray-500">Aarav requested Plumbing service</p>
+                <p class="text-xs text-gray-400 mt-2">2 min ago</p>
             </div>
         </div>
     </div>
 </div>
+    <script>
+        // Tailwind Script
+        function initializeTailwind() {
+            // Already using CDN
+        }
 
-<script>
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
+        // Navigation
+        function navigateTo(section) {
+            // Hide all sections
+            document.querySelectorAll('#main-content > div').forEach(div => {
+                div.classList.add('hidden');
+            });
+            
+            // Show target
+            const target = document.getElementById(`section-${section}`);
+            if (target) target.classList.remove('hidden');
+            
+            // Update active nav
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/30', 'text-yellow-600', 'dark:text-yellow-400');
+            });
+            
+            const activeNav = document.getElementById(`nav-${section}`);
+            if (activeNav) activeNav.classList.add('bg-yellow-50', 'dark:bg-yellow-900/30', 'text-yellow-600', 'dark:text-yellow-400');
+        }
+
+        // Dark Mode
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                icon.classList.add('fa-moon');
+                icon.classList.remove('fa-sun');
+                localStorage.setItem('darkMode', 'false');
+            }
+        }
+
+        // Sample Data for Charts
+        let revenueChart, bookingsChart;
+
+        function initCharts() {
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx) {
+                revenueChart = new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1 Jul', '5 Jul', '10 Jul', '15 Jul', '20 Jul', '25 Jul', '30 Jul'],
+                        datasets: [{
+                            label: 'Revenue (₹)',
+                            data: [12400, 18900, 15600, 24500, 19800, 31200, 28400],
+                            borderColor: '#eab308',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280' } },
+                            x: { grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280' } }
+                        }
+                    }
+                });
+            }
+
+            const bookingsCtx = document.getElementById('bookingsChart');
+            if (bookingsCtx) {
+                bookingsChart = new Chart(bookingsCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
+                        datasets: [{
+                            data: [23, 45, 210, 12],
+                            backgroundColor: ['#eab308', '#3b82f6', '#22c55e', '#ef4444']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+        }
+
+       
+        function showNotifications() {
+            const modal = document.getElementById('notification-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function showProfileMenu() {
+            alert("Admin Profile Menu\n\n1. Profile Settings\n2. Change Password\n3. Activity Log\n4. Logout");
+        }
+
+       
+            
+    function logout() {
+
+    if (confirm("Are you sure you want to logout?")) {
+
+        alert("✅ Logout Successful!");
+
+        window.location.href = "/auth/logout";
+
     }
 
-    // Recent Activity Chart
-    document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('activityChart').getContext('2d');
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'New Bookings',
-                    data: [12, 19, 15, 25, 22, 30, 28],
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { mode: 'index', intersect: false }
-                },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
-                    x: { grid: { color: '#e2e8f0' } }
-                }
-            }
-        });
-    });
-</script>
+}
 
+
+        function exportReport() {
+            alert("✅ Report exported successfully as Excel & PDF!");
+        }
+
+        function refreshDashboard() {
+            alert("Dashboard refreshed with latest data.");
+            // In real app, fetch new data here
+        }
+
+        function toggleSidebar() {
+            alert("Sidebar toggle works best on mobile view.");
+        }
+
+        // Initialize everything
+        window.onload = function() {
+            // Set dark mode from localStorage
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').classList.remove('fa-moon');
+                document.getElementById('theme-icon').classList.add('fa-sun');
+            }
+            
+            // Initialize charts and data
+            initCharts();
+            populateRecentBookings();
+            
+            // Show dashboard by default
+            navigateTo('dashboard');
+            
+            console.log("%c✅ MistriPoint Admin Panel Loaded Successfully", "color: #eab308; font-size: 14px; font-weight: bold");
+        };
+    </script>
 </body>
 </html>
