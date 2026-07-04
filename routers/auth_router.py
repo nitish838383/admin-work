@@ -124,6 +124,7 @@ def dashboard(
     data_notifications = notification_response.json()
 
     total_customers = data_customers["total_customers"]
+    customers = data_customers["customers"]
 
     
     
@@ -146,6 +147,7 @@ def dashboard(
             "total_skills": total_skills,
             "total_kyc_workers":total_kyc_workers,
             "total_notifications":total_notifications,
+             "customers": customers,
             
         }
     )
