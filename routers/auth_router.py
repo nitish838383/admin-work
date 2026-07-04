@@ -94,63 +94,121 @@ def dashboard(
             status_code=302
         )
 
-    # External API se customers data
-    customers_response = requests.get(
-        "https://mistripoint-backend-1.onrender.com/auth/all-customers"
-    )
-    workers_response = requests.get(
-      "https://mistripoint-1.onrender.com/worker-profiles"
-    )
+    # ---------------- Customers ----------------
+    try:
+        customers_response = requests.get(
+            "https://mistripoint-backend-1.onrender.com/auth/all-customers",
+            timeout=10
+        )
+        customers_response.raise_for_status()
 
-    skills_response = requests.get(
-      "https://mistripoint-1.onrender.com/skills"
-    )
+        data_customers = customers_response.json()
 
-    kycs_response = requests.get(
-      "https://mistripoint-1.onrender.com/worker-kyc"
-    )
+        if isinstance( data_customers, dict):
+            customers =  data_customers.get("customers", [])
+        else:
+            customers =  data_customers
 
-    notification_response = requests.get(
-      "https://mistripoint-1.onrender.com/notifications/9"
-    )
-    
-    
-    
-    
-    data_customers = customers_response.json()
-    data_workers = workers_response.json()
-    data_skills = skills_response.json()
-    data_kycs = kycs_response.json()
-    data_notifications = notification_response.json()
+        total_customers = len(customers)
 
-    total_customers = data_customers["total_customers"]
-    customers = data_customers["customers"]
+    except Exception as e:
+        print("Customers API Error:", e)
+        customers = []
+        total_customers = 0
 
-    
-    
-    total_workers = len(data_workers)
-    total_skills = len(data_skills)
-    total_kyc_workers = len(data_kycs["data"])
-    total_notifications = len(data_notifications)
-    # Apni DB ka data
+
+    # ---------------- Workers ----------------
+    try:
+        workers_response = requests.get(
+            "https://mistripoint-1.onrender.com/worker-profiles",
+            timeout=10
+        )
+        workers_response.raise_for_status()
+
+        data_workers = workers_response.json()
+        total_workers = len(data_workers)
+
+    except Exception as e:
+        print("Workers API Error:", e)
+        total_workers = 0
+
+
+    # ---------------- Skills ----------------
+    try:
+        skills_response = requests.get(
+            "https://mistripoint-1.onrender.com/skills",
+            timeout=10
+        )
+        skills_response.raise_for_status()
+
+        data_skills = skills_response.json()
+        total_skills = len(data_skills)
+
+    except Exception as e:
+        print("Skills API Error:", e)
+        total_skills = 0
+
+
+    # ---------------- KYC ----------------
+    try:
+        kycs_response = requests.get(
+            "https://mistripoint-1.onrender.com/worker-kyc",
+            timeout=10
+        )
+        kycs_response.raise_for_status()
+
+        data_kycs = kycs_response.json()
+
+        if isinstance(data_kycs, dict):
+            total_kyc_workers = len(data_kycs.get("data", []))
+        else:
+            total_kyc_workers = len(data_kycs)
+
+    except Exception as e:
+        print("KYC API Error:", e)
+        total_kyc_workers = 0
+
+
+    # ---------------- Notifications ----------------
+    try:
+        notification_response = requests.get(
+            "https://mistripoint-1.onrender.com/notifications",
+            timeout=10
+        )
+        notification_response.raise_for_status()
+
+        data_notifications = notification_response.json()
+
+        if isinstance(data_notifications, dict):
+            total_notifications = len(data_notifications.get("data", []))
+        else:
+            total_notifications = len(data_notifications)
+
+    except Exception as e:
+        print("Notification API Error:", e)
+        total_notifications = 0
+
+
+    # ---------------- Local Database ----------------
     total_users = db.query(User).count()
     total_bookings = db.query(Booking).count()
 
+
     return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context={
-            "total_users": total_users,
-            "total_workers": total_workers,
-            "total_bookings": total_bookings,
-            "total_customers": total_customers,
-            "total_skills": total_skills,
-            "total_kyc_workers":total_kyc_workers,
-            "total_notifications":total_notifications,
-             "customers": customers,
-            
-        }
-    )
+    request=request,
+    name="dashboard.html",
+    context={
+        "request": request,
+        "total_users": total_users,
+        "total_bookings": total_bookings,
+        "total_customers": total_customers,
+        "total_workers": total_workers,
+        "total_skills": total_skills,
+        "total_kyc_workers": total_kyc_workers,
+        "total_notifications": total_notifications,
+        "customers": customers,
+    }
+)
 
 # -------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -572,7 +630,7 @@ def create_category(
 
 
 
-
+# ---------------------------------------------------------------------------------------------------------------------------------------------
 from models import Booking
 
 # booking items page
@@ -583,6 +641,8 @@ def book_summary(request:Request):
         name="booking_summary.html"
     )
 
+# ------------------------------------------------------------------------------------------------------------------------------------------
+
 # booking items page
 @router.get("/worker_list")
 def worker_item_view(request:Request):
@@ -591,8 +651,8 @@ def worker_item_view(request:Request):
         name="worker_list.html"
     )
 
-
-
+# ====================================================================================================================================
+# all booking 
 @router.get("/all-bookings")
 def all_bookings(
     request: Request,
@@ -613,7 +673,9 @@ def all_bookings(
         
     )
 
+# ==========================================================================================================================================
 
+# create booking
 @router.post("/create-booking")
 def create_booking(
     booking: BookingCreate,
@@ -653,7 +715,7 @@ def create_booking(
     }
 
 # ______________________________________________________________________________________________________________________________________
-
+# service-selections
 @router.get("/service-selection")
 def service_selection_name(request:Request):
     return templates.TemplateResponse(
@@ -661,6 +723,8 @@ def service_selection_name(request:Request):
         name="service-selection.html"
     )
 
+# -----------------------------------------------------------------------------------------------------------------------
+# payment
 @router.get("/payment")
 def payment_view_page(request:Request):
     return templates.TemplateResponse(
@@ -669,7 +733,8 @@ def payment_view_page(request:Request):
 
     )
 
-
+# ===================================================================================================================================
+# all- skills
 @router.get("/all-skills")
 def all_skills(
     request: Request,
@@ -692,6 +757,9 @@ def all_skills(
         }
         
     )
+
+# -----------------------------------------------------------------------------------------------------------------------------------
+# kyc-admin
 
 @router.get("/kyc-admin")
 def kyc_admin(
@@ -717,6 +785,9 @@ def kyc_admin(
             "total_kyc_workers": total_kyc_workers,
         }
     )
+# ---------------------------------------------------------------------------------------------------------------------------------------
+
+# kyc/{worker_id}/approve
 
 @router.get("/kyc/{worker_id}/approve")
 def approve_kyc(worker_id: int):
@@ -742,12 +813,12 @@ def reject_kyc(worker_id: int):
     )
 
 
-
+# -------------------------------------------------------------------------------------------------------------------------------------
 from models import Notification
 from schemas import NotificationCreate
 
 
-
+# notification
 @router.post("/notifications")
 def create_notification(
     notification: NotificationCreate,
@@ -768,12 +839,14 @@ def create_notification(
         "notification": new_notification
     }
 
+# -----------------------------------------------------------------------------------------------------------------------------------------
 
+# notification_admin
 @router.get("/notification-admin")
 def notification_admin(request: Request):
 
     response = requests.get(
-        "https://mistripoint-1.onrender.com/notifications/9"
+        "hhttps://mistripoint-1.onrender.com/notifications"
     )
 
     data = response.json()
