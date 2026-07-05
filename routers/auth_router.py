@@ -540,26 +540,26 @@ def all_customers(
         }
     )
 
-# _________________________________________________________________________________________________________________________________________
-# customer appproved
 @router.get("/customer_approved/{customer_id}/approve")
 def approve_customer(
     customer_id: int,
     db: Session = Depends(get_db)
 ):
-    customer = db.query(AllCustomer).filter(
-        AllCustomer.id == customer_id
-    ).first()
-
-    if customer:
-        customer.status = "Approved"
-        db.commit()
-
-    return RedirectResponse(
-        url="/auth/all-customers",
-        status_code=303
+    response = requests.put(
+        f"https://mistripoint-backend-1.onrender.com/auth/admin/approve/{customer_id}"
     )
 
+    if response.status_code == 200:
+        return RedirectResponse(
+            url="/auth/all-customers",
+            status_code=303
+        )
+
+    return {
+        "success": False,
+        "status_code": response.status_code,
+        "response": response.text
+    }
 # __________________________________________________________________________________________________________________________________________
 # customer reject
 from models import AllCustomer
@@ -569,18 +569,21 @@ def reject_customer(
     customer_id: int,
     db: Session = Depends(get_db)
 ):
-    customer = db.query(AllCustomer).filter(
-        AllCustomer.id == customer_id
-    ).first()
-
-    if customer:
-        customer.status = "Rejected"
-        db.commit()
-
-    return RedirectResponse(
-        url="/auth/all-customers",
-        status_code=303
+    response = requests.put(
+        f"https://mistripoint-backend-1.onrender.com/auth/admin/reject/{customer_id}"
     )
+
+    if response.status_code == 200:
+        return RedirectResponse(
+            url="/auth/all-customers",
+            status_code=303
+        )
+
+    return {
+        "success": False,
+        "status_code": response.status_code,
+        "response": response.text
+    }
 
 # _________________________________________________________________________________________________________________________________________
 # services
@@ -846,7 +849,7 @@ def create_notification(
 def notification_admin(request: Request):
 
     response = requests.get(
-        "hhttps://mistripoint-1.onrender.com/notifications"
+        "https://mistripoint-1.onrender.com/notifications"
     )
 
     data = response.json()
