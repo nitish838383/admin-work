@@ -585,6 +585,31 @@ def reject_customer(
         "response": response.text
     }
 
+@router.get("/customer_delete/{customer_id}/delete")
+def delete_customer(
+    customer_id: int,
+    db: Session = Depends(get_db)
+):
+    response = requests.delete(
+        f"https://mistripoint-backend-1.onrender.com/auth/admin/delete-customer/{customer_id}"
+    )
+
+    if response.status_code == 200:
+        return RedirectResponse(
+            url="/auth/all-customers",
+            status_code=303
+        )
+
+    return {
+        "success": False,
+        "status_code": response.status_code,
+        "response": response.text
+    }
+
+    
+    
+
+
 # _________________________________________________________________________________________________________________________________________
 # services
 @router.get("/services")

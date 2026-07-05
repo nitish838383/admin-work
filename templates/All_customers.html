@@ -95,7 +95,11 @@
                             <a href="/auth/customer_approved/{{ customer['id'] }}/approve" class="action-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-sm">Approve</a>
                             <a href="/auth/customer_rejected/{{ customer['id'] }}/reject" class="action-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Reject</a>
                             <button onclick="editCustomer({{ customer['id'] }})" class="action-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-edit"></i></button>
-                            <a href="/auth/customer/{{ customer['id'] }}/delete" onclick="return confirm('Delete this customer?')" class="action-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-trash"></i></a>
+                            <a href="/auth/customer_delete/{{ customer['id'] }}/delete"
+                            onclick="return confirm('Delete this customer?')"
+                            class="action-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
                         </td>
                     </tr>
                     {% endfor %}

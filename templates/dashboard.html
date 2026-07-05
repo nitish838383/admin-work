@@ -178,15 +178,15 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
                         <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">7</span>
                     </button>
 
-                    <!-- Profile -->
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="showProfileMenu()">
-                        <div class="text-right">
-                            <p class="font-semibold text-sm">Nitish Kumar</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Super Admin</p>
-                        </div>
-                        <div class="w-9 h-9 bg-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold">NK</div>
-                    </div>
-                </div>
+                    <!-- Profile with Dropdown -->
+    <div class="relative group">
+        <div onclick="toggleProfileDropdown()" class="flex items-center gap-3 cursor-pointer">
+            <div class="text-right">
+                <p class="font-semibold text-sm">Nitish Kumar</p>
+                <p class="text-xs text-emerald-400">Super Admin</p>
+            </div>
+            <div class="w-9 h-9 bg-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold text-lg">NK</div>
+        </div>
             </header>
 <!-- Content Area -->
 <!-- Content Area -->
@@ -632,6 +632,14 @@ function toggleDarkMode() {
 }
 
 // Page Load
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('profile-dropdown');
+    if (!e.target.closest('.relative')) {
+        dropdown.classList.add('hidden');
+    }
+});
 
 
         // Sample Data for Charts
