@@ -42,6 +42,26 @@ def login_page(request: Request):
     )
 # ---------------------------------------------------------------------------------------------------------------------------------
 
+@router.post("/login-view")
+def login_view(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    admin = db.query(Admin).filter(Admin.email == email).first()
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin not found")
+
+    if not verify_password(password, admin.password):
+        raise HTTPException(status_code=401, detail="Invalid Password")
+
+    token = create_access_token({
+        "admin_id": admin.id,
+        "email": admin.email
+    })
+
+    
 @router.post("/login-page")
 def login_form(
     email: str = Form(...),
@@ -62,8 +82,16 @@ def login_form(
     })
 
     response = RedirectResponse(
-        url="/auth/dashboard",
-        status_code=302
+    url="/auth/loading",
+    status_code=302
+)
+
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="lax"
     )
 
     response.set_cookie(
@@ -889,5 +917,37 @@ def notification_admin(request: Request):
             "request": request,
             "notifications": notifications,
             "total_notifications": total_notifications
+        }
+    )
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+@router.get("/admin-profile")
+def show_admin_profile(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="admin_profile.html"
+    )
+
+@router.get("/profile/{admin_id}")
+def get_admin_profile(admin_id: int, db: Session = Depends(get_db)):
+    admin = db.query(Admin).filter(Admin.id == admin_id).first()
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin not found")
+
+    return {
+        "message": "Admin Profile",
+        "data": admin
+    }
+
+
+@router.get("/loading")
+def loading(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="splash_screen.html",
+        context={
+            "request": request,
+            
         }
     )

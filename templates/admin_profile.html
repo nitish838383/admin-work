@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - MistriPoint Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .profile-card {
+            background: linear-gradient(135deg, #1e2937, #334155);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+        
+        .stat-item {
+            transition: all 0.3s ease;
+        }
+        .stat-item:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-lg w-full profile-card rounded-3xl overflow-hidden">
+        <!-- Header -->
+        <div class="h-32 bg-gradient-to-r from-yellow-500 to-amber-600 relative">
+            <div class="absolute -bottom-12 left-8">
+                <img src="/static/images/nitish.png"
+                class="w-28 h-28 rounded-3xl border-4 border-zinc-900 shadow-2xl object-cover">
+            </div>
+        </div>
+
+        <div class="pt-16 pb-8 px-8">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-3xl font-bold">Nitish Kumar</h2>
+                    <p class="text-amber-400">Super Admin</p>
+                </div>
+                <span class="px-5 py-2 bg-emerald-500/20 text-emerald-400 text-sm font-medium rounded-3xl flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    Active
+                </span>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 mt-10">
+                <div class="stat-item bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center">
+                    <p class="text-xs text-gray-400">Bookings</p>
+                    <p class="text-2xl font-bold mt-1">142</p>
+                </div>
+                <div class="stat-item bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center">
+                    <p class="text-xs text-gray-400">Workers</p>
+                    <p class="text-2xl font-bold mt-1">87</p>
+                </div>
+                <div class="stat-item bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center">
+                    <p class="text-xs text-gray-400">Revenue</p>
+                    <p class="text-2xl font-bold mt-1">₹8.4L</p>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="mt-10 space-y-6">
+                <div class="flex justify-between">
+                    <div class="text-gray-400">Email</div>
+                    <div class="font-medium">admin@mistripoint.com</div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-gray-400">Mobile</div>
+                    <div class="font-medium">+91 98765 43210</div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-gray-400">Employee ID</div>
+                    <div class="font-medium">MP-001</div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-gray-400">Joined On</div>
+                    <div class="font-medium">10 July 2026</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-12 flex gap-4">
+                <button onclick="editProfile()" 
+                        class="flex-1 bg-white text-zinc-900 font-semibold py-4 rounded-2xl hover:bg-amber-400 transition-all">
+                    Edit Profile
+                </button>
+                <button onclick="changePassword()" 
+                        class="flex-1 border border-white/30 hover:bg-white/10 font-semibold py-4 rounded-2xl transition-all">
+                    Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function editProfile() {
+            alert("Edit Profile Modal Open");
+        }
+        function changePassword() {
+            alert("Change Password Modal Open");
+        }
+    </script>
+</body>
+</html>
