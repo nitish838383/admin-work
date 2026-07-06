@@ -215,12 +215,12 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
                     <span>Export Report</span>
                 </button>
 
-                <button
-                    onclick="refreshDashboard()"
-                    class="w-full sm:w-auto px-5 py-3 bg-yellow-500 text-white rounded-3xl flex items-center justify-center gap-2 hover:bg-yellow-600">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>Refresh</span>
-                </button>
+                <button onclick="refreshDashboard()"
+                class="px-5 py-3 bg-yellow-500 text-white rounded-3xl">
+                <i class="fas fa-sync-alt"></i>
+                Refresh
+
+            </button>
 
             </div>
 
@@ -724,10 +724,31 @@ document.addEventListener('click', function(e) {
             alert("✅ Report exported successfully as Excel & PDF!");
         }
 
-        function refreshDashboard() {
-            alert("Dashboard refreshed with latest data.");
-            // In real app, fetch new data here
-        }
+        async function refreshDashboard() {
+
+    const button = document.querySelector(".fa-sync-alt");
+    button.classList.add("fa-spin");
+
+    try{
+
+        const response = await fetch("/auth/dashboard");
+
+        const data = await response.json();
+
+        document.getElementById("total-users").innerText = data.total_users;
+        document.getElementById("total-customers").innerText = data.total_customers;
+        document.getElementById("total-workers").innerText = data.total_workers;
+        document.getElementById("total-bookings").innerText = data.total_bookings;
+        document.getElementById("total-notifications").innerText = data.total_notifications;
+        document.getElementById("total-skills").innerText = data.total_skills;
+        document.getElementById("total-kyc").innerText = data.total_kyc_workers;
+
+    }catch(err){
+        console.log(err);
+    }
+
+    button.classList.remove("fa-spin");
+}
 
     function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
