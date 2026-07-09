@@ -95,3 +95,11 @@ class NotificationCreate(BaseModel):
     worker_id: int
     title: str
     message: str
+
+
+
+
+class ReviewCreate(BaseModel):
+    booking_id: int
+    rating: int
+    review: str

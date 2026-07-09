@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews | MistriPoint Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+        }
+        
+        .review-row {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .review-row:hover {
+            background-color: #f8fafc;
+        }
+        
+        .dark .review-row:hover {
+            background-color: #1f2937;
+        }
+        
+        .star {
+            color: #facc15;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 min-h-screen">
+
+<div class="max-w-7xl mx-auto p-6 lg:p-10">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div>
+            <h1 class="text-4xl font-bold tracking-tight">Customer Reviews</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Monitor and manage feedback from your customers</p>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <input type="text" id="searchInput" placeholder="Search by customer or worker..." 
+                   onkeyup="filterTable()"
+                   class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl px-5 py-3 w-80 focus:outline-none focus:border-yellow-500">
+            
+            <button onclick="resetFilters()" 
+                    class="px-6 py-3 border border-gray-300 dark:border-zinc-700 rounded-2xl hover:bg-gray-100 dark:hover:bg-zinc-800">
+                Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10">
+        <div class="glass border border-gray-200 dark:border-zinc-700 rounded-3xl p-6">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">Total Reviews</p>
+            <h2 class="text-4xl font-bold mt-2">{{ total_reviews }}</h2>
+        </div>
+        <div class="glass border border-gray-200 dark:border-zinc-700 rounded-3xl p-6">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">Average Rating</p>
+            <h2 class="text-4xl font-bold text-yellow-500 mt-2">{{ average_rating }} ★</h2>
+        </div>
+        <div class="glass border border-gray-200 dark:border-zinc-700 rounded-3xl p-6">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">5 Star</p>
+            <h2 class="text-4xl font-bold mt-2">{{ five_star_reviews }}</h2>
+        </div>
+        <div class="glass border border-gray-200 dark:border-zinc-700 rounded-3xl p-6">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">Positive %</p>
+            <h2 class="text-4xl font-bold text-emerald-500 mt-2">{{ positive_percent }}%</h2>
+        </div>
+        <div class="glass border border-gray-200 dark:border-zinc-700 rounded-3xl p-6">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">4 Star</p>
+            <h2 class="text-4xl font-bold mt-2">{{ four_star_reviews }}</h2>
+        </div>
+        <div class="glass border border-gray-200 dark:border-zinc-700 rounded-3xl p-6">
+            <p class="text-gray-500 dark:text-gray-400 text-sm">Negative %</p>
+            <h2 class="text-4xl font-bold text-red-500 mt-2">{{ negative_percent }}%</h2>
+        </div>
+    </div>
+
+    <!-- Reviews Table -->
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow border border-gray-100 dark:border-zinc-700 overflow-hidden">
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-gray-100 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800">
+                    <th class="p-6 text-left font-medium text-gray-500">Review ID</th>
+                    <th class="p-6 text-left font-medium text-gray-500">Customer</th>
+                    <th class="p-6 text-left font-medium text-gray-500">Worker</th>
+                    <th class="p-6 text-left font-medium text-gray-500">Rating</th>
+                    <th class="p-6 text-left font-medium text-gray-500">Review</th>
+                    <th class="p-6 text-left font-medium text-gray-500">Date</th>
+                    <th class="p-6 text-center font-medium text-gray-500">Status</th>
+                    <th class="p-6 text-center font-medium text-gray-500">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="reviewsBody">
+                {% for review in reviews %}
+                <tr class="review-row border-b border-gray-100 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800">
+                    <td class="p-6 font-mono text-sm">{{ review.id }}</td>
+                    <td class="p-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-200 dark:bg-zinc-700 rounded-full"></div>
+                            <div>{{ review.customer_name }}</div>
+                        </div>
+                    </td>
+                    <td class="p-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-200 dark:bg-zinc-700 rounded-full"></div>
+                            <div>{{ review.worker_name }}</div>
+                        </div>
+                    </td>
+                    <td class="p-6">
+                        <div class="flex text-yellow-400">
+                            {% for i in range(review.rating) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                        </div>
+                    </td>
+                    <td class="p-6 text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate">{{ review.review }}</td>
+                    <td class="p-6 text-sm text-gray-500">{{ review.created_at }}</td>
+                    <td class="p-6 text-center">
+                        <span class="px-4 py-1 text-xs rounded-full {{ review.status == 'Published' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                            {{ review.status }}
+                        </span>
+                    </td>
+                    <td class="p-6 text-center">
+                        <button onclick="" class="text-blue-600 hover:text-blue-700 mr-4">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button onclick="" class="text-red-600 hover:text-red-700">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-between items-center mt-8">
+        <p class="text-sm text-gray-500">Showing 1-10 of {{ total_reviews }} reviews</p>
+        <div class="flex gap-2">
+            <button class="px-5 py-2 border border-gray-300 dark:border-zinc-700 rounded-2xl text-sm">Previous</button>
+            <button class="px-5 py-2 bg-yellow-500 text-black rounded-2xl text-sm font-medium">1</button>
+            <button class="px-5 py-2 border border-gray-300 dark:border-zinc-700 rounded-2xl text-sm">2</button>
+            <button class="px-5 py-2 border border-gray-300 dark:border-zinc-700 rounded-2xl text-sm">Next</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function viewReview(id) {
+        alert(`Viewing review #${id}`);
+    }
+    
+    function deleteReview(id) {
+        if (confirm(`Delete review #${id}?`)) {
+            alert(`Review #${id} deleted successfully.`);
+        }
+    }
+    
+    function filterTable() {
+        // Add search logic
+        console.log("Filtering...");
+    }
+</script>
+</body>
+</html>

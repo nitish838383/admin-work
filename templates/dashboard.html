@@ -118,7 +118,7 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
                         <i class="fas fa-bell w-5"></i>
                         <span>Notifications</span>
                     </a>
-                    <a href="#" onclick="navigateTo('reviews')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-reviews">
+                    <a href="reviews" onclick="navigateTo('reviews')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-reviews">
                         <i class="fas fa-star w-5"></i>
                         <span>Reviews</span>
                     </a>
@@ -173,9 +173,10 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
                     </button>
 
                     <!-- Notifications -->
-                    <button onclick="showNotifications()" class="relative text-xl">
+                    <button onclick="window.location.href='/auth/notification-admin'"
+                     class="relative text-xl">
                         <i class="fas fa-bell"></i>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">7</span>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{{total_notifications}}</span>
                     </button>
 
                     <!-- Profile with Dropdown -->
@@ -213,134 +214,153 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
                     class="w-full sm:w-auto px-5 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-3xl flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-600">
                     <i class="fas fa-download"></i>
                     <span>Export Report</span>
-                </button>
+                <button
+    onclick="refreshDashboard()"
+    class="inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200
+    focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
+    border-2 border-emerald-600 text-emerald-700 bg-transparent
+    hover:bg-emerald-50 px-3 py-1.5 text-sm">
 
-                <button onclick="refreshDashboard()"
-                class="px-5 py-3 bg-yellow-500 text-white rounded-3xl">
-                <i class="fas fa-sync-alt"></i>
-                Refresh
-
-            </button>
+    <i id="refreshIcon" class="fas fa-sync-alt"></i>
+    Refresh
+</button>
 
             </div>
 
         </div>
 
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+   <!-- Stats Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Total Customers</p>
-                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_customers }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-users text-2xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-                    <i class="fas fa-arrow-up"></i> +12% this month
-                </p>
+    <!-- Total Customers -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Customers</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_customers }}</h2>
             </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Total Workers</p>
-                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_workers }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-hard-hat text-2xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-                    <i class="fas fa-arrow-up"></i> +8% this month
-                </p>
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-users text-2xl"></i>
             </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Total KYC Workers</p>
-                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_kyc_workers }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-id-card text-2xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-                    <i class="fas fa-arrow-up"></i> +8% this month
-                </p>
-            </div>
-
-            
-           <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-    <div class="flex justify-between">
-        <div>
-            <p class="text-sm text-gray-500">Total Notifications</p>
-            <h2 class="text-4xl md:text-5xl font-bold mt-3">
-                {{ total_notifications }}
-            </h2>
         </div>
-
-        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
-            <i class="fas fa-bell text-2xl"></i>
-        </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +12% this month
+        </p>
     </div>
 
-    <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-        <i class="fas fa-arrow-up"></i>
-        +23% this month
-    </p>
-</div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Total Skills</p>
-                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_skills }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-tools text-2xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-                    <i class="fas fa-arrow-up"></i> +15% this month
-                </p>
+    <!-- Total Workers -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Workers</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_workers }}</h2>
             </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Total Bookings</p>
-                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_bookings }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-calendar-check text-2xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-                    <i class="fas fa-arrow-up"></i> +23% this month
-                </p>
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-hard-hat text-2xl"></i>
             </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Total Revenue</p>
-                        <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_revenue }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-rupee-sign text-2xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-                    <i class="fas fa-arrow-up"></i> +18% this month
-                </p>
-            </div>
-
         </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +8% this month
+        </p>
+    </div>
+
+    <!-- Total KYC Workers -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total KYC Workers</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_kyc_workers }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-id-card text-2xl"></i>
+            </div>
+        </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +8% this month
+        </p>
+    </div>
+
+    <!-- Total Skills -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Skills</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_skills }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-tools text-2xl"></i>
+            </div>
+        </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +15% this month
+        </p>
+    </div>
+
+    <!-- Total Bookings -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Bookings</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_bookings }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-calendar-check text-2xl"></i>
+            </div>
+        </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +23% this month
+        </p>
+    </div>
+
+    <!-- Total Reviews -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Reviews</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_reviews }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-pink-100 dark:bg-pink-900/50 text-pink-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-star text-2xl"></i>
+            </div>
+        </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +10% this month
+        </p>
+    </div>
+
+    <!-- Total Notifications -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Notifications</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_notifications }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-bell text-2xl"></i>
+            </div>
+        </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +23% this month
+        </p>
+    </div>
+
+    <!-- Total Revenue -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
+        <div class="flex justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Revenue</p>
+                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_revenue }}</h2>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-rupee-sign text-2xl"></i>
+            </div>
+        </div>
+        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-up"></i> +18% this month
+        </p>
+    </div>
+
+</div>
 
         <!-- Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
@@ -353,6 +373,8 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
                 <canvas id="bookingsChart" height="120"></canvas>
             </div>
         </div>
+
+        
 
         <!-- Recent Bookings -->
         <div class="bg-white rounded-3xl shadow-lg p-6 mt-8">
@@ -557,22 +579,6 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
 
                     
 
-</div>
-<!-- Notification Modal -->
-<div id="notification-modal" class="hidden fixed inset-0 bg-black/50 flex items-start justify-end pt-20 pr-8 z-50">
-    <div class="bg-white dark:bg-gray-800 w-96 rounded-3xl shadow-2xl modal">
-        <div class="p-6 border-b">
-            <h3 class="font-semibold">Notifications</h3>
-        </div>
-        <div class="max-h-96 overflow-auto">
-            <div class="p-5 border-b hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
-                <p class="font-medium">New booking request</p>
-                <p class="text-sm text-gray-500">Aarav requested Plumbing service</p>
-                <p class="text-xs text-gray-400 mt-2">2 min ago</p>
-            </div>
-        </div>
-    </div>
-</div>
     <script>
 
         function globalSearch() {
@@ -724,30 +730,8 @@ document.addEventListener('click', function(e) {
             alert("✅ Report exported successfully as Excel & PDF!");
         }
 
-        async function refreshDashboard() {
-
-    const button = document.querySelector(".fa-sync-alt");
-    button.classList.add("fa-spin");
-
-    try{
-
-        const response = await fetch("/auth/dashboard");
-
-        const data = await response.json();
-
-        document.getElementById("total-users").innerText = data.total_users;
-        document.getElementById("total-customers").innerText = data.total_customers;
-        document.getElementById("total-workers").innerText = data.total_workers;
-        document.getElementById("total-bookings").innerText = data.total_bookings;
-        document.getElementById("total-notifications").innerText = data.total_notifications;
-        document.getElementById("total-skills").innerText = data.total_skills;
-        document.getElementById("total-kyc").innerText = data.total_kyc_workers;
-
-    }catch(err){
-        console.log(err);
-    }
-
-    button.classList.remove("fa-spin");
+  function refreshDashboard() {
+    location.reload();
 }
 
     function toggleSidebar() {

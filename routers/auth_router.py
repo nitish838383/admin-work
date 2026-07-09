@@ -106,7 +106,11 @@ def login_form(
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 # get dashboard
-from models import User, Worker, Booking
+# --------------------------------------------------------------------------
+# Dashboard
+# --------------------------------------------------------------------------
+
+from models import User, Booking
 import requests
 
 @router.get("/dashboard")
@@ -132,10 +136,10 @@ def dashboard(
 
         data_customers = customers_response.json()
 
-        if isinstance( data_customers, dict):
-            customers =  data_customers.get("customers", [])
+        if isinstance(data_customers, dict):
+            customers = data_customers.get("customers", [])
         else:
-            customers =  data_customers
+            customers = data_customers
 
         total_customers = len(customers)
 
@@ -143,7 +147,6 @@ def dashboard(
         print("Customers API Error:", e)
         customers = []
         total_customers = 0
-
 
     # ---------------- Workers ----------------
     try:
@@ -154,12 +157,18 @@ def dashboard(
         workers_response.raise_for_status()
 
         data_workers = workers_response.json()
-        total_workers = len(data_workers)
+
+        if isinstance(data_workers, dict):
+            workers = data_workers.get("data", [])
+        else:
+            workers = data_workers
+
+        total_workers = len(workers)
 
     except Exception as e:
         print("Workers API Error:", e)
+        workers = []
         total_workers = 0
-
 
     # ---------------- Skills ----------------
     try:
@@ -170,14 +179,20 @@ def dashboard(
         skills_response.raise_for_status()
 
         data_skills = skills_response.json()
-        total_skills = len(data_skills)
+
+        if isinstance(data_skills, dict):
+            skills = data_skills.get("data", [])
+        else:
+            skills = data_skills
+
+        total_skills = len(skills)
 
     except Exception as e:
         print("Skills API Error:", e)
+        skills = []
         total_skills = 0
 
-
-    # ---------------- KYC ----------------
+    # ---------------- Worker KYC ----------------
     try:
         kycs_response = requests.get(
             "https://mistripoint-1.onrender.com/worker-kyc",
@@ -188,14 +203,16 @@ def dashboard(
         data_kycs = kycs_response.json()
 
         if isinstance(data_kycs, dict):
-            total_kyc_workers = len(data_kycs.get("data", []))
+            kycs = data_kycs.get("data", [])
         else:
-            total_kyc_workers = len(data_kycs)
+            kycs = data_kycs
+
+        total_kyc_workers = len(kycs)
 
     except Exception as e:
         print("KYC API Error:", e)
+        kycs = []
         total_kyc_workers = 0
-
 
     # ---------------- Notifications ----------------
     try:
@@ -208,36 +225,61 @@ def dashboard(
         data_notifications = notification_response.json()
 
         if isinstance(data_notifications, dict):
-            total_notifications = len(data_notifications.get("data", []))
+            notifications = data_notifications.get("data", [])
         else:
-            total_notifications = len(data_notifications)
+            notifications = data_notifications
+
+        total_notifications = len(notifications)
 
     except Exception as e:
         print("Notification API Error:", e)
+        notifications = []
         total_notifications = 0
 
+    # ---------------- Reviews ----------------
+    try:
+        reviews_response = requests.get(
+            "https://mistripoint-1.onrender.com/reviews",
+            timeout=10
+        )
+        reviews_response.raise_for_status()
+
+        data_reviews = reviews_response.json()
+
+        if isinstance(data_reviews, dict):
+            reviews = data_reviews.get("data", [])
+        else:
+            reviews = data_reviews
+
+        total_reviews = len(reviews)
+
+    except Exception as e:
+        print("Reviews API Error:", e)
+        reviews = []
+        total_reviews = 0
 
     # ---------------- Local Database ----------------
     total_users = db.query(User).count()
     total_bookings = db.query(Booking).count()
 
-
+    # ---------------- Render ----------------
     return templates.TemplateResponse(
-    request=request,
-    name="dashboard.html",
-    context={
-        "request": request,
-        "total_users": total_users,
-        "total_bookings": total_bookings,
-        "total_customers": total_customers,
-        "total_workers": total_workers,
-        "total_skills": total_skills,
-        "total_kyc_workers": total_kyc_workers,
-        "total_notifications": total_notifications,
-        "customers": customers,
-    }
-)
-
+        request=request,
+        name="dashboard.html",
+        context={
+            "request": request,
+            "total_users": total_users,
+            "total_bookings": total_bookings,
+            "total_customers": total_customers,
+            "total_workers": total_workers,
+            "total_skills": total_skills,
+            "total_kyc_workers": total_kyc_workers,
+            "total_notifications": total_notifications,
+            "total_reviews": total_reviews,
+            "customers": customers,
+            "reviews": reviews,
+        }
+    )
 # -------------------------------------------------------------------------------------------------------------------------------------------
 
 # get Logout
@@ -953,3 +995,25 @@ def loading(request: Request):
     )
 
 
+
+@router.get("/reviews")
+def reviews(request: Request):
+
+    response = requests.get(
+        "https://mistripoint-1.onrender.com/reviews"
+    )
+
+    data = response.json()
+
+    reviews = data["data"]
+
+    return templates.TemplateResponse(
+        "reviews.html",
+        {
+            "request": request,
+            "review": reviews,
+            "total_reviews": len(reviews),
+            "average_rating": 4.8,
+            "five_star_reviews": 24
+        }
+    )

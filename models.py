@@ -182,3 +182,14 @@ class Notification(Base):
     worker_id = Column(Integer, ForeignKey("workers.id"))
     title = Column(String(255))
     message = Column(String(500))
+
+from sqlalchemy import Column, Integer, String, ForeignKey
+from database import Base
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    booking_id = Column(Integer, ForeignKey("bookings.id"))
+    rating = Column(Integer)
+    review = Column(String(500))
