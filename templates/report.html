@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics | LabourMitra Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(20px); 
+        }
+        
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 320px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div class="max-w-7xl mx-auto p-6">
+
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
+            </div>
+            <p class="text-gray-500">Comprehensive performance insights • Updated just now</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <button onclick="exportReport('pdf')" 
+                    class="flex items-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-all">
+                <i class="fas fa-file-pdf text-red-500"></i>
+                <span class="font-medium">PDF</span>
+            </button>
+            <button onclick="exportReport('excel')" 
+                    class="flex items-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-all">
+                <i class="fas fa-file-excel text-emerald-500"></i>
+                <span class="font-medium">Excel</span>
+            </button>
+            <button onclick="window.print()" 
+                    class="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 transition-all">
+                <i class="fas fa-print"></i>
+                <span class="font-medium">Print</span>
+            </button>
+            <button
+            onclick="refreshDashboard()"
+            class="inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200
+            focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
+            border-2 border-emerald-600 text-emerald-700 bg-transparent
+            hover:bg-emerald-50 px-3 py-1.5 text-sm">
+            <i id="refreshIcon" class="fas fa-sync-alt"></i>
+            Refresh
+        </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-3xl p-6 shadow mb-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div>
+                <label class="text-xs font-medium text-gray-500">From</label>
+                <input type="date" class="w-full mt-1 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none">
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-500">To</label>
+                <input type="date" class="w-full mt-1 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none">
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-500">City</label>
+                <select class="w-full mt-1 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none">
+                    <option>All Cities</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-500">Category</label>
+                <select class="w-full mt-1 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none">
+                    <option>All Categories</option>
+                </select>
+            </div>
+            <div class="lg:col-span-2 flex items-end gap-3">
+                <button onclick="applyFilters()" 
+                        class="flex-1 bg-indigo-600 text-white py-3 rounded-2xl font-medium hover:bg-indigo-700 transition-all">
+                    Apply Filters
+                </button>
+                <button onclick="resetFilters()" 
+                        class="flex-1 border border-gray-300 py-3 rounded-2xl hover:bg-gray-50 transition-all">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10">
+        <div class="glass rounded-3xl p-6 stat-card">
+            <div class="flex justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Total Customers</p>
+                    <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_customers }}</h2>
+
+                </div>
+                <div class="text-4xl opacity-80">👥</div>
+            </div>
+            <p class="text-emerald-500 text-sm mt-4">↑ 14% this month</p>
+        </div>
+        <div class="glass rounded-3xl p-6 stat-card">
+            <div class="flex justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Total Workers</p>
+                    <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_workers }}</h2>
+
+                </div>
+                <div class="text-4xl opacity-80">👷</div>
+            </div>
+            <p class="text-emerald-500 text-sm mt-4">↑ 9% this month</p>
+        </div>
+        <div class="glass rounded-3xl p-6 stat-card">
+            <div class="flex justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Total Bookings</p>
+                    <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_bookings }}</h2>
+
+                </div>
+                <div class="text-4xl opacity-80">📅</div>
+            </div>
+            <p class="text-emerald-500 text-sm mt-4">↑ 22% this month</p>
+        </div>
+        <div class="glass rounded-3xl p-6 stat-card">
+            <div class="flex justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Total Revenue</p>
+                    <p class="text-4xl font-bold mt-2">₹4.82 Cr</p>
+                </div>
+                <div class="text-4xl opacity-80">₹</div>
+            </div>
+            <p class="text-emerald-500 text-sm mt-4">↑ 31% this month</p>
+        </div>
+        <div class="glass rounded-3xl p-6 stat-card">
+            <div class="flex justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Avg Rating</p>
+                    <p class="text-4xl font-bold mt-2">4.8</p>
+                </div>
+                <div class="text-4xl opacity-80">⭐</div>
+            </div>
+            <p class="text-emerald-500 text-sm mt-4">Excellent</p>
+        </div>
+        <div class="glass rounded-3xl p-6 stat-card">
+            <div class="flex justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Active Workers</p>
+                    <p class="text-4xl font-bold mt-2">2184</p>
+                </div>
+                <div class="text-4xl opacity-80">✅</div>
+            </div>
+            <p class="text-emerald-500 text-sm mt-4">↑ 12% this month</p>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        <div class="bg-white rounded-3xl p-6 shadow">
+            <h3 class="font-semibold mb-4">Monthly Bookings Trend</h3>
+            <div class="chart-container">
+                <canvas id="bookingChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white rounded-3xl p-6 shadow">
+            <h3 class="font-semibold mb-4">Revenue Analytics</h3>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    div class="bg-white rounded-3xl shadow-lg p-6 mt-8">
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Recent Report</h2>
+
+        <a href="/auth/all-customers"
+           class="text-blue-600 hover:underline">
+            View All
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full">
+            <thead>
+                <tr class="border-b text-left text-sm font-semibold text-gray-600">
+                    <th class="py-4 px-3">ID</th>
+                    <th class="py-4 px-3">Customer Name</th>
+                    <th class="py-4 px-3">Phone</th>
+                    <th class="py-4 px-3">City</th>
+                    <th class="py-4 px-3">Address</th>
+                    <th class="py-4 px-3">Pincode</th>
+                    <th class="py-4 px-3">Status</th>
+                    <th class="py-4 px-3 text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+{% for customer in customers %}
+
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+
+    <td class="py-4 px-3">
+        #{{ customer.id }}
+    </td>
+    
+
+   <td class="p-5">{{ customer["first_name"] or "-" }} {{ customer["last_name"] or "" }}</td>
+
+    <td class="py-4 px-3">
+        {{ customer.phone }}
+    </td>
+
+    <td class="py-4 px-3">
+        {{ customer.city }}
+    </td>
+
+    <td class="py-4 px-3">
+        {{ customer.address }}
+    </td>
+
+    <td class="py-4 px-3">
+        {{ customer.pincode }}
+    </td>
+
+    <td class="py-4 px-3">
+
+        {% if customer.status == "Active" %}
+
+        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+            Active
+        </span>
+
+        {% else %}
+
+        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs">
+            Inactive
+        </span>
+
+        {% endif %}
+
+    </td>
+
+    <td class="py-4 px-3 text-center">
+
+        <a href="/auth/customer/{{ customer.id }}"
+           class="text-blue-600 hover:text-blue-800 mr-3">
+            <i class="fas fa-eye"></i>
+        </a>
+
+        <a href="/auth/customer/{{ customer.id }}/edit"
+           class="text-yellow-500 hover:text-yellow-600 mr-3">
+            <i class="fas fa-edit"></i>
+        </a>
+
+        <a href="/auth/customer/{{ customer.id }}/delete"
+           onclick="return confirm('Delete this customer?')"
+           class="text-red-600 hover:text-red-700">
+            <i class="fas fa-trash"></i>
+        </a>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+    // Charts
+    let bookingChart, revenueChart;
+
+    function initCharts() {
+        // Booking Trend
+        const bookingCtx = document.getElementById('bookingChart');
+        bookingChart = new Chart(bookingCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Bookings',
+                    data: [1240, 1890, 2100, 2450, 2780, 3120, 2890],
+                    borderColor: '#4f46e5',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)'
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart');
+        revenueChart = new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Revenue (₹ Lakhs)',
+                    data: [45, 62, 78, 85, 92, 105, 98],
+                    backgroundColor: '#10b981'
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    }
+
+   
+
+    function renderTable() {
+        const tbody = document.getElementById('reportTable');
+        tbody.innerHTML = reports.map(r => `
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-5 font-mono">${r.id}</td>
+                <td class="px-6 py-5">${r.customer}</td>
+                <td class="px-6 py-5">${r.worker}</td>
+                <td class="px-6 py-5">${r.service}</td>
+                <td class="px-6 py-5 font-semibold">${r.amount}</td>
+                <td class="px-6 py-5 text-center">
+                    <span class="px-4 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full">${r.status}</span>
+                </td>
+                <td class="px-6 py-5 text-center">
+                    <button onclick="viewReport('${r.id}')" class="text-blue-600 hover:text-blue-700">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function viewReport(id) {
+        alert(`Viewing detailed report: ${id}`);
+    }
+
+    function exportReport(type) {
+        alert(`Exporting ${type.toUpperCase()} report...`);
+    }
+
+    function applyFilters() {
+        alert("Filters applied successfully!");
+    }
+
+    function refreshDashboard() {
+        location.reload();
+    }
+
+    function filterTable() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#reportTable tr');
+        rows.forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+        });
+    }
+
+    // Initialize
+    window.onload = () => {
+        initCharts();
+        renderTable();
+    };
+</script>
+
+</body>
+</html>

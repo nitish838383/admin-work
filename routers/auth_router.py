@@ -1006,3 +1006,67 @@ def reviews(request: Request):
             "five_star_reviews": 24
         }
     )
+# ------------------------------------------------------------------------------------------------------
+
+@router.get("/report")
+def report(
+    request: Request,
+    db: Session = Depends(get_db)
+    ):
+    
+    try:
+        customers_response = requests.get(
+            "https://mistripoint-backend-1.onrender.com/auth/all-customers",
+            timeout=10
+        )
+        customers_response.raise_for_status()
+
+        data_customers = customers_response.json()
+
+        if isinstance(data_customers, dict):
+            customers = data_customers.get("customers", [])
+        else:
+            customers = data_customers
+
+        total_customers = len(customers)
+
+    except Exception as e:
+        print("Customers API Error:", e)
+        customers = []
+        total_customers = 0
+
+    try:
+        workers_response = requests.get(
+            "https://mistripoint-1.onrender.com/worker-profiles",
+            timeout=10
+        )
+        workers_response.raise_for_status()
+
+        data_workers = workers_response.json()
+
+        if isinstance(data_workers, dict):
+            workers = data_workers.get("data", [])
+        else:
+            workers = data_workers
+
+        total_workers = len(workers)
+
+    except Exception as e:
+        print("Workers API Error:", e)
+        workers = []
+        total_workers = 0
+    return templates.TemplateResponse(
+        name = "report.html",
+        request=request,
+        context={
+            "request":request,
+            
+            "total_customers": total_customers,
+            "total_workers": total_workers,
+            
+            "customers": customers,
+           
+            
+        }
+
+    )
