@@ -3,56 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Customers - 🥈 LabourMitra Admin</title>
+    <title>All Customers - LabourMitra Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
    
     <style>
-        body { font-family: 'Poppins', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
         .table-container {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            max-height: calc(100vh - 280px);
         }
-        .action-btn { transition: all 0.2s; }
-        .action-btn:hover { transform: translateY(-2px); }
+        
+        .action-btn { 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        
+        .action-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
 <div class="p-4 md:p-8 max-w-7xl mx-auto">
 
-    <!-- Enhanced Header with Download Button -->
+    <!-- Enhanced Header with Back Button -->
     <div class="bg-white rounded-3xl shadow-xl p-6 mb-8">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             
-            <!-- Left Side -->
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">All Customers</h1>
-                <p class="text-slate-500">Manage and monitor all registered customers</p>
+            <!-- Left Side with Back Button -->
+            <div class="flex items-center gap-4">
+                <button onclick="goBack()" 
+                        class="flex items-center gap-2 px-5 py-3 text-gray-700 hover:bg-gray-100 rounded-2xl transition-all hover:text-blue-600 font-medium">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+                
+                <div class="h-8 w-px bg-gray-200"></div>
+                
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">All Customers</h1>
+                    <p class="text-slate-500 text-sm">Manage and monitor all registered customers</p>
+                </div>
             </div>
 
             <!-- Right Side - Stats + Download -->
-            <div class="flex flex-col sm:flex-row items-center gap-4">
-                <div class="bg-blue-50 text-blue-700 px-6 py-3 rounded-2xl text-center min-w-[170px]">
+            <div class="flex flex-wrap items-center gap-4">
+                <div class="bg-blue-50 text-blue-700 px-6 py-3 rounded-2xl text-center min-w-[170px] shadow-sm">
                     <p class="text-sm font-medium">Total Customers</p>
-                    <p class="text-3xl font-bold">{{ total_customers }}</p>
+                    <p class="text-3xl font-bold">{{ total_customers | default(124) }}</p>
+                </div>
+                
+                <div class="bg-emerald-600 text-white rounded-2xl p-6 shadow-lg">
+                    <p class="text-sm opacity-90">Active Workers</p>
+                    <h2 class="text-4xl font-bold mt-1">{{ active_workers | default(87) }}</h2>
+                </div>
+                
+                <div class="bg-amber-600 text-white rounded-2xl p-6 shadow-lg">
+                    <p class="text-sm opacity-90">Pending Approval</p>
+                    <h2 class="text-4xl font-bold mt-1">{{ pending_workers | default(19) }}</h2>
                 </div>
 
                 <button onclick="exportToExcel()" 
-                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-7 py-3 rounded-2xl flex items-center gap-3 font-medium shadow-lg transition-all">
-                    <i class="fas fa-download"></i> 
-                    <span>Download Excel</span>
+                        class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl flex items-center gap-3 font-semibold shadow-lg transition-all">
+                    <i class="fas fa-file-excel"></i> 
+                    <span>Export Excel</span>
                 </button>
             </div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="mt-6 max-w-lg">
-            <div class="relative">
+        <!-- Search + Filters -->
+        <div class="mt-8 flex flex-col md:flex-row gap-4">
+            <div class="relative flex-1">
                 <i class="fas fa-search absolute left-5 top-4 text-gray-400"></i>
                 <input type="text" id="searchInput"
-                       class="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:border-blue-500 text-base shadow-sm"
+                       class="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-1 text-base shadow-sm"
                        placeholder="Search customers by name, phone or city...">
+            </div>
+            
+            <div class="flex gap-3">
+                <select id="statusFilter" 
+                        class="px-5 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:border-blue-500 bg-white text-sm font-medium">
+                    <option value="">All Status</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                
+                <button onclick="clearFilters()" 
+                        class="px-6 py-4 border border-gray-200 hover:bg-gray-50 rounded-3xl text-gray-600 font-medium flex items-center gap-2 transition-colors">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
             </div>
         </div>
     </div>
@@ -61,7 +116,7 @@
     <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
         <div class="table-container">
             <table class="w-full min-w-[1100px]" id="customerTable">
-                <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white sticky top-0">
+                <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
                     <tr>
                         <th class="p-5 text-left">ID</th>
                         <th class="p-5 text-left">Customer Name</th>
@@ -75,7 +130,7 @@
                 </thead>
                 <tbody class="divide-y" id="tableBody">
                     {% for customer in customers %}
-                    <tr class="hover:bg-slate-50 transition-all" id="row-{{ customer['id'] }}">
+                    <tr class="hover:bg-slate-50 transition-all group" id="row-{{ customer['id'] }}">
                         <td class="p-5 font-medium">{{ customer["id"] }}</td>
                         <td class="p-5">{{ customer["first_name"] or "-" }} {{ customer["last_name"] or "" }}</td>
                         <td class="p-5">{{ customer["phone"] }}</td>
@@ -84,22 +139,35 @@
                         <td class="p-5">{{ customer["pincode"] or "-" }}</td>
                         <td class="p-5 text-center">
                             {% if customer["status"] == "Approved" %}
-                                <span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">Approved</span>
+                                <span class="inline-flex items-center bg-green-100 text-green-700 px-5 py-1.5 rounded-full text-sm font-medium">
+                                    <i class="fas fa-check-circle mr-1"></i> Approved
+                                </span>
                             {% elif customer["status"] == "Rejected" %}
-                                <span class="bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">Rejected</span>
+                                <span class="inline-flex items-center bg-red-100 text-red-700 px-5 py-1.5 rounded-full text-sm font-medium">
+                                    <i class="fas fa-times-circle mr-1"></i> Rejected
+                                </span>
                             {% else %}
-                                <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium">Pending</span>
+                                <span class="inline-flex items-center bg-amber-100 text-amber-700 px-5 py-1.5 rounded-full text-sm font-medium">
+                                    <i class="fas fa-clock mr-1"></i> Pending
+                                </span>
                             {% endif %}
                         </td>
-                        <td class="p-5 text-center space-x-2">
-                            <a href="/auth/customer_approved/{{ customer['id'] }}/approve" class="action-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-sm">Approve</a>
-                            <a href="/auth/customer_rejected/{{ customer['id'] }}/reject" class="action-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Reject</a>
-                            <button onclick="editCustomer({{ customer['id'] }})" class="action-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-edit"></i></button>
-                            <a href="/auth/customer_delete/{{ customer['id'] }}/delete"
-                            onclick="return confirm('Delete this customer?')"
-                            class="action-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm">
-                            <i class="fas fa-trash"></i>
-                        </a>
+                        <td class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="/auth/customer_approved/{{ customer['id'] }}/approve" 
+                                   class="action-btn bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl text-sm">Approve</a>
+                                <a href="/auth/customer_rejected/{{ customer['id'] }}/reject" 
+                                   class="action-btn bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-2xl text-sm">Reject</a>
+                                <button onclick="editCustomer({{ customer['id'] }})" 
+                                        class="action-btn bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-2xl text-sm">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <a href="/auth/customer_delete/{{ customer['id'] }}/delete"
+                                   onclick="return confirm('Delete this customer? This action cannot be undone.')"
+                                   class="action-btn bg-slate-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-2xl text-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -110,27 +178,45 @@
 </div>
 
 <script>
-    // Search Functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        const term = this.value.toLowerCase();
+    // Search + Status Filter
+    function filterTable() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const statusFilter = document.getElementById('statusFilter').value;
+        
         const rows = document.querySelectorAll('#tableBody tr');
+        
         rows.forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+            const rowText = row.textContent.toLowerCase();
+            const statusCell = row.querySelector('td:nth-child(7)').textContent.trim();
+            
+            const matchesSearch = rowText.includes(searchTerm);
+            const matchesStatus = !statusFilter || statusCell.includes(statusFilter);
+            
+            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
         });
-    });
+    }
 
-    // Download Excel Function
+    document.getElementById('searchInput').addEventListener('keyup', filterTable);
+    document.getElementById('statusFilter').addEventListener('change', filterTable);
+
+    function clearFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('statusFilter').value = '';
+        filterTable();
+    }
+
+    // Export to Excel (CSV)
     function exportToExcel() {
         const table = document.getElementById("customerTable");
-        let csvContent = "data:text/csv;charset=utf-8,";
+        let csvContent = "\uFEFFdata:text/csv;charset=utf-8,";
 
         const rows = table.querySelectorAll("tr");
         rows.forEach(row => {
             const cols = row.querySelectorAll("td, th");
             const rowData = [];
             cols.forEach(col => {
-                let text = col.textContent.trim().replace(/,/g, "");
-                rowData.push(text);
+                let text = col.textContent.trim().replace(/,/g, " ").replace(/"/g, '""');
+                rowData.push(`"${text}"`);
             });
             csvContent += rowData.join(",") + "\n";
         });
@@ -138,15 +224,34 @@
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "customers_data.csv");
+        link.setAttribute("download", `customers_export_${new Date().toISOString().slice(0,10)}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
     function editCustomer(id) {
-        alert(`Editing Customer ID: ${id}`);
+        if (confirm(`Edit Customer ID: ${id}?`)) {
+            window.location.href = `/auth/customer_edit/${id}`;
+        }
     }
+
+    // Back Button Function
+    function goBack() {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = '/dashboard';   // Change this to your actual dashboard URL
+        }
+    }
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "/" && document.getElementById('searchInput') !== document.activeElement) {
+            e.preventDefault();
+            document.getElementById('searchInput').focus();
+        }
+    });
 </script>
 
 </body>

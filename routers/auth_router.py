@@ -514,9 +514,8 @@ def reject_worker(
 
 # __________________________________________________________________________________________________________________________________________
 
-# worker delete
-@router.get("/worker/{worker_id}/delete")
-def delete_worker(
+@router.get("/worker/{worker_id}/active")
+def active_worker(
     worker_id: int,
     db: Session = Depends(get_db)
 ):
@@ -525,7 +524,7 @@ def delete_worker(
     ).first()
 
     if worker:
-        db.delete(worker)
+        worker.status = "Active"
         db.commit()
 
     return RedirectResponse(
@@ -537,33 +536,23 @@ def delete_worker(
 
 # worker edit
 
-@router.post("/worker/{worker_id}/edit")
-def edit_worker(
+@router.get("/worker/{worker_id}/inactive")
+def inactive_worker(
     worker_id: int,
-    name: str = Form(...),
-    mobile: str = Form(...),
-    email: str = Form(...),
-    skills: str = Form(...),
-    experience_years: int = Form(...),
     db: Session = Depends(get_db)
 ):
     worker = db.query(Worker).filter(
         Worker.id == worker_id
     ).first()
 
-    worker.name = name
-    worker.mobile = mobile
-    worker.email = email
-    worker.skills = skills
-    worker.experience_years = experience_years
-
-    db.commit()
+    if worker:
+        worker.status = "Inactive"
+        db.commit()
 
     return RedirectResponse(
         url="/auth/worker-admin",
         status_code=303
     )
-
 # __________________________________________________________________________________________________________________________________________
 # users detail
 

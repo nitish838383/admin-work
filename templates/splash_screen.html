@@ -3,167 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MistriPoint - Loading</title>
+    <title>Loading | LabourMitra Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
         
-        .runner {
-            animation: run 0.7s steps(4) infinite;
-            font-size: 5.5rem;
+        .splash-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #4338ca 50%, #6d28d9 100%);
         }
         
-        @keyframes run {
-            0% { transform: translateX(-25px); }
-            100% { transform: translateX(25px); }
+        .glass-circle {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 60px rgba(255,255,255,0.2);
         }
         
         .progress-bar {
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 20px #facc15;
+            transition: width 2.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
         .particle {
             position: absolute;
-            background: #facc15;
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            opacity: 0.6;
-            animation: particleFloat 4s linear infinite;
+            animation: float 15s infinite linear;
         }
         
-        @keyframes particleFloat {
-            0% { transform: translateY(100vh) scale(0.6); opacity: 0.7; }
-            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            100% { transform: translateY(-100vh) scale(1.2); opacity: 0.6; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-zinc-900 to-black text-white overflow-hidden flex items-center justify-center min-h-screen relative">
+<body class="splash-bg min-h-screen flex items-center justify-center overflow-hidden relative">
 
     <!-- Background Particles -->
-    <div id="particles" class="absolute inset-0 pointer-events-none"></div>
+    <div id="particles" class="absolute inset-0 overflow-hidden"></div>
 
-    <div class="text-center px-6 w-full max-w-md z-10">
-        <!-- Cartoon Runner -->
+    <div class="text-center z-10 px-6">
+        <!-- Logo -->
         <div class="flex justify-center mb-8">
-            <div class="relative w-40 h-40 flex items-center justify-center">
-                <div id="runner" class="runner">🏃‍♂️</div>
-                <div class="absolute -bottom-2 text-yellow-400 text-3xl animate-bounce">💨</div>
+            <div class="glass-circle w-32 h-32 rounded-full flex items-center justify-center pulse">
+                <span class="text-7xl">👷</span>
             </div>
         </div>
 
-        <h1 class="text-5xl sm:text-6xl font-black tracking-tighter">MISTRIPOINT</h1>
-        <p class="text-amber-400 text-lg sm:text-xl mt-2">Worker Booking Platform</p>
+        <!-- Title -->
+        <h1 class="text-5xl md:text-6xl font-bold text-white tracking-tighter mb-3">
+            LabourMitra
+        </h1>
+        <p class="text-white/80 text-lg md:text-xl mb-12 max-w-md mx-auto">
+            Connecting Skilled Workers with Customers
+        </p>
 
-        <!-- Progress -->
-        <div class="mt-16 w-full max-w-xs mx-auto">
-            <div class="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                <div id="progress-bar" class="progress-bar h-2 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 rounded-full"></div>
-            </div>
-            <div class="flex justify-between text-sm mt-4 text-zinc-400">
-                <span id="status">Initializing...</span>
-                <span id="percent">0%</span>
-            </div>
+        <!-- Loading Text -->
+        <div class="flex items-center justify-center gap-3 mb-6 text-white/90">
+            <span class="text-sm font-medium">Loading Dashboard</span>
+            <span id="loading-dots" class="text-xl">.</span>
         </div>
 
-        <p class="text-zinc-500 mt-12 text-sm">Please wait while we prepare your admin portal</p>
+        <!-- Progress Container -->
+        <div class="max-w-xs mx-auto">
+            <div class="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div id="progressBar" 
+                     class="progress-bar h-full bg-gradient-to-r from-white to-cyan-300 w-0 rounded-full"></div>
+            </div>
+            
+            <!-- Percentage -->
+            <div class="flex justify-between text-white/70 text-sm font-medium mt-3">
+                <span>0%</span>
+                <span id="percentage">0%</span>
+            </div>
+        </div>
     </div>
 
-    <script>
-        let progress = 0;
-        const progressBar = document.getElementById('progress-bar');
-        const percentEl = document.getElementById('percent');
-        const statusEl = document.getElementById('status');
-        const runner = document.getElementById('runner');
+<script>
+    let progress = 0;
+    const progressBar = document.getElementById('progressBar');
+    const percentageText = document.getElementById('percentage');
+    const loadingDots = document.getElementById('loading-dots');
 
-        const statusMessages = [
-            "Initializing...",
-            "Connecting to Server...",
-            "Loading Customers...",
-            "Loading Workers...",
-            "Loading Bookings...",
-            "Loading Notifications...",
-            "Preparing Dashboard...",
-            "Almost Ready..."
-        ];
-
-        let messageIndex = 0;
-        let lastSpeed = 0;
-
-        const stages = [4, 9, 15, 23, 35, 48, 61, 74, 82, 89, 93, 95];
-        let stageIndex = 0;
-
-        const interval = setInterval(() => {
-            // Gradual increase
-            if (stageIndex < stages.length) {
-                const target = stages[stageIndex];
-                if (progress < target) {
-                    progress += Math.random() * 3 + 1.5;
-                } else {
-                    stageIndex++;
-                }
-            } else {
-                progress += Math.random() * 1.2; // Very slow after 95%
-            }
-
-            if (progress > 95) progress = 95;
-
-            progressBar.style.width = `${progress}%`;
-            percentEl.textContent = `${Math.floor(progress)}%`;
-
-            // Dynamic runner speed
-            const speed = Math.min(1.8, 0.7 + (progress / 70));
-            if (Math.abs(speed - lastSpeed) > 0.1) {
-                runner.style.animationDuration = `${speed}s`;
-                lastSpeed = speed;
-            }
-
-            // Status message change
-            if (Math.random() > 0.88) {
-                messageIndex = (messageIndex + 1) % statusMessages.length;
-                statusEl.textContent = statusMessages[messageIndex];
-            }
-
-            // Final push to 100%
-            if (progress >= 95 && Math.random() > 0.7) {
-                clearInterval(interval);
-                progress = 100;
-                progressBar.style.width = "100%";
-                percentEl.textContent = "100%";
-                statusEl.textContent = "Launching Dashboard...";
-
-                setTimeout(() => {
-                    window.location.href = "/auth/dashboard";
-                }, 600);
-            }
-        }, 90);
-
-        // Floating Particles
-        function createParticle() {
+    // Create floating particles
+    function createParticles() {
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
+            
             const size = Math.random() * 6 + 3;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
             particle.style.left = `${Math.random() * 100}vw`;
-            particle.style.bottom = `-20px`;
-            particle.style.opacity = Math.random() * 0.6 + 0.3;
+            particle.style.animationDuration = `${Math.random() * 12 + 8}s`;
+            particle.style.animationDelay = `-${Math.random() * 10}s`;
+            particle.style.opacity = Math.random() * 0.5 + 0.2;
             
-            document.getElementById('particles').appendChild(particle);
-            
-            setTimeout(() => {
-                particle.style.transition = 'all 4s linear';
-                particle.style.transform = `translateY(-${window.innerHeight + 100}px)`;
-                particle.style.opacity = '0';
-            }, 50);
-            
-            setTimeout(() => particle.remove(), 4500);
+            container.appendChild(particle);
         }
+    }
 
-        setInterval(createParticle, 40);
-    </script>
+    // Animate loading dots
+    let dots = 0;
+    setInterval(() => {
+        dots = (dots + 1) % 4;
+        loadingDots.textContent = '.'.repeat(dots);
+    }, 400);
+
+    // Progress Animation
+    function startLoading() {
+        const interval = setInterval(() => {
+            progress += Math.random() * 6 + 3;
+            
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                
+                // Fade out and redirect
+                setTimeout(() => {
+                    document.body.style.transition = 'opacity 0.8s';
+                    document.body.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        window.location.href = "/auth/dashboard"; // Change to your login page
+                    }, 800);
+                }, 600);
+            }
+            
+            progressBar.style.width = `${progress}%`;
+            percentageText.textContent = `${Math.floor(progress)}%`;
+        }, 60);
+    }
+
+    // Initialize
+    window.onload = function() {
+        createParticles();
+        startLoading();
+    };
+</script>
+
 </body>
 </html>
