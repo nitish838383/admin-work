@@ -443,7 +443,9 @@ def worker_register(
 
     # ------------------------------------------------------------------------------------------------------------
 
-# get worker-admin
+# ==========================================
+# Worker Admin Page
+# ==========================================
 from models import Worker
 @router.get("/worker-admin")
 def worker_admin_page(
@@ -454,57 +456,65 @@ def worker_admin_page(
         "https://mistripoint-1.onrender.com/worker-profiles"
     )
 
-    data = response.json()
-
-    workers = data          
-    total_workers = len(workers)
+    workers = response.json()
 
     return templates.TemplateResponse(
         request=request,
         name="worker_admin.html",
         context={
-            "request":request,
+        
+            "request": request,
             "workers": workers,
-            "total_workers": total_workers
+            "total_workers": len(workers)
         }
     )
 
-# _____________________________________________________________________________________________________________________________________
 
-# -worker approved
+# ==========================================
+# Approve Worker
+# ==========================================
+
 @router.get("/worker/{worker_id}/approve")
 def approve_worker(
     worker_id: int,
     db: Session = Depends(get_db)
 ):
-    worker = db.query(Worker).filter(
-        Worker.id == worker_id
-    ).first()
 
-    if worker:
-        worker.status = "Approved"
-        db.commit()
+    response = requests.put(
+        f"https://mistripoint-1.onrender.com/admin/worker-profile/approve/{worker_id}",
+        
+    )
+    print(response.status_code, response.text)
+
+
+  
+
+    
 
     return RedirectResponse(
         url="/auth/worker-admin",
         status_code=303
     )
 
-# _____________________________________________________________________________________________________________________________________________
 
-# worker reject
+# ==========================================
+# Reject Worker
+# ==========================================
+
 @router.get("/worker/{worker_id}/reject")
 def reject_worker(
     worker_id: int,
     db: Session = Depends(get_db)
 ):
-    worker = db.query(Worker).filter(
-        Worker.id == worker_id
-    ).first()
 
-    if worker:
-        worker.status = "Rejected"
-        db.commit()
+    response = requests.put(
+        f"https://mistripoint-1.onrender.com/admin/worker-profile/reject/{worker_id}",
+        
+    )
+    print(response.status_code, response.text)
+
+
+    
 
     return RedirectResponse(
         url="/auth/worker-admin",
@@ -879,25 +889,25 @@ def kyc_admin(
 @router.get("/kyc/{worker_id}/approve")
 def approve_kyc(worker_id: int):
 
-    requests.put(
-        f"https://mistripoint-1.onrender.com/kyc/{worker_id}/approve"
+    response = requests.put(
+        f"https://mistripoint-1.onrender.com/admin/worker-kyc/approve/{worker_id}"
     )
 
-    return RedirectResponse(
-        "/auth/kyc-admin",
-        status_code=302
-    )
+    print(response.status_code, response.text)
+
+    return RedirectResponse("/auth/kyc-admin", status_code=302)
+
+
 @router.get("/kyc/{worker_id}/reject")
 def reject_kyc(worker_id: int):
 
-    requests.put(
-        f"https://mistripoint-1.onrender.com/kyc/{worker_id}/reject"
+    response = requests.put(
+        f"https://mistripoint-1.onrender.com/admin/worker-kyc/reject/{worker_id}"
     )
 
-    return RedirectResponse(
-        "/auth/kyc-admin",
-        status_code=302
-    )
+    print(response.status_code, response.text)
+
+    return RedirectResponse("/auth/kyc-admin", status_code=302)
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------
@@ -1069,4 +1079,17 @@ def report(
             
         }
 
+    )
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+@router.get("/setting")
+def setting(request:Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="setting.html",
+        context={
+            "request":request,
+
+        }
     )

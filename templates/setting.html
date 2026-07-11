@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabourMitra Admin Panel - Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #dbeafe 100%);
+            color: #333;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="flex flex-col lg:flex-row">
+        <nav class="lg:w-64 bg-white p-6 shadow-lg space-y-4 lg:fixed lg:top-0 lg:left-0 lg:h-full lg:overflow-y-auto">
+            <h1 class="text-2xl font-bold text-blue-600 mb-8">LabourMitra Panel</h1>
+            <a href="#" class="block px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"><i class="fas fa-home mr-3">3</i> Dashboard</a>
+            <a href="#" class="block px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"><i class="fas fa-users mr-3">1</i> Workers</a>
+            <a href="#" class="block px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"><i class="fas fa-calendar-check mr-3"></i> Bookings</a>
+            <a href="#" class="block px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"><i class="fas fa-cog mr-3"></i> Settings</a>
+        </nav>
+
+        <main class="flex-1 p-6 lg:ml-64">
+            <header class="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-4">
+                <h2 class="text-3xl font-bold">Settings</h2>
+                <div class="flex items-center gap-2">
+                    <button class="bg-blue-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-blue-600 transition shadow">Save Changes</button>
+                    <button class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-full text-sm hover:bg-gray-300 transition">Reset to Default</button>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <section class="glass-card p-8">
+                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-3"><i class="fas fa-user-circle text-blue-500"></i> Admin Profile</h3>
+                    <div class="flex items-center gap-5 mb-6">
+                        <img src="https://via.placeholder.com/100" alt="Profile Picture" class="w-20 h-20 rounded-full border-4 border-blue-100 object-cover">
+                        <div>
+                            <button class="bg-white text-gray-700 border border-gray-300 px-4 py-1.5 rounded-full text-xs hover:bg-gray-50 mb-1.5 transition">Change Photo</button>
+                            <p class="text-xs text-gray-500">JPG, PNG, GIF. Max 5MB</p>
+                        </div>
+                    </div>
+                    <form class="space-y-4">
+                        <input type="text" placeholder="Full Name" value="" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-300 focus:ring-blue-300 bg-white/50">
+                        <input type="email" placeholder="Email Address" value="" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-300 focus:ring-blue-300 bg-white/50">
+                        <input type="tel" placeholder="Mobile Number" value="" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-300 focus:ring-blue-300 bg-white/50">
+                        <p class="text-sm">Role: <span class="font-semibold text-blue-600"></span></p>
+                    </form>
+                </section>
+
+                <section class="glass-card p-8">
+                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-3"><i class="fas fa-lock text-blue-500"></i> Account Settings</h3>
+                    <div class="space-y-3 text-sm text-gray-700">
+                        <a href="#" class="block hover:text-blue-600 transition">Change Email</a>
+                        <a href="#" class="block hover:text-blue-600 transition">Change Username</a>
+                        <a href="#" class="block hover:text-blue-600 transition">Change Password</a>
+                        <div class="flex items-center justify-between gap-3 pt-1">
+                            <span>Two-Factor Authentication</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <a href="#" class="block hover:text-blue-600 transition">Login Activity</a>
+                        <p>Active Sessions: <span class="font-medium text-gray-900"></span></p>
+                        <button class="bg-red-100 text-red-600 px-4 py-1.5 rounded-full text-xs font-semibold hover:bg-red-200 transition">Logout from All Devices</button>
+                    </div>
+                </section>
+
+                <section class="glass-card p-8">
+                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-3"><i class="fas fa-bell text-blue-500"></i> Notification Settings</h3>
+                    <div class="space-y-4 text-sm text-gray-700">
+                        <div class="flex items-center justify-between gap-3">
+                            <span>Email Notifications</span>
+                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <span>SMS Notifications</span>
+                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <span>Booking Alerts</span>
+                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <span>Worker Registration Alerts</span>
+                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <span>Payment Alerts</span>
+                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                </section>
+
+                </div> </main>
+    </div>
+
+</body>
+</html>

@@ -29,7 +29,6 @@
         }
         .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
     </style>
 </head>
@@ -53,10 +52,6 @@
                 <i class="fas fa-briefcase w-5"></i>
                 <span>Workers</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-blue-700 transition-colors">
-                <i class="fas fa-chart-bar w-5"></i>
-                <span>Analytics</span>
-            </a>
         </nav>
     </div>
 
@@ -66,27 +61,12 @@
         <!-- Top Bar -->
         <div class="bg-white shadow-sm border-b p-5 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-4">
-                <!-- Back Button -->
-                <button onclick="goBack()" 
-                        class="flex items-center gap-2 px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-2xl transition-all hover:text-blue-600">
+                <button onclick="goBack()" class="flex items-center gap-2 px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-2xl">
                     <i class="fas fa-arrow-left"></i>
-                    <span class="font-medium">Back</span>
+                    <span>Back</span>
                 </button>
-
-                <div class="h-6 w-px bg-gray-300"></div>
-
-                <button onclick="toggleSidebar()" class="md:hidden text-3xl text-gray-600">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
                 <h1 class="text-2xl font-bold text-gray-800">Worker Management</h1>
             </div>
-           
-            <a href="/auth/register"
-               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2 font-medium transition-all active:scale-95">
-                <i class="fas fa-plus"></i>
-                <span>Add New Worker</span>
-            </a>
         </div>
 
         <div class="p-6">
@@ -106,77 +86,74 @@
                 </div>
             </div>
 
-            <!-- Search & Filters -->
-            <div class="flex flex-col lg:flex-row gap-4 mb-6">
+            <!-- Filters + Export -->
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
                 <div class="relative flex-1">
                     <i class="fas fa-search absolute left-5 top-4 text-gray-400"></i>
-                    <input type="text" id="searchInput"
-                           placeholder="Search by name, mobile, email or skill..."
-                           class="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-1 text-base">
+                    <input type="text" id="searchInput" placeholder="Search by name, mobile or skill..."
+                           class="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500">
                 </div>
-               
-                <select id="statusFilter"
-                        class="px-6 py-4 border border-gray-300 rounded-3xl focus:outline-none bg-white">
+                
+                <!-- All Status Dropdown -->
+                <select id="statusFilter" 
+                        class="px-6 py-4 border border-gray-300 rounded-3xl focus:outline-none bg-white text-sm font-medium">
                     <option value="">All Status</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
                     <option value="Pending">Pending</option>
                 </select>
-                
-                <button onclick="exportToExcel()"
+
+                <!-- Export Excel Button -->
+                <button onclick="exportToExcel()" 
                         class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-3xl flex items-center gap-3 font-semibold shadow-lg transition-all">
                     <i class="fas fa-file-excel"></i>
                     <span>Export Excel</span>
                 </button>
             </div>
 
-            <!-- Workers Table -->
+            <!-- Table -->
             <div class="bg-white rounded-3xl shadow table-wrapper">
                 <table class="w-full min-w-[1000px]">
                     <thead>
                         <tr class="border-b">
-                            <th class="px-6 py-5 text-left text-sm font-semibold text-gray-600">ID</th>
-                            <th class="px-6 py-5 text-left text-sm font-semibold text-gray-600">Name</th>
-                            <th class="px-6 py-5 text-left text-sm font-semibold text-gray-600">Mobile</th>
-                            <th class="px-6 py-5 text-left text-sm font-semibold text-gray-600">Email</th>
-                            <th class="px-6 py-5 text-left text-sm font-semibold text-gray-600">Skill</th>
-                            <th class="px-6 py-5 text-left text-sm font-semibold text-gray-600">Experience</th>
-                            <th class="px-6 py-5 text-left text-sm font-semibold text-gray-600">Status</th>
-                            <th class="px-6 py-5 text-center text-sm font-semibold text-gray-600">Actions</th>
+                            <th class="px-6 py-5 text-left">ID</th>
+                            <th class="px-6 py-5 text-left">Name</th>
+                            <th class="px-6 py-5 text-left">Mobile</th>
+                            <th class="px-6 py-5 text-left">Email</th>
+                            <th class="px-6 py-5 text-left">Skill</th>
+                            <th class="px-6 py-5 text-left">Experience</th>
+                            <th class="px-6 py-5 text-center">Status</th>
+                            <th class="px-6 py-5 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100" id="tableBody">
-                        {% for w in workers %}
-                        <tr class="hover:bg-slate-50 transition-all group">
-                            <td class="px-6 py-5 font-mono text-slate-500">{{ w.id }}</td>
-                            <td class="px-6 py-5 font-semibold text-gray-800">{{ w.name }}</td>
-                            <td class="px-6 py-5">{{ w.mobile }}</td>
-                            <td class="px-6 py-5 text-gray-600">{{ w.email or '-' }}</td>
-                            <td class="px-6 py-5">{{ w.skills }}</td>
-                            <td class="px-6 py-5">{{ w.experience_years }} years</td>
-                            <td class="px-6 py-5">
-                                {% if w.status == 'Active' %}
-                                    <span class="px-5 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">Active</span>
-                                {% elif w.status == 'Pending' %}
-                                    <span class="px-5 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">Pending</span>
+                        {% for worker in workers %}
+                        <tr class="hover:bg-slate-50 transition-all">
+                            <td class="px-6 py-5">{{ worker.id }}</td>
+                            <td class="px-6 py-5 font-semibold">{{ worker.name }}</td>
+                            <td class="px-6 py-5">{{ worker.mobile }}</td>
+                            <td class="px-6 py-5">{{ worker.email or '-' }}</td>
+                            <td class="px-6 py-5">{{ worker.skills }}</td>
+                            <td class="px-6 py-5">{{ worker.experience_years }} yrs</td>
+                            <td class="px-6 py-5 text-center">
+                                {% if worker.profile_status == 'Approved' %}
+                                    <span class="px-5 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">Approved</span>
+                                {% elif worker.profile_status == 'Rejected' %}
+                                    <span class="px-5 py-1.5 bg-red-100 text-red-700 rounded-full text-sm font-medium">Rejected</span>
                                 {% else %}
-                                    <span class="px-5 py-1.5 bg-red-100 text-red-700 rounded-full text-sm font-medium">Inactive</span>
+                                    <span class="px-5 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">Pending</span>
                                 {% endif %}
                             </td>
                             <td class="px-6 py-5 text-center">
-                                <div class="flex justify-center gap-2">
-                                    <a href="/auth/worker/{{ w.id }}/active"
-                                       class="action-btn px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-2xl">
-                                        Activate
+                                <div class="flex justify-center gap-3">
+                                    <a href="/auth/worker/{{ worker.id }}/approve" 
+                                       class="action-btn px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-2xl">
+                                        Approve
                                     </a>
-                                    <a href="/auth/worker/{{ w.id }}/inactive"
-                                       class="action-btn px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-2xl">
-                                        Deactivate
+                                    <a href="/auth/worker/{{ worker.id }}/reject" 
+                                       class="action-btn px-6 py-3 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-2xl">
+                                        Reject
                                     </a>
-                                    <button onclick="editWorker({{ w.id }})"
-                                            class="action-btn px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -189,20 +166,20 @@
 </div>
 
 <script>
-    // Search + Filter
+    // Search + Filter (Fixed)
     function filterTable() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
         const statusFilter = document.getElementById('statusFilter').value;
-       
+        
         const rows = document.querySelectorAll('#tableBody tr');
-       
+        
         rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
+            const rowText = row.textContent.toLowerCase();
             const statusCell = row.querySelector('td:nth-child(7)').textContent.trim();
-           
-            const matchesSearch = text.includes(searchTerm);
-            const matchesStatus = !statusFilter || statusCell.includes(statusFilter);
-           
+            
+            const matchesSearch = rowText.includes(searchTerm);
+            const matchesStatus = !statusFilter || statusCell === statusFilter;
+            
             row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
         });
     }
@@ -210,57 +187,13 @@
     document.getElementById('searchInput').addEventListener('keyup', filterTable);
     document.getElementById('statusFilter').addEventListener('change', filterTable);
 
-    // Export Function
     function exportToExcel() {
-        const table = document.querySelector('table');
-        let csvContent = "\uFEFFdata:text/csv;charset=utf-8,";
-       
-        const rows = table.querySelectorAll("tr");
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td, th");
-            const rowData = [];
-            cols.forEach(col => {
-                let text = col.textContent.trim().replace(/,/g, " ").replace(/"/g, '""');
-                rowData.push(`"${text}"`);
-            });
-            csvContent += rowData.join(",") + "\n";
-        });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `workers_export_${new Date().toISOString().slice(0,10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        alert("Exporting Excel file...");
     }
 
-    function editWorker(id) {
-        if (confirm(`Edit worker ID: ${id}?`)) {
-            window.location.href = `/auth/worker/edit/${id}`;
-        }
-    }
-
-    // Back Button Function
     function goBack() {
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            window.location.href = '/dashboard'; // Change this to your actual dashboard/home URL
-        }
+        window.history.back();
     }
-
-    function toggleSidebar() {
-        alert("Mobile sidebar toggle - You can expand this into a full mobile menu if needed.");
-    }
-
-    // Keyboard shortcut: Press '/' to focus search
-    document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.getElementById('searchInput') !== document.activeElement) {
-            e.preventDefault();
-            document.getElementById('searchInput').focus();
-        }
-    });
 </script>
 
 </body>
