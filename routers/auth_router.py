@@ -318,7 +318,7 @@ def forgot_password(
 import os
 import requests
 
-BREVO_API_KEY = os.getenv("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")
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
 async def send_otp_email(email: str, otp: str):
 
