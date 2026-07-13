@@ -3,164 +3,893 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabourMitra Admin Panel - Settings</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Settings - MistriPoint Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f4f8 0%, #dbeafe 100%);
-            color: #333;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: 234 179 8;
+        }
+        
+        .tail-container {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        .nav-link {
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        .nav-link.active {
+            background-color: rgb(234 179 8);
+            color: black;
+            border-radius: 9999px;
         }
 
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
+        .section-header {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+        .toast {
+            animation: slideUp 0.3s ease forwards;
         }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 34px;
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
+        .modal {
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        input:checked + .slider {
-            background-color: #3b82f6;
+        @keyframes modalPop {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
-        input:checked + .slider:before {
-            transform: translateX(24px);
+        .input-focus {
+            transition: all 0.2s ease;
+        }
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgb(234 179 8 / 0.2);
+        }
+        /* Mobile Sidebar */
+        .mobile-sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .mobile-sidebar.open {
+            transform: translateX(0);
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="tail-container bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen">
 
-    <div class="flex flex-col lg:flex-row">
-        <nav class="lg:w-64 bg-white p-6 shadow-lg space-y-4 lg:fixed lg:top-0 lg:left-0 lg:h-full lg:overflow-y-auto">
-            <h1 class="text-2xl font-bold text-blue-600 mb-8">LabourMitra Panel</h1>
-            <a href="#" class="block px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"><i class="fas fa-home mr-3">3</i> Dashboard</a>
-            <a href="#" class="block px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"><i class="fas fa-users mr-3">1</i> Workers</a>
-            <a href="#" class="block px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"><i class="fas fa-calendar-check mr-3"></i> Bookings</a>
-            <a href="#" class="block px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"><i class="fas fa-cog mr-3"></i> Settings</a>
-        </nav>
+    <div class="flex h-screen overflow-hidden">
+        <!-- MOBILE OVERLAY -->
+        <div id="mobile-overlay" onclick="toggleMobileSidebar()" 
+             class="hidden fixed inset-0 bg-black/60 z-40 lg:hidden"></div>
 
-        <main class="flex-1 p-6 lg:ml-64">
-            <header class="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-4">
-                <h2 class="text-3xl font-bold">Settings</h2>
-                <div class="flex items-center gap-2">
-                    <button class="bg-blue-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-blue-600 transition shadow">Save Changes</button>
-                    <button class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-full text-sm hover:bg-gray-300 transition">Reset to Default</button>
+        <!-- SIDEBAR -->
+        <div id="sidebar" 
+             class="w-72 lg:w-64 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col fixed lg:static h-full z-50 mobile-sidebar lg:translate-x-0 shadow-2xl lg:shadow-none overflow-hidden">
+            
+            <!-- Logo -->
+            <div class="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-x-3">
+                <div class="w-9 h-9 bg-yellow-400 rounded-2xl flex items-center justify-center text-zinc-900 font-bold text-2xl logo-font">M</div>
+                <div>
+                    <span class="font-semibold tracking-tighter text-3xl logo-font">mistri</span>
+                    <span class="text-yellow-500 font-semibold tracking-tighter text-3xl logo-font">point</span>
+                </div>
+            </div>
+            
+            <!-- Main Nav -->
+            <div class="px-3 py-6 flex-1 overflow-y-auto">
+                <nav class="space-y-1">
+                    <a href="#" onclick="navigateTo('dashboard')" class="nav-link flex items-center gap-x-3 px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl">
+                        <i class="fa-solid fa-house w-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-link flex items-center gap-x-3 px-4 py-3 text-sm font-medium bg-yellow-400 text-zinc-900 rounded-3xl">
+                        <i class="fa-solid fa-cog w-5"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" onclick="navigateTo('users')" class="nav-link flex items-center gap-x-3 px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl">
+                        <i class="fa-solid fa-users w-5"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="#" class="nav-link flex items-center gap-x-3 px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl">
+                        <i class="fa-solid fa-briefcase w-5"></i>
+                        <span>Workers</span>
+                    </a>
+                    <a href="#" class="nav-link flex items-center gap-x-3 px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl">
+                        <i class="fa-solid fa-calendar w-5"></i>
+                        <span>Bookings</span>
+                    </a>
+                </nav>
+
+                <!-- Settings Categories -->
+                <div class="mt-10 px-4">
+                    <div class="text-xs font-semibold tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">SETTINGS</div>
+                    <div id="settings-nav" class="space-y-1 text-sm">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-zinc-200 dark:border-zinc-800">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-9 h-9 bg-zinc-200 dark:bg-zinc-700 rounded-2xl overflow-hidden">
+                        <img src="https://picsum.photos/id/64/128/128" alt="Admin" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold text-sm">Rahul Sharma</div>
+                        <div class="text-xs text-zinc-500">Super Admin</div>
+                    </div>
+                    <button onclick="logout()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-colors">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- TOPBAR -->
+            <header class="h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-8 flex items-center justify-between">
+                <div class="flex items-center gap-x-8">
+                    <div class="flex items-center gap-x-2">
+                        <button onclick="toggleSidebar()" class="lg:hidden w-9 h-9 flex items-center justify-center text-2xl text-zinc-400">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <div>
+                            <h1 class="text-2xl font-semibold tracking-tight section-header">Admin Settings</h1>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden md:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-3xl px-4 py-2 text-sm w-80">
+                        <i class="fa-solid fa-magnifying-glass text-zinc-400"></i>
+                        <input id="search-input" 
+                               onkeyup="filterSettings()"
+                               type="text" 
+                               placeholder="Search settings..." 
+                               class="flex-1 ml-3 bg-transparent outline-none text-sm">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-x-6">
+                    <button onclick="toggleDarkMode()" class="w-9 h-9 flex items-center justify-center text-xl text-zinc-400 hover:text-yellow-500 transition-colors">
+                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                    </button>
+                    
+                    <div class="relative">
+                        <button class="w-9 h-9 flex items-center justify-center text-xl text-zinc-400 hover:text-yellow-500 transition-colors relative">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-[10px] flex items-center justify-center rounded-full">3</span>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center gap-x-2.5">
+                        <div class="text-right">
+                            <div class="text-sm font-medium">Rahul Sharma</div>
+                            <div class="text-xs text-emerald-500">Online</div>
+                        </div>
+                        <div class="w-8 h-8 rounded-2xl overflow-hidden ring-2 ring-yellow-300">
+                            <img src="https://picsum.photos/id/64/128/128" alt="" class="w-full h-full object-cover">
+                        </div>
+                    </div>
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- BREADCRUMB -->
+            <div class="bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 px-8 py-3 text-sm flex items-center gap-x-2 text-zinc-500">
+                <span class="hover:text-yellow-500 cursor-pointer">Dashboard</span>
+                <span class="text-xs">›</span>
+                <span class="text-yellow-500 font-medium">Settings</span>
+            </div>
 
-                <section class="glass-card p-8">
-                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-3"><i class="fas fa-user-circle text-blue-500"></i> Admin Profile</h3>
-                    <div class="flex items-center gap-5 mb-6">
-                        <img src="https://via.placeholder.com/100" alt="Profile Picture" class="w-20 h-20 rounded-full border-4 border-blue-100 object-cover">
-                        <div>
-                            <button class="bg-white text-gray-700 border border-gray-300 px-4 py-1.5 rounded-full text-xs hover:bg-gray-50 mb-1.5 transition">Change Photo</button>
-                            <p class="text-xs text-gray-500">JPG, PNG, GIF. Max 5MB</p>
+            <!-- CONTENT AREA -->
+            <div class="flex-1 overflow-auto p-8 bg-zinc-100 dark:bg-zinc-950">
+                <div class="max-w-6xl mx-auto">
+                    
+                    <!-- SETTINGS NAV TABS (horizontal on large) -->
+                    <div class="flex border-b border-zinc-200 dark:border-zinc-800 mb-8 overflow-x-auto hide-scroll">
+                        <div onclick="switchTab(0)" id="tab-0" class="tab-button px-8 py-4 border-b-2 border-yellow-400 text-yellow-400 font-medium cursor-pointer whitespace-nowrap">General</div>
+                        <div onclick="switchTab(1)" id="tab-1" class="tab-button px-8 py-4 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer whitespace-nowrap">Profile</div>
+                        <div onclick="switchTab(2)" id="tab-2" class="tab-button px-8 py-4 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer whitespace-nowrap">Security</div>
+                        <div onclick="switchTab(3)" id="tab-3" class="tab-button px-8 py-4 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer whitespace-nowrap">Notifications</div>
+                        <div onclick="switchTab(4)" id="tab-4" class="tab-button px-8 py-4 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer whitespace-nowrap">Payments</div>
+                        <div onclick="switchTab(5)" id="tab-5" class="tab-button px-8 py-4 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer whitespace-nowrap">System</div>
+                    </div>
+
+                    <!-- GENERAL SETTINGS -->
+                    <div id="content-0" class="tab-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Company Settings -->
+                            <div class="card bg-white dark:bg-zinc-900 rounded-3xl shadow-xl p-8">
+                                <div class="flex items-center gap-x-3 mb-6">
+                                    <i class="fa-solid fa-building text-yellow-500 text-2xl"></i>
+                                    <h2 class="text-2xl font-semibold">Company Settings</h2>
+                                </div>
+                                
+                                <div class="space-y-6">
+                                    <!-- Logo -->
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">Company Logo</label>
+                                        <div class="flex items-center gap-x-6">
+                                            <div id="logo-preview" class="w-20 h-20 bg-zinc-100 dark:bg-zinc-800 rounded-3xl flex items-center justify-center border border-dashed border-zinc-300 dark:border-zinc-700">
+                                                <i class="fa-solid fa-image text-3xl text-zinc-300"></i>
+                                            </div>
+                                            <div>
+                                                <label class="cursor-pointer inline-flex items-center px-5 py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-yellow-100 dark:hover:bg-yellow-900 rounded-3xl text-sm font-medium">
+                                                    <i class="fa-solid fa-upload mr-2"></i>
+                                                    Upload Logo
+                                                    <input type="file" class="hidden" id="logo-upload" accept="image/*" onchange="previewLogo(this)">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-5">
+                                        <div>
+                                            <label class="block text-sm mb-1.5 font-medium">Company Name</label>
+                                            <input id="company-name" value="MistriPoint Services" type="text" 
+                                                   class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:border-yellow-400 rounded-3xl px-5 py-4 outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm mb-1.5 font-medium">GST Number</label>
+                                            <input id="gst" value="29AAECP1234B1Z5" type="text" 
+                                                   class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:border-yellow-400 rounded-3xl px-5 py-4 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm mb-1.5 font-medium">Company Email</label>
+                                        <input id="company-email" value="hello@mistripoint.com" type="email" 
+                                               class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:border-yellow-400 rounded-3xl px-5 py-4 outline-none">
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-5">
+                                        <div>
+                                            <label class="block text-sm mb-1.5 font-medium">Phone</label>
+                                            <input id="company-phone" value="+91 98765 43210" type="tel" 
+                                                   class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:border-yellow-400 rounded-3xl px-5 py-4 outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm mb-1.5 font-medium">Website</label>
+                                            <input id="website" value="https://mistripoint.com" type="url" 
+                                                   class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:border-yellow-400 rounded-3xl px-5 py-4 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm mb-1.5 font-medium">Address</label>
+                                        <textarea id="address" rows="3"
+                                            class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 focus:border-yellow-400 rounded-3xl px-5 py-4 outline-none resize-none">123 MG Road, Bengaluru, Karnataka 560001</textarea>
+                                    </div>
+
+                                    <button onclick="saveCompany()" 
+                                            class="w-full bg-yellow-400 hover:bg-yellow-300 transition-colors text-zinc-900 font-semibold py-4 rounded-3xl text-lg flex items-center justify-center gap-x-2">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        SAVE COMPANY INFO
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Appearance -->
+                            <div class="card bg-white dark:bg-zinc-900 rounded-3xl shadow-xl p-8">
+                                <div class="flex items-center gap-x-3 mb-6">
+                                    <i class="fa-solid fa-palette text-yellow-500 text-2xl"></i>
+                                    <h2 class="text-2xl font-semibold">Appearance</h2>
+                                </div>
+                                
+                                <div class="space-y-8">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-4">Theme</label>
+                                        <div class="flex gap-3">
+                                            <button onclick="setTheme(0)" id="theme-light" 
+                                                    class="flex-1 border-2 border-transparent hover:border-yellow-400 p-4 rounded-3xl text-center transition-all active-theme">
+                                                <i class="fa-solid fa-sun text-3xl mb-2"></i>
+                                                <div class="font-medium">Light</div>
+                                            </button>
+                                            <button onclick="setTheme(1)" id="theme-dark"
+                                                    class="flex-1 border-2 border-transparent hover:border-yellow-400 p-4 rounded-3xl text-center transition-all">
+                                                <i class="fa-solid fa-moon text-3xl mb-2"></i>
+                                                <div class="font-medium">Dark</div>
+                                            </button>
+                                            <button onclick="setTheme(2)" id="theme-system"
+                                                    class="flex-1 border-2 border-transparent hover:border-yellow-400 p-4 rounded-3xl text-center transition-all">
+                                                <i class="fa-solid fa-display text-3xl mb-2"></i>
+                                                <div class="font-medium">System</div>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium mb-3">Primary Color</label>
+                                        <div class="flex gap-4 items-center">
+                                            <input type="color" id="color-picker" value="#eab308" 
+                                                   class="w-12 h-12 bg-transparent border-0 p-0 rounded-2xl cursor-pointer">
+                                            <div class="text-sm text-zinc-500">Yellow is the current brand color</div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium mb-3">Sidebar Style</label>
+                                        <select id="sidebar-style" 
+                                                class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-3xl px-5 py-4">
+                                            <option value="full">Full Width</option>
+                                            <option value="compact" selected>Compact Icons</option>
+                                            <option value="minimal">Minimal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <form class="space-y-4">
-                        <input type="text" placeholder="Full Name" value="" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-300 focus:ring-blue-300 bg-white/50">
-                        <input type="email" placeholder="Email Address" value="" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-300 focus:ring-blue-300 bg-white/50">
-                        <input type="tel" placeholder="Mobile Number" value="" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-300 focus:ring-blue-300 bg-white/50">
-                        <p class="text-sm">Role: <span class="font-semibold text-blue-600"></span></p>
-                    </form>
-                </section>
 
-                <section class="glass-card p-8">
-                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-3"><i class="fas fa-lock text-blue-500"></i> Account Settings</h3>
-                    <div class="space-y-3 text-sm text-gray-700">
-                        <a href="#" class="block hover:text-blue-600 transition">Change Email</a>
-                        <a href="#" class="block hover:text-blue-600 transition">Change Username</a>
-                        <a href="#" class="block hover:text-blue-600 transition">Change Password</a>
-                        <div class="flex items-center justify-between gap-3 pt-1">
-                            <span>Two-Factor Authentication</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <a href="#" class="block hover:text-blue-600 transition">Login Activity</a>
-                        <p>Active Sessions: <span class="font-medium text-gray-900"></span></p>
-                        <button class="bg-red-100 text-red-600 px-4 py-1.5 rounded-full text-xs font-semibold hover:bg-red-200 transition">Logout from All Devices</button>
-                    </div>
-                </section>
-
-                <section class="glass-card p-8">
-                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-3"><i class="fas fa-bell text-blue-500"></i> Notification Settings</h3>
-                    <div class="space-y-4 text-sm text-gray-700">
-                        <div class="flex items-center justify-between gap-3">
-                            <span>Email Notifications</span>
-                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
-                        </div>
-                        <div class="flex items-center justify-between gap-3">
-                            <span>SMS Notifications</span>
-                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
-                        </div>
-                        <div class="flex items-center justify-between gap-3">
-                            <span>Booking Alerts</span>
-                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
-                        </div>
-                        <div class="flex items-center justify-between gap-3">
-                            <span>Worker Registration Alerts</span>
-                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
-                        </div>
-                        <div class="flex items-center justify-between gap-3">
-                            <span>Payment Alerts</span>
-                            <label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label>
+                    <!-- PROFILE -->
+                    <div id="content-1" class="tab-content hidden">
+                        <div class="max-w-xl mx-auto card bg-white dark:bg-zinc-900 rounded-3xl shadow-xl p-10">
+                            <div class="flex justify-center mb-8">
+                                <div class="relative">
+                                    <div id="profile-preview" class="w-32 h-32 rounded-3xl overflow-hidden ring-8 ring-yellow-100 dark:ring-yellow-900">
+                                        <img src="https://picsum.photos/id/64/300/300" alt="Profile" class="w-full h-full object-cover">
+                                    </div>
+                                    <label class="absolute bottom-2 right-2 bg-white dark:bg-zinc-800 shadow p-3 rounded-2xl cursor-pointer">
+                                        <i class="fa-solid fa-camera"></i>
+                                        <input type="file" class="hidden" id="profile-upload" accept="image/*" onchange="previewProfile(this)">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-xs uppercase tracking-widest mb-2">Full Name</label>
+                                        <input value="Rahul Sharma" type="text" class="input-focus w-full px-6 py-5 rounded-3xl border border-zinc-200 dark:border-zinc-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs uppercase tracking-widest mb-2">Username</label>
+                                        <input value="rahul_admin" type="text" class="input-focus w-full px-6 py-5 rounded-3xl border border-zinc-200 dark:border-zinc-700">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest mb-2">Email Address</label>
+                                    <input value="rahul@mistripoint.com" type="email" class="input-focus w-full px-6 py-5 rounded-3xl border border-zinc-200 dark:border-zinc-700">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest mb-2">Mobile Number</label>
+                                    <input value="+91 9876543210" type="tel" class="input-focus w-full px-6 py-5 rounded-3xl border border-zinc-200 dark:border-zinc-700">
+                                </div>
+                            </div>
+                            
+                            <button onclick="saveProfile()" 
+                                    class="mt-10 w-full py-6 bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white rounded-3xl font-semibold text-lg">
+                                SAVE PROFILE CHANGES
+                            </button>
                         </div>
                     </div>
-                </section>
 
-                </div> </main>
+                    <!-- SECURITY -->
+                    <div id="content-2" class="tab-content hidden">
+                        <div class="max-w-md mx-auto card bg-white dark:bg-zinc-900 rounded-3xl p-10 shadow-xl">
+                            <h2 class="text-3xl font-semibold mb-8">Change Password</h2>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block mb-2 text-sm">Current Password</label>
+                                    <div class="relative">
+                                        <input id="current-pass" type="password" 
+                                               class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-3xl px-6 py-5">
+                                        <button onclick="togglePassword(this)" class="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-400">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm">New Password</label>
+                                    <div class="relative">
+                                        <input id="new-pass" type="password" 
+                                               class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-3xl px-6 py-5">
+                                        <button onclick="togglePassword(this)" class="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-400">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm">Confirm New Password</label>
+                                    <div class="relative">
+                                        <input id="confirm-pass" type="password" 
+                                               class="input-focus w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-3xl px-6 py-5">
+                                        <button onclick="togglePassword(this)" class="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-400">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="updatePassword()" 
+                                    class="mt-10 w-full py-6 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-3xl">
+                                UPDATE PASSWORD
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- NOTIFICATIONS -->
+                    <div id="content-3" class="tab-content hidden">
+                        <div class="card bg-white dark:bg-zinc-900 rounded-3xl p-8">
+                            <h2 class="text-2xl font-semibold mb-8">Notification Preferences</h2>
+                            <div class="space-y-6">
+                                <div class="flex justify-between items-center py-4 border-b dark:border-zinc-700">
+                                    <div>
+                                        <div class="font-medium">Email Notifications</div>
+                                        <div class="text-sm text-zinc-500">Receive updates via email</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" onchange="toggleSwitch(this)">
+                                        <div class="w-12 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex justify-between items-center py-4 border-b dark:border-zinc-700">
+                                    <div>
+                                        <div class="font-medium">Booking Alerts</div>
+                                        <div class="text-sm text-zinc-500">New bookings and status changes</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" onchange="toggleSwitch(this)">
+                                        <div class="w-12 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex justify-between items-center py-4 border-b dark:border-zinc-700">
+                                    <div>
+                                        <div class="font-medium">Payment Alerts</div>
+                                        <div class="text-sm text-zinc-500">Successful payments and refunds</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" onchange="toggleSwitch(this)">
+                                        <div class="w-12 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex justify-between items-center py-4">
+                                    <div>
+                                        <div class="font-medium">Worker Registration</div>
+                                        <div class="text-sm text-zinc-500">New worker signups</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" onchange="toggleSwitch(this)">
+                                        <div class="w-12 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PAYMENTS -->
+                    <div id="content-4" class="tab-content hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="card bg-white dark:bg-zinc-900 rounded-3xl p-8">
+                                <h3 class="font-semibold mb-6 flex items-center gap-x-2">
+                                    <i class="fa-solid fa-credit-card"></i> Payment Gateways
+                                </h3>
+                                <div class="space-y-5">
+                                    <div class="flex justify-between items-center">
+                                        <div>Razorpay</div>
+                                        <input value="rzp_test_xxxxxxxx" class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 rounded-2xl text-sm w-56">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div>Stripe</div>
+                                        <input value="pk_test_xxxxxxxx" class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 rounded-2xl text-sm w-56">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div>UPI ID</div>
+                                        <input value="admin@mistripoint" class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 rounded-2xl text-sm w-56">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card bg-white dark:bg-zinc-900 rounded-3xl p-8 flex flex-col">
+                                <h3 class="font-semibold mb-8">Payment Methods Allowed</h3>
+                                <div class="space-y-8 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium">Cash on Service</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer">
+                                            <div class="w-11 h-6 bg-zinc-200 rounded-full peer peer-checked:bg-emerald-400"></div>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium">Online Payment</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer">
+                                            <div class="w-11 h-6 bg-zinc-200 rounded-full peer peer-checked:bg-emerald-400"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button onclick="savePaymentSettings()" class="mt-auto py-4 bg-emerald-500 text-white font-medium rounded-3xl">SAVE PAYMENT CONFIG</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SYSTEM -->
+                    <div id="content-5" class="tab-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- System Settings Card -->
+                            <div class="lg:col-span-2 card bg-white dark:bg-zinc-900 rounded-3xl p-8">
+                                <h2 class="text-xl font-semibold mb-8">System Configuration</h2>
+                                <div class="grid grid-cols-2 gap-x-8 gap-y-7">
+                                    <div>
+                                        <label class="text-xs font-medium block mb-2">Currency</label>
+                                        <select class="w-full rounded-3xl border border-zinc-300 dark:border-zinc-700 px-5 py-4">
+                                            <option>₹ INR</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-medium block mb-2">Timezone</label>
+                                        <select class="w-full rounded-3xl border border-zinc-300 dark:border-zinc-700 px-5 py-4">
+                                            <option>Asia/Kolkata (IST)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-medium block mb-2">Language</label>
+                                        <select class="w-full rounded-3xl border border-zinc-300 dark:border-zinc-700 px-5 py-4">
+                                            <option>English</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-medium block mb-2">Auto-approve Workers</label>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer">
+                                            <div class="w-12 h-6 bg-zinc-300 rounded-full peer peer-checked:bg-yellow-400"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- About System -->
+                            <div class="card bg-white dark:bg-zinc-900 rounded-3xl p-8">
+                                <h2 class="font-semibold mb-6">System Info</h2>
+                                <div class="space-y-5 text-sm">
+                                    <div class="flex justify-between"><span class="text-zinc-500">Version</span><span class="font-medium">v2.4.1</span></div>
+                                    <div class="flex justify-between"><span class="text-zinc-500">Build</span><span class="font-medium">2418</span></div>
+                                    <div class="flex justify-between"><span class="text-zinc-500">Database</span><span class="text-emerald-500 font-medium">Healthy</span></div>
+                                    <div class="flex justify-between"><span class="text-zinc-500">Last Backup</span><span class="font-medium">2 hours ago</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FLOATING SAVE -->
+            <div class="fixed bottom-8 right-8 bg-yellow-400 text-zinc-900 shadow-2xl rounded-3xl px-8 py-4 flex items-center gap-x-3 font-semibold cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+                 onclick="saveAllSettings()">
+                <i class="fa-solid fa-save"></i>
+                <span>SAVE ALL CHANGES</span>
+            </div>
+        </div>
     </div>
 
+    <!-- TOAST -->
+    <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-6 py-4 rounded-3xl flex items-center gap-x-3 shadow-2xl">
+        <i class="fa-solid fa-check-circle text-emerald-400"></i>
+        <span id="toast-text" class="font-medium">Settings saved successfully</span>
+    </div>
+
+    <!-- CONFIRM MODAL -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div class="modal bg-white dark:bg-zinc-900 rounded-3xl max-w-md w-full p-8">
+            <h3 class="text-xl font-semibold mb-2" id="modal-title">Dangerous Action</h3>
+            <p class="text-zinc-500 mb-8" id="modal-text">Are you sure you want to proceed?</p>
+            
+            <div class="flex gap-4">
+                <button onclick="closeModal()" 
+                        class="flex-1 py-5 border border-zinc-300 dark:border-zinc-700 rounded-3xl font-medium">Cancel</button>
+                <button onclick="confirmDangerAction()" 
+                        id="modal-confirm-btn"
+                        class="flex-1 py-5 bg-red-500 text-white rounded-3xl font-medium">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script already loaded
+        
+        function initTailwind() {
+            // Nothing needed - Tailwind CDN handles it
+        }
+        
+        // Tab management
+        let currentTab = 0;
+        
+        function switchTab(tabIndex) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-button').forEach(tab => {
+                tab.classList.remove('border-b-2', 'border-yellow-400', 'text-yellow-400');
+                tab.classList.add('text-zinc-500');
+            });
+            
+            // Activate selected
+            document.getElementById(`tab-${tabIndex}`).classList.add('border-b-2', 'border-yellow-400', 'text-yellow-400');
+            
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show target
+            document.getElementById(`content-${tabIndex}`).classList.remove('hidden');
+            currentTab = tabIndex;
+        }
+        
+        // Preview logo
+        function previewLogo(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('logo-preview');
+                    preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-3xl">`;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+        
+        // Preview profile
+        function previewProfile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('profile-preview');
+                    preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function togglePassword(btn) {
+            const input = btn.parentElement.querySelector('input');
+            if (input.type === "password") {
+                input.type = "text";
+                btn.innerHTML = `<i class="fa-solid fa-eye-slash"></i>`;
+            } else {
+                input.type = "password";
+                btn.innerHTML = `<i class="fa-solid fa-eye"></i>`;
+            }
+        }
+        
+        function toggleSwitch(el) {
+            // Visual toggle already handled by Tailwind peer classes
+        }
+        
+        // Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = message;
+            toast.classList.remove('hidden');
+            toast.style.transform = 'translate(-50%, 0)';
+            
+            setTimeout(() => {
+                toast.style.transform = 'translate(-50%, 80px)';
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 300);
+            }, 2800);
+        }
+        
+        // Save functions
+        function saveCompany() {
+            showToast("Company information updated successfully");
+        }
+        
+        function saveProfile() {
+            showToast("Profile updated successfully");
+        }
+        
+        function updatePassword() {
+            const newPass = document.getElementById('new-pass').value;
+            const confirmPass = document.getElementById('confirm-pass').value;
+            
+            if (newPass && newPass === confirmPass) {
+                showToast("Password updated successfully");
+                document.getElementById('current-pass').value = '';
+                document.getElementById('new-pass').value = '';
+                document.getElementById('confirm-pass').value = '';
+            } else {
+                showToast("Passwords do not match");
+            }
+        }
+        
+        function savePaymentSettings() {
+            showToast("Payment settings saved");
+        }
+        
+        function saveAllSettings() {
+            showToast("All settings have been saved");
+        }
+        
+        // Theme
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.add('fa-moon');
+                icon.classList.remove('fa-sun');
+            }
+        }
+        
+        function setTheme(mode) {
+            // Simple dark toggle simulation
+            if (mode === 1) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            showToast("Theme preference updated");
+        }
+        
+        // Modal
+        let currentDangerCallback = null;
+        
+        function showConfirmModal(title, text, callback) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-text').textContent = text;
+            currentDangerCallback = callback;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+        
+        function closeModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+        
+        function confirmDangerAction() {
+            if (currentDangerCallback) currentDangerCallback();
+            closeModal();
+        }
+        
+        // Fake danger actions
+        function clearCache() {
+            showConfirmModal(
+                "Clear Cache?", 
+                "This will clear all cached data. Continue?", 
+                () => showToast("Cache cleared successfully")
+            );
+        }
+        
+        // Fake navigation
+        function navigateTo(page) {
+            showToast(`Navigating to ${page}... (demo)`);
+        }
+        
+        function logout() {
+            if (confirm("Logout from all devices?")) {
+                window.location.reload();
+            }
+        }
+        
+        function filterSettings() {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            // Demo filter - can be expanded
+            if (term.length > 2) {
+                console.log("Filtering settings for:", term);
+            }
+        }
+        
+        function toggleSidebar() {
+            // For mobile - demo alert
+            alert("Sidebar toggle would open on mobile devices.");
+        }
+        
+        // Populate settings navigation (demo)
+        function populateSettingsNav() {
+            const navContainer = document.getElementById('settings-nav');
+            const items = [
+                {icon: "fa-cog", label: "General"},
+                {icon: "fa-user", label: "Profile"},
+                {icon: "fa-shield-halved", label: "Security"},
+                {icon: "fa-bell", label: "Notifications"},
+                {icon: "fa-credit-card", label: "Payments"},
+                {icon: "fa-server", label: "System"}
+            ];
+            
+            let html = '';
+            items.forEach(item => {
+                html += `
+                    <a href="#" onclick="switchTabByName('${item.label}')" 
+                       class="nav-link flex items-center gap-x-3 px-4 py-3 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl">
+                        <i class="fa-solid ${item.icon} w-4"></i>
+                        <span>${item.label}</span>
+                    </a>
+                `;
+            });
+            navContainer.innerHTML = html;
+        }
+        
+        function switchTabByName(name) {
+            if (name === "General") switchTab(0);
+            else if (name === "Profile") switchTab(1);
+            else if (name === "Security") switchTab(2);
+            else if (name === "Notifications") switchTab(3);
+            else if (name === "Payments") switchTab(4);
+            else if (name === "System") switchTab(5);
+        }
+        
+        // Initialize everything
+        window.onload = function() {
+            // Tailwind ready
+            initTailwind();
+            
+            // Set default tab
+            switchTab(0);
+            
+            // Populate sidebar nav
+            populateSettingsNav();
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.metaKey && e.key === "k") {
+                    e.preventDefault();
+                    document.getElementById('search-input').focus();
+                }
+            });
+            
+            // Make color picker interactive
+            const colorPicker = document.getElementById('color-picker');
+            colorPicker.addEventListener('input', function() {
+                // Could update CSS variable in real app
+                console.log('Color changed to:', this.value);
+            });
+            
+            // Demo toast on load
+            setTimeout(() => {
+                // showToast("Welcome back to MistriPoint Admin");
+            }, 1200);
+            
+            console.log('%cMistriPoint Admin Settings Loaded Successfully ✨', 'color:#eab308; font-family:monospace; font-size:13px');
+        };
+    </script>
 </body>
 </html>

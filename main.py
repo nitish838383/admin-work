@@ -37,6 +37,15 @@ def home(request: Request):
 
     )
 
+from starlette.middleware.sessions import SessionMiddleware
+
+
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="your-secret-key-change-this"
+)
+
 
         
     

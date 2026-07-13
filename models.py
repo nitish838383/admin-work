@@ -11,17 +11,18 @@ from database import Base
 # -----------------------------------------------------------------------------------------------------------------------------------------------
 
 # admin
+from sqlalchemy import DateTime
+
 class Admin(Base):
     __tablename__ = "admins"
 
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True)
     password = Column(String(255))
-    created_at = Column(
-        TIMESTAMP,
-        server_default=func.now()
-    )
+    created_at = Column(TIMESTAMP, server_default=func.now())
 
+    otp = Column(String(6), nullable=True)
+    otp_expiry = Column(DateTime, nullable=True)
 # -----------------------------------------------------------------------------------------------------------------------------------------------
 
 # 

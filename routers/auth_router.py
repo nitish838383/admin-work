@@ -16,6 +16,11 @@ from datetime import datetime
 import os
 from uuid import uuid4
 from schemas import BookingCreate
+from fastapi.responses import JSONResponse
+import random
+from datetime import datetime, timedelta
+
+
 
 
 
@@ -312,11 +317,79 @@ def forgot_password(
     )
 
 # ----------------------------------------------------------------------------------------------------------------------------------
+# opt send
+@router.post("/send-otp")
+def send_otp(
+    request: Request,
+    email: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    admin = db.query(Admin).filter(Admin.email == email).first()
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin not found")
+
+    otp = str(random.randint(100000, 999999))
+ 
+
+    # Save in database
+    admin.otp = otp
+    admin.otp_expiry = datetime.utcnow() + timedelta(minutes=10)
+    db.commit()
+    db.refresh(admin)
+    print("Database OTP:", admin.otp)
+    print("Database Expiry:", admin.otp_expiry)
+
+    # Save in session
+    request.session["reset_email"] = email
+
+    # TODO: Send OTP to email
+    print("OTP:", otp)
+
+    return JSONResponse({
+        "success": True,
+        "message": "OTP sent successfully"
+    })
+
+# ------------------------------------------------------------------------------------------------
+# varify opt
+from datetime import datetime
+
+@router.post("/verify-otp")
+def verify_otp(
+    request: Request,
+    otp: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    email = request.session.get("reset_email")
+    
+
+    if not email:
+        raise HTTPException(status_code=400, detail="Session expired")
+
+    admin = db.query(Admin).filter(Admin.email == email).first()
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin not found")
+
+    if admin.otp != otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+
+    if admin.otp_expiry < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="OTP Expired")
+
+    request.session["otp_verified"] = True
+
+    return JSONResponse({
+        "success": True,
+        "message": "OTP verified successfully"
+    })
 
 # post reset-password
 @router.post("/reset-password")
 def reset_password(
     email: str = Form(...),
+    otp: str = Form(...),
     new_password: str = Form(...),
     confirm_password: str = Form(...),
     db: Session = Depends(get_db)
@@ -330,16 +403,19 @@ def reset_password(
     if not admin:
         raise HTTPException(status_code=404, detail="Admin not found")
 
+    if admin.otp != otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+
+    if admin.otp_expiry < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="OTP Expired")
+
     admin.password = hash_password(new_password)
+    admin.otp = None
+    admin.otp_expiry = None
 
     db.commit()
 
-    return RedirectResponse(url="/auth/login", status_code=303)
-
-
-
-
-templates = Jinja2Templates(directory="templates")
+    return RedirectResponse("/auth/login", status_code=303)
 
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -699,31 +775,9 @@ def Contact(request:Request):
     )
 
 
-# ___________________________________________________________________________________________________________________________________________
-@router.get("/categories")
-def get_categories(db: Session = Depends(get_db)):
-    return db.query(Category).all()
 
-from schemas import CategoryCreate
-from models import Category
 
-@router.post("/categories")
-def create_category(
-    category: CategoryCreate,
-    db: Session = Depends(get_db)
-):
-    new_category = Category(
-        name=category.name
-    )
 
-    db.add(new_category)
-    db.commit()
-    db.refresh(new_category)
-
-    return {
-        "message": "Category Created Successfully",
-        "category": new_category
-    }
 
 
 
@@ -1091,5 +1145,33 @@ def setting(request:Request):
         context={
             "request":request,
 
+        }
+    )
+
+
+# ______________________________________________________________________________________________________________________________-
+import requests
+
+@router.get("/categories")
+def category(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    response = requests.get(
+        "https://mistripoint-backend-1.onrender.com/auth/categories"
+    )
+
+    data = response.json()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="category.html",
+        context={
+            "request": request,
+            "categories": data,
+            "total_categories": len(data),
+            "total_active": len(
+                [c for c in data if c.get("status", "").lower() == "active"]
+            ),
         }
     )
