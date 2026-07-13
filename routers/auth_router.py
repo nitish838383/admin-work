@@ -317,12 +317,13 @@ def forgot_password(
     )
 
 # --------------------------------------------------------------------------------------------
+import os
 from fastapi_mail import ConnectionConfig
 
 conf = ConnectionConfig(
-    MAIL_USERNAME="admin.ustadji@gmail.com",      # Gmail
-    MAIL_PASSWORD="kldj zpdq ptgy ueba",  # App Password
-    MAIL_FROM="admin.ustadji@gmail.com",
+    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
+    MAIL_FROM=os.getenv("MAIL_FROM"),
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_STARTTLS=True,
