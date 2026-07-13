@@ -316,10 +316,48 @@ def forgot_password(
        
     )
 
+# --------------------------------------------------------------------------------------------
+from fastapi_mail import ConnectionConfig
+
+conf = ConnectionConfig(
+    MAIL_USERNAME="admin.ustadji@gmail.com",      # Gmail
+    MAIL_PASSWORD="kldj zpdq ptgy ueba",  # App Password
+    MAIL_FROM="admin.ustadji@gmail.com",
+    MAIL_PORT=587,
+    MAIL_SERVER="smtp.gmail.com",
+    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=False,
+    USE_CREDENTIALS=True,
+)
+
+from fastapi_mail import FastMail, MessageSchema
+
+async def send_otp_email(email: str, otp: str):
+
+    message = MessageSchema(
+        subject="Your OTP Code",
+        recipients=[email],
+        body=f"""
+Hello,
+
+Your OTP is: {otp}
+
+This OTP is valid for 10 minutes.
+
+Thank You.
+""",
+        subtype="plain",
+    )
+
+    fm = FastMail(conf)
+    await fm.send_message(message)
+
+
+
 # ----------------------------------------------------------------------------------------------------------------------------------
 # opt send
 @router.post("/send-otp")
-def send_otp(
+async def send_otp(
     request: Request,
     email: str = Form(...),
     db: Session = Depends(get_db)
@@ -337,14 +375,16 @@ def send_otp(
     admin.otp_expiry = datetime.utcnow() + timedelta(minutes=10)
     db.commit()
     db.refresh(admin)
-    print("Database OTP:", admin.otp)
-    print("Database Expiry:", admin.otp_expiry)
+   
 
     # Save in session
     request.session["reset_email"] = email
+    
+    await send_otp_email(email, otp)
+
 
     # TODO: Send OTP to email
-    print("OTP:", otp)
+   
 
     return JSONResponse({
         "success": True,
