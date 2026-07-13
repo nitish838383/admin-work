@@ -315,46 +315,49 @@ def forgot_password(
        
        
     )
-
-# --------------------------------------------------------------------------------------------
 import os
-from fastapi_mail import ConnectionConfig
+import requests
 
-conf = ConnectionConfig(
-    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
-    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
-    MAIL_FROM=os.getenv("MAIL_FROM"),
-    MAIL_PORT=465,
-    MAIL_SERVER="smtp.gmail.com",
-    MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False,
-    USE_CREDENTIALS=True,
-)
-
-from fastapi_mail import FastMail, MessageSchema
+BREVO_API_KEY = os.getenv("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")
 
 async def send_otp_email(email: str, otp: str):
 
-    message = MessageSchema(
-        subject="Your OTP Code",
-        recipients=[email],
-        body=f"""
-Hello,
+    url = "https://api.brevo.com/v3/smtp/email"
 
-Your OTP is: {otp}
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
 
-This OTP is valid for 10 minutes.
+    payload = {
+        "sender": {
+            "name": "UstadJi",
+            "email": "admin.ustadji@gmail.com"
+        },
+        "to": [
+            {
+                "email": email
+            }
+        ],
+        "subject": "OTP Verification",
+        "htmlContent": f"""
+        <h2>Password Reset OTP</h2>
 
-Thank You.
-""",
-        subtype="plain",
+        <h1>{otp}</h1>
+
+        <p>This OTP is valid for 10 minutes.</p>
+        """
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload
     )
 
-    fm = FastMail(conf)
-    await fm.send_message(message)
-
-
-
+    print(response.status_code)
+    print(response.text)
 # ----------------------------------------------------------------------------------------------------------------------------------
 # opt send
 @router.post("/send-otp")
