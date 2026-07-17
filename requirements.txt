@@ -14,3 +14,4 @@ python-jose[cryptography]
 requests
 itsdangerous
 fastapi_mail
+httpx
