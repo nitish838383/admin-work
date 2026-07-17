@@ -12,24 +12,18 @@ class TokenResponse(BaseModel):
     token_type: str
 
 from pydantic import BaseModel
+from pydantic import BaseModel
+from datetime import date
+from decimal import Decimal
 
 class BookingCreate(BaseModel):
-    customer_name:str
-    worker_name:str
-    service_name:str
-    service_selection_name:str
+    service_id: int
     
-    booking_date: str
-    slot: str
-
-    quantity: int
-    state: str
-    address: str
-    city: str
-    pincode: str
-
-    amount: int
-
+    booking_date: date
+    time_slot: str
+    latitude: float
+    longitude: float
+    amount: Decimal
     payment_method: str
 
 from pydantic import BaseModel

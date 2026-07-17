@@ -118,6 +118,7 @@
             <table class="w-full min-w-[1100px]" id="customerTable">
                 <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
                     <tr>
+                        <th>S.No.</th>
                         <th class="p-5 text-left">ID</th>
                         <th class="p-5 text-left">Customer Name</th>
                         <th class="p-5 text-left">Phone</th>
@@ -131,6 +132,9 @@
                 <tbody class="divide-y" id="tableBody">
                     {% for customer in customers %}
                     <tr class="hover:bg-slate-50 transition-all group" id="row-{{ customer['id'] }}">
+                            <td>{{ loop.index }}</td>
+                            <td class="p-5 font-medium">{{ customer["S.No."] }}</td>
+
                         <td class="p-5 font-medium">{{ customer["id"] }}</td>
                         <td class="p-5">{{ customer["first_name"] or "-" }} {{ customer["last_name"] or "" }}</td>
                         <td class="p-5">{{ customer["phone"] }}</td>

@@ -90,33 +90,29 @@ class AllCustomer(Base):
     pincode = Column(String(20))  
     status = Column(String(20), default="Pending") 
 
+from sqlalchemy import Column, Integer, String, Float, Date, Numeric, DateTime
+from sqlalchemy.sql import func
+from database import Base
+
+
 class Booking(Base):
     __tablename__ = "bookings"
 
     id = Column(Integer, primary_key=True, index=True)
-    customer_name = Column(String(225))
-    worker_name = Column(String(255))
-    service_name = Column(String(225))
-    service_selection_name =Column(String(225))
-    booking_date = Column(String(20))
-    slot = Column(String(50))
 
-    quantity = Column(Integer)
-    state= Column(String(225))
+    service_id = Column(Integer, nullable=False)
+    
 
-    address = Column(String(255))
-    city = Column(String(100))
-    pincode = Column(String(20))
+    booking_date = Column(Date, nullable=False)
+    time_slot = Column(String(50), nullable=False)
 
-    amount = Column(Integer)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
 
-    payment_method = Column(String(50))
-    payment_status = Column(String(20), default="Pending")
+    amount = Column(Numeric(10, 2), nullable=False)
+    payment_method = Column(String(50), nullable=False)
 
-    status = Column(String(20), default="Pending")
-
-    created_at = Column(DateTime, default=datetime.utcnow)
-
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 class Payment(Base):
     __tablename__ = "payments"
 

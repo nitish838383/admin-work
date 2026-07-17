@@ -16,7 +16,7 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-        .kyc-card {
+        .mobile-card {
             transition: all 0.3s ease;
         }
     </style>
@@ -62,7 +62,7 @@
                 <div class="flex justify-between">
                     <div>
                         <p class="text-zinc-500 text-sm">Total Categories</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_categories }}</h2>
+                        <h2 class="text-4xl font-semibold mt-2">{{ total_categories }}</h2>
                     </div>
                     <i class="fas fa-tags text-4xl text-blue-500"></i>
                 </div>
@@ -71,7 +71,7 @@
                 <div class="flex justify-between">
                     <div>
                         <p class="text-zinc-500 text-sm">Active</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_active }}</h2>
+                        <h2 class="text-4xl font-semibold mt-2 text-emerald-600">{{ total_active }}</h2>
                     </div>
                     <i class="fas fa-check-circle text-4xl text-emerald-500"></i>
                 </div>
@@ -97,88 +97,6 @@
             </button>
         </div>
 
-        <!-- Mobile Cards View -->
-<div class="md:hidden space-y-4">
-
-    {% for category in categories %}
-    <div class="bg-white rounded-3xl shadow-sm p-5 border border-zinc-200">
-
-        <!-- Header -->
-        <div class="flex justify-between items-start mb-4">
-
-            <div class="flex items-center gap-3">
-
-                <img src="{{ category.icon }}"
-                     alt="Icon"
-                     class="w-14 h-14 rounded-xl object-cover border">
-
-                <div>
-                    <p class="text-xs text-zinc-500">
-                        S.No : {{ loop.index }}
-                    </p>
-
-                    <h3 class="font-semibold text-lg text-zinc-900">
-                        {{ category.category_name }}
-                    </h3>
-
-                    <p class="text-sm text-zinc-500">
-                        {{ category.slug }}
-                    </p>
-                </div>
-
-            </div>
-
-            <span class="px-3 py-1 rounded-full text-xs font-semibold
-                {% if category.status == 'Active' %}
-                    bg-emerald-100 text-emerald-700
-                {% else %}
-                    bg-red-100 text-red-700
-                {% endif %}">
-                {{ category.status }}
-            </span>
-
-        </div>
-
-        <!-- Details -->
-        <div class="grid grid-cols-2 gap-4 text-sm mb-5">
-
-            <div>
-                <p class="text-zinc-500 text-xs">Workers</p>
-                <p class="font-semibold">
-                    {{ category.worker_count }}
-                </p>
-            </div>
-
-            <div>
-                <p class="text-zinc-500 text-xs">Slug</p>
-                <p class="font-medium break-all">
-                    {{ category.slug }}
-                </p>
-            </div>
-
-        </div>
-
-        <!-- Actions -->
-        <div class="flex gap-3">
-
-            <a href="/auth/category/{{ category.id }}/edit"
-               class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-sm font-medium">
-                Edit
-            </a>
-
-            <a href="/auth/category/{{ category.id }}/delete"
-               onclick="return confirm('Delete this category?')"
-               class="flex-1 text-center bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-sm font-medium">
-                Delete
-            </a>
-
-        </div>
-
-    </div>
-    {% endfor %}
-
-</div>
-
         <!-- Content -->
         <div class="flex-1 overflow-auto p-6">
             <!-- Desktop Table -->
@@ -200,8 +118,51 @@
                 </table>
             </div>
 
-            <!-- Mobile Cards -->
-            <div class="md:hidden space-y-4" id="mobileCards"></div>
+            <!-- Mobile Cards View -->
+            <div class="md:hidden space-y-4" id="mobileCards">
+                {% for category in categories %}
+                <div class="bg-white rounded-3xl shadow-sm p-5 border border-zinc-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            {% if category.icon %}
+                            <img src="{{ category.icon }}" alt="Icon" class="w-14 h-14 rounded-xl object-cover border">
+                            {% else %}
+                            <div class="w-14 h-14 rounded-xl border bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-image text-gray-500 text-xl"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <p class="text-xs text-zinc-500">S.No : {{ loop.index }}</p>
+                                <h3 class="font-semibold text-lg text-zinc-900">{{ category.category_name }}</h3>
+                                <p class="text-sm text-zinc-500">{{ category.slug or "-" }}</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold 
+                            {% if category.status == 'Active' %}bg-emerald-100 text-emerald-700{% else %}bg-red-100 text-red-700{% endif %}">
+                            {{ category.status }}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm mb-5">
+                        <div>
+                            <p class="text-zinc-500 text-xs">Workers</p>
+                            <p class="font-semibold">{{ category.workers }}</p>
+                        </div>
+                        <div>
+                            <p class="text-zinc-500 text-xs">Slug</p>
+                            <p class="font-medium break-all">{{ category.slug or "-" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="/auth/category/{{ category.id }}/edit" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-sm font-medium transition">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </a>
+                        <a href="/auth/category/{{ category.id }}/delete" onclick="return confirm('Delete this category?')" class="flex-1 text-center bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-sm font-medium transition">
+                            <i class="fas fa-trash mr-1"></i> Delete
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
@@ -236,14 +197,12 @@
 </div>
 
 <script>
-
-
-
 // Modals
 function showAddModal() {
     document.getElementById("modalTitle").textContent = "Add New Category";
     document.getElementById("categoryForm").reset();
     document.getElementById("categoryModal").classList.remove("hidden");
+}
 
 function closeModal() {
     document.getElementById("categoryModal").classList.add("hidden");
@@ -256,10 +215,15 @@ function generateSlug() {
     document.getElementById("catSlug").value = slug;
 }
 
+// Form Submit
+function handleFormSubmit(e) {
+    e.preventDefault();
+    alert("Category saved successfully!");
+    closeModal();
+}
 
 // Initialize
-renderTable(categories);
-renderMobileCards(categories);
+// renderTable and renderMobileCards functions can be added if needed
 </script>
 </body>
 </html>

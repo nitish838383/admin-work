@@ -14,110 +14,115 @@
         .action-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
-<body class="bg-slate-100">
+<body class="bg-zinc-950 text-zinc-100">
 
 <div class="p-4 md:p-8 max-w-7xl mx-auto">
-<!-- Header -->
-<div class="bg-white rounded-3xl shadow p-6 mb-8">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
-        <!-- Left Side -->
-        <div class="flex items-center gap-4">
-
-            <!-- Back Button -->
-            <button onclick="history.back()"
-                class="w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-all duration-200 shadow">
-                <i class="fas fa-arrow-left text-gray-700 text-lg"></i>
-            </button>
-
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">All Bookings</h1>
-                <p class="text-slate-500">Manage customer bookings and assignments</p>
+    <!-- Header -->
+    <div class="bg-zinc-900 rounded-3xl shadow p-5 md:p-6 mb-8 border border-zinc-800">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            
+            <!-- Left -->
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <button onclick="history.back()" 
+                    class="w-11 h-11 rounded-2xl bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">All Bookings</h1>
+                    <p class="text-zinc-400 text-sm">Manage customer bookings</p>
+                </div>
             </div>
 
-        </div>
+            <!-- Right Side - Fixed for Mobile -->
+            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                <div class="bg-zinc-800 text-emerald-400 px-5 py-3 rounded-2xl text-center hidden sm:block">
+                    <p class="text-xs">Total</p>
+                    <p class="text-2xl font-bold">{{ total_bookings }}</p>
+                </div>
 
-        <!-- Right Side -->
-        <div class="flex items-center gap-4">
-            <div class="bg-emerald-50 text-emerald-700 px-6 py-3 rounded-2xl text-center">
-                <p class="text-sm">Total Bookings</p>
-                <p class="text-3xl font-bold">{{ total_bookings }}</p>
+                <!-- Export Button - Fixed for Phone -->
+                <button onclick="exportBookings()" 
+                    class="flex-1 md:flex-none bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3.5 rounded-2xl flex items-center justify-center gap-2 font-medium text-sm md:text-base">
+                    <i class="fas fa-download"></i>
+                    <span>Export</span>
+                </button>
             </div>
-
-            <button onclick="exportBookings()"
-                class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-2xl flex items-center gap-2 font-medium">
-                <i class="fas fa-download"></i> Export
-            </button>
         </div>
 
-    </div>
-
-        <!-- Search -->
-        <div class="mt-6 max-w-lg">
+        <!-- Filters -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             <div class="relative">
-                <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
-                <input type="text" id="searchInput"
-                       class="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500"
-                       placeholder="Search by customer, worker or booking ID...">
+                <i class="fas fa-search absolute left-4 top-3.5 text-zinc-400"></i>
+                <input type="text" id="searchInput" 
+                       class="w-full pl-12 pr-4 py-3.5 bg-zinc-800 border border-zinc-700 rounded-3xl focus:outline-none focus:border-emerald-500 text-white"
+                       placeholder="Search..." onkeyup="filterTable()">
             </div>
+
+            <select id="statusFilter" onchange="filterTable()" 
+                    class="bg-zinc-800 border border-zinc-700 rounded-3xl px-5 py-3.5 focus:outline-none focus:border-emerald-500 text-white">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Assigned">Assigned</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+
+            <select id="paymentFilter" onchange="filterTable()" 
+                    class="bg-zinc-800 border border-zinc-700 rounded-3xl px-5 py-3.5 focus:outline-none focus:border-emerald-500 text-white">
+                <option value="">All Payments</option>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+            </select>
+
+            <button onclick="resetFilters()" 
+                    class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-6 py-3.5 rounded-3xl font-medium">Reset</button>
         </div>
     </div>
 
-    <!-- Bookings Table -->
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+    <!-- Table -->
+    <div class="bg-zinc-900 rounded-3xl shadow-xl overflow-hidden border border-zinc-800">
         <div class="table-container">
-            <table class="w-full min-w-[1300px]" id="bookingsTable">
-                <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white sticky top-0">
+            <table class="w-full min-w-[1100px]" id="bookingsTable">
+                <thead class="bg-zinc-800 text-zinc-300 sticky top-0">
                     <tr>
                         <th class="px-6 py-5 text-left">Booking ID</th>
                         <th class="px-6 py-5 text-left">Customer</th>
                         <th class="px-6 py-5 text-left">Worker</th>
                         <th class="px-6 py-5 text-left">Service</th>
                         <th class="px-6 py-5 text-left">Date</th>
-                        <th class="px-6 py-5 text-left">Slot</th>
-                        <th class="px-6 py-5 text-left">Address</th>
                         <th class="px-6 py-5 text-left">Amount</th>
                         <th class="px-6 py-5 text-center">Payment</th>
                         <th class="px-6 py-5 text-center">Status</th>
                         <th class="px-6 py-5 text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y" id="tableBody">
+                <tbody class="divide-y divide-zinc-800" id="tableBody">
                     {% for booking in bookings %}
-                    <tr class="hover:bg-slate-50 transition-all" id="row-{{ booking.id }}">
-                        <td class="px-6 py-5 font-medium">#{{ booking.id }}</td>
+                    <tr class="hover:bg-zinc-800 transition-all" id="row-{{ booking.id }}">
+                        <td class="px-6 py-5 font-medium text-emerald-400">#{{ booking.id }}</td>
+                        <td class="p-5 font-medium">{{ booking.customer_id }}</td>
                         <td class="px-6 py-5">{{ booking.customer_name }}</td>
-                        <td class="px-6 py-5">
-                            {{ booking.worker_name or '<span class="text-amber-500 font-medium">Not Assigned</span>' }}
-                        </td>
+                        <td class="px-6 py-5">{{ booking.worker_name or '<span class="text-amber-400">Not Assigned</span>' }}</td>
                         <td class="px-6 py-5">{{ booking.category_name }}</td>
                         <td class="px-6 py-5">{{ booking.booking_date }}</td>
-                        <td class="px-6 py-5">{{ booking.slot }}</td>
-                        <td class="px-6 py-5 text-sm text-slate-600">{{ booking.address|truncate(35) }}</td>
-                        <td class="px-6 py-5 font-semibold text-emerald-600">₹{{ booking.amount }}</td>
+                        <td class="px-6 py-5 font-semibold text-emerald-400">₹{{ booking.amount }}</td>
                         <td class="px-6 py-5 text-center">
                             {% if booking.payment_status == "Paid" %}
-                                <span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">Paid</span>
+                                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Paid</span>
                             {% else %}
-                                <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium">Pending</span>
+                                <span class="bg-amber-900 text-amber-400 px-4 py-1 rounded-full text-sm">Pending</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-5 text-center">
                             {% if booking.status == "Completed" %}
-                                <span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">Completed</span>
-                            {% elif booking.status == "Cancelled" %}
-                                <span class="bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">Cancelled</span>
+                                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Completed</span>
                             {% else %}
-                                <span class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-medium">Pending</span>
+                                <span class="bg-blue-900 text-blue-400 px-4 py-1 rounded-full text-sm">Pending</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-5 text-center space-x-2">
-                            <a href="/auth/booking/{{ booking.id }}/assign" class="action-btn bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm">Assign</a>
-                            <a href="/auth/booking/{{ booking.id }}/complete" class="action-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-sm">Complete</a>
-                            <a href="/auth/booking/{{ booking.id }}/cancel" class="action-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Cancel</a>
-                            <a href="/auth/booking/{{ booking.id }}/delete" onclick="return confirm('Delete this booking?')" class="action-btn bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                            <a href="/auth/booking/{{ booking.id }}/assign" class="action-btn bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm">Assign</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -128,19 +133,35 @@
 </div>
 
 <script>
-    // Search Functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        const term = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#tableBody tr');
-        rows.forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
-        });
-    });
+    function filterTable() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const paymentFilter = document.getElementById('paymentFilter').value;
 
-    // Export to Excel
+        const rows = document.querySelectorAll('#tableBody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const statusText = row.cells[7] ? row.cells[7].textContent : '';
+            const paymentText = row.cells[6] ? row.cells[6].textContent : '';
+
+            const matchSearch = text.includes(term);
+            const matchStatus = !statusFilter || statusText.includes(statusFilter);
+            const matchPayment = !paymentFilter || paymentText.includes(paymentFilter);
+
+            row.style.display = (matchSearch && matchStatus && matchPayment) ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('paymentFilter').value = '';
+        filterTable();
+    }
+
     function exportBookings() {
         alert("📥 Bookings data is being downloaded...");
-        // Full CSV export logic can be added here
     }
 </script>
 

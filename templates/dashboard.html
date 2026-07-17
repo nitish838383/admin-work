@@ -26,15 +26,16 @@
         }
         
         .sidebar-link {
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .sidebar-link:hover {
-            background-color: #f3f4f6;
+            transform: translateX(8px);
+            background: linear-gradient(90deg, #fefce8, #facc15);
         }
         
         .dark .sidebar-link:hover {
-            background-color: #374151;
+            background: linear-gradient(90deg, #451a03, #ca8a04);
         }
         
         .card-hover {
@@ -137,10 +138,9 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
                 </nav>
             </div>
 
-            <!-- Logout -->
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-                <button
-    onclick="logout()"class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-2xl font-semibold shadow-md transition duration-300">
+           <!-- Logout -->
+            <div class="p-6 border-t border-gray-200 dark:border-gray-800">
+                <button onclick="logout()" class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white rounded-3xl font-semibold shadow-lg shadow-yellow-500/30 transition-all duration-300 hover:scale-105">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </button>
@@ -149,20 +149,17 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
+            
             <!-- Top Header -->
-            <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-8 py-4 flex items-center justify-between">
+            <header class="glass border-b border-gray-200 dark:border-gray-800 px-6 py-5 flex items-center justify-between z-30">
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+                    <button onclick="toggleSidebar()" class="lg:hidden text-3xl text-gray-600 dark:text-gray-400">
                         <i id="menu-icon" class="fas fa-bars"></i>
                     </button>
                     <div class="relative hidden md:block w-96">
-                        <input
-                        type="text"
-                        id="global-search"
-                        onkeyup="globalSearch()"
-                        class="w-full bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-yellow-400 rounded-3xl py-3 pl-12 pr-4 text-sm focus:outline-none"
-                        placeholder="Search customers, workers, bookings...">
-                        <i class="fas fa-search absolute left-5 top-3.5 text-gray-400"></i>
+                        <input type="text" id="global-search" onkeyup="globalSearch()" 
+                               class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:border-yellow-400 rounded-3xl py-4 pl-14 pr-6 text-sm focus:outline-none shadow-sm">
+                        <i class="fas fa-search absolute left-6 top-4 text-gray-400"></i>
                     </div>
                 </div>
 
@@ -229,150 +226,173 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
 
         </div>
 
-   <!-- Stats Grid -->
+  <!-- Stats Grid - Vibrant Colored Boxes -->
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-    <!-- Total Customers -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 1. Total Customers - Blue Theme -->
+    <div class="bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total Customers</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_customers }}</h2>
+                <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Customers</p>
+                <h2 class="text-5xl font-bold mt-5 text-blue-700 dark:text-blue-200 stat-number">{{ total_customers }}</h2>
             </div>
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-users text-2xl"></i>
+            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                👥
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +12% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +12% this month
         </p>
     </div>
 
-    <!-- Total Workers -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 2. Total Workers - Emerald Theme -->
+    <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total Workers</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_workers }}</h2>
+                <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Total Workers</p>
+                <h2 class="text-5xl font-bold mt-5 text-emerald-700 dark:text-emerald-200 stat-number">{{ total_workers }}</h2>
             </div>
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-hard-hat text-2xl"></i>
+            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                🛠️
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +8% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +8% this month
         </p>
     </div>
 
-    <!-- Total KYC Workers -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 3. Total KYC Workers - Teal Theme -->
+    <div class="bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total KYC Workers</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_kyc_workers }}</h2>
+                <p class="text-sm font-medium text-teal-600 dark:text-teal-400">Total KYC Workers</p>
+                <h2 class="text-5xl font-bold mt-5 text-teal-700 dark:text-teal-200 stat-number">{{ total_kyc_workers }}</h2>
             </div>
-            <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-id-card text-2xl"></i>
+            <div class="w-16 h-16 bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                <i class="fas fa-id-card"></i>
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +8% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +8% this month
         </p>
     </div>
 
-    <!-- Total Skills -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 4. Total Skills - Purple Theme -->
+    <div class="bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total Skills</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_skills }}</h2>
+                <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Total Skills</p>
+                <h2 class="text-5xl font-bold mt-5 text-purple-700 dark:text-purple-200 stat-number">{{ total_skills }}</h2>
             </div>
-            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-tools text-2xl"></i>
+            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                🔧
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +15% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +15% this month
         </p>
     </div>
 
-    <!-- Total Bookings -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 5. Total Bookings - Indigo Theme -->
+    <div class="bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total Bookings</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_bookings }}</h2>
+                <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Total Bookings</p>
+                <h2 class="text-5xl font-bold mt-5 text-indigo-700 dark:text-indigo-200 stat-number">{{ total_bookings }}</h2>
             </div>
-            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-calendar-check text-2xl"></i>
+            <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                📅
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +23% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +23% this month
         </p>
     </div>
 
-    <!-- Total Reviews -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 6. Total Reviews - Pink Theme -->
+    <div class="bg-pink-50 dark:bg-pink-950/60 border border-pink-200 dark:border-pink-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total Reviews</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_reviews }}</h2>
+                <p class="text-sm font-medium text-pink-600 dark:text-pink-400">Total Reviews</p>
+                <h2 class="text-5xl font-bold mt-5 text-pink-700 dark:text-pink-200 stat-number">{{ total_reviews }}</h2>
             </div>
-            <div class="w-12 h-12 bg-pink-100 dark:bg-pink-900/50 text-pink-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-star text-2xl"></i>
+            <div class="w-16 h-16 bg-pink-100 dark:bg-pink-900 text-pink-600 dark:text-pink-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                ⭐
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +10% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +10% this month
         </p>
     </div>
 
-    <!-- Total Notifications -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 7. Total Notifications - Amber Theme -->
+    <div class="bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total Notifications</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_notifications }}</h2>
+                <p class="text-sm font-medium text-amber-600 dark:text-amber-400">Total Notifications</p>
+                <h2 class="text-5xl font-bold mt-5 text-amber-700 dark:text-amber-200 stat-number">{{ total_notifications }}</h2>
             </div>
-            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-bell text-2xl"></i>
+            <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                🛎️
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +23% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +23% this month
         </p>
     </div>
 
-    <!-- Total Revenue -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 card-hover">
-        <div class="flex justify-between">
+    <!-- 8. Total Revenue - Yellow/Orange Theme -->
+    <div class="bg-yellow-50 dark:bg-yellow-950/60 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-8 card-hover shadow-xl">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-sm text-gray-500">Total Revenue</p>
-                <h2 class="text-4xl md:text-5xl font-bold mt-3">{{ total_revenue }}</h2>
+                <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Total Revenue</p>
+                <h2 class="text-5xl font-bold mt-5 text-yellow-700 dark:text-yellow-200 stat-number">₹{{ total_revenue }}</h2>
             </div>
-            <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-rupee-sign text-2xl"></i>
+            <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                ₹
             </div>
         </div>
-        <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
-            <i class="fas fa-arrow-up"></i> +18% this month
+        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+            <i class="fas fa-arrow-trend-up"></i> +18% this month
         </p>
     </div>
 
 </div>
 
-        <!-- Charts -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6">
-                <h3 class="font-semibold mb-4">Revenue Trend (Last 30 Days)</h3>
-                <canvas id="revenueChart" height="120"></canvas>
+       <!-- Charts Section - Premium Look -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+
+    <!-- Revenue Trend Chart -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-700 card-hover">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="font-semibold text-xl">Revenue Trend</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Last 30 Days • ₹ in Thousands</p>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6">
-                <h3 class="font-semibold mb-4">Bookings Status</h3>
-                <canvas id="bookingsChart" height="120"></canvas>
+            <div class="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400 rounded-2xl text-sm font-medium flex items-center gap-2">
+                <i class="fas fa-chart-line"></i>
+                Growth
             </div>
         </div>
+        <canvas id="revenueChart" height="145"></canvas>
+    </div>
+
+    <!-- Bookings Status Chart -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-700 card-hover">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="font-semibold text-xl">Bookings Status</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Current Distribution</p>
+            </div>
+            <div class="px-4 py-2 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-2xl text-sm font-medium flex items-center gap-2">
+                <i class="fas fa-pie-chart"></i>
+                Overview
+            </div>
+        </div>
+        <canvas id="bookingsChart" height="145"></canvas>
+    </div>
+
+</div>
 
         
 
@@ -735,26 +755,21 @@ document.addEventListener('click', function(e) {
 }
 
     function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const icon = document.getElementById("menu-icon");
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const icon = document.getElementById("menu-icon");
 
-    if (sidebar.classList.contains("-translate-x-full")) {
-        // Open Sidebar
-        sidebar.classList.remove("-translate-x-full");
-        overlay.classList.remove("hidden");
+            if (sidebar.classList.contains("-translate-x-full")) {
+                sidebar.classList.remove("-translate-x-full");
+                overlay.classList.remove("hidden");
+                icon.classList.replace("fa-bars", "fa-times");
+            } else {
+                sidebar.classList.add("-translate-x-full");
+                overlay.classList.add("hidden");
+                icon.classList.replace("fa-times", "fa-bars");
+            }
+        }
 
-        icon.classList.remove("fa-bars");
-        icon.classList.add("fa-times");
-    } else {
-        // Close Sidebar
-        sidebar.classList.add("-translate-x-full");
-        overlay.classList.add("hidden");
-
-        icon.classList.remove("fa-times");
-        icon.classList.add("fa-bars");
-    }
-}
 
 
         // Initialize everything

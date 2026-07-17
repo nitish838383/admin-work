@@ -36,7 +36,28 @@ router = APIRouter(
 )
 #
 # -------------------------------------------------------------------------------------------------------------------------------
+from authlib.integrations.starlette_client import OAuth
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+oauth = OAuth()
+
+oauth.register(
+    name="google",
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={
+        "scope": "openid email profile"
+    },
+)
+
+@router.get("/google")
+async def google_login(request: Request):
+    redirect_uri = request.url_for("google_callback")
+    return await oauth.google.authorize_redirect(request, redirect_uri)
 # get login page
 @router.get("/login")
 def login_page(request: Request):
@@ -45,6 +66,20 @@ def login_page(request: Request):
         name="login.html",
         context={}
     )
+
+@router.get("/google/callback", name="google_callback")
+async def google_callback(request: Request):
+
+    token = await oauth.google.authorize_access_token(request)
+
+    user = token["userinfo"]
+
+    email = user["email"]
+    name = user["name"]
+
+    # Database check yahan kar sakte ho
+
+    return RedirectResponse("/auth/dashboard")
 # ---------------------------------------------------------------------------------------------------------------------------------
 
 @router.post("/login-view")
@@ -66,9 +101,9 @@ def login_view(
         "email": admin.email
     })
 
-    
-@router.post("/login-page")
+@router.post("/login")
 def login_form(
+    request: Request,
     email: str = Form(...),
     password: str = Form(...),
     db: Session = Depends(get_db)
@@ -76,10 +111,24 @@ def login_form(
     admin = db.query(Admin).filter(Admin.email == email).first()
 
     if not admin:
-        raise HTTPException(status_code=404, detail="Admin not found")
+        return templates.TemplateResponse(
+    request=request,
+    name="login.html",
+    context={
+        "error": "Email not found!"
+    },
+    status_code=400
+)
 
     if not verify_password(password, admin.password):
-        raise HTTPException(status_code=401, detail="Invalid Password")
+        return templates.TemplateResponse(
+    request=request,
+    name="login.html",
+    context={
+        "error": "Invalid Password"
+    },
+    status_code=400
+)
 
     token = create_access_token({
         "admin_id": admin.id,
@@ -87,16 +136,8 @@ def login_form(
     })
 
     response = RedirectResponse(
-    url="/auth/loading",
-    status_code=302
-)
-
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True,
-        secure=True,
-        samesite="lax"
+        url="/auth/loading",
+        status_code=302
     )
 
     response.set_cookie(
@@ -262,6 +303,29 @@ def dashboard(
         print("Reviews API Error:", e)
         reviews = []
         total_reviews = 0
+
+    # ---------------- Customers ----------------
+    try:
+        booking_response = requests.get(
+            "https://mistripoint-backend-1.onrender.com/auth/admin/bookings",
+            timeout=10
+        )
+        booking_response.raise_for_status()
+
+        data_booking = booking_response.json()
+
+        if isinstance(data_booking, dict):
+            booking = data_booking.get("booking", [])
+        else:
+            booking = data_booking
+
+        total_bookings = len(booking)
+
+    except Exception as e:
+        print("booking API Error:", e)
+        booking = []
+        total_bookings = 0
+
 
     # ---------------- Local Database ----------------
     total_users = db.query(User).count()
@@ -716,6 +780,7 @@ def all_customers(
     )
 
     data = response.json()
+    print(data)
 
     total_customers = data["total_customers"]
     customers = data["customers"]
@@ -828,13 +893,6 @@ def Contact(request:Request):
 # ---------------------------------------------------------------------------------------------------------------------------------------------
 from models import Booking
 
-# booking items page
-@router.get("/booking-summary")
-def book_summary(request:Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="booking_summary.html"
-    )
 
 # ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -854,7 +912,12 @@ def all_bookings(
     db: Session = Depends(get_db)
 ):
 
-    bookings = db.query(Booking).all()
+    response=requests.get(
+        "https://mistripoint-backend-1.onrender.com/auth/admin/bookings"
+    )
+
+    bookings = response.json()
+    
     total_bookings=len(bookings)
 
     return templates.TemplateResponse(
@@ -868,46 +931,7 @@ def all_bookings(
         
     )
 
-# ==========================================================================================================================================
 
-# create booking
-@router.post("/create-booking")
-def create_booking(
-    booking: BookingCreate,
-    db: Session = Depends(get_db)
-):
-
-    new_booking = Booking(
-
-        customer_name=booking.customer_name,
-        worker_name=booking.worker_name,
-        service_name=booking.service_name,
-        service_selection_name=booking.service_selection_name,
-        booking_date=booking.booking_date,
-        slot=booking.slot,
-
-        quantity=booking.quantity,
-        state=booking.state,
-
-        address=booking.address,
-        city=booking.city,
-        pincode=booking.pincode,
-
-        amount=booking.amount,
-
-        payment_method=booking.payment_method,
-        payment_status="Pending",
-        status="Pending"
-    )
-
-    db.add(new_booking)
-    db.commit()
-    db.refresh(new_booking)
-
-    return {
-        "message": "Booking Created Successfully",
-        "booking": new_booking
-    }
 
 # ______________________________________________________________________________________________________________________________________
 # service-selections
@@ -1206,14 +1230,17 @@ def category(
     )
 
     data = response.json()
+    print(data)
+    categories=data
+    total_categories=len(categories)
 
     return templates.TemplateResponse(
         request=request,
         name="category.html",
         context={
             "request": request,
-            "categories": data,
-            "total_categories": len(data),
+            "categories": categories,
+            "total_categories": total_categories,
             "total_active": len(
                 [c for c in data if c.get("status", "").lower() == "active"]
             ),

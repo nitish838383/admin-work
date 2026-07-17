@@ -3,38 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MistriPoint - Book trusted local workers, plumbers, electricians, painters, AC technicians & more. Instant booking with verified professionals.">
-    <title>MistriPoint - Book Trusted Workers Near You</title>
+    <meta name="description" content="Book trusted local workers instantly - Plumbers, Electricians, Painters, AC Technicians & more.">
+    <title>MistriPoint - Trusted Home Services</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
-        
-        :root {
-            --primary: #6366f1;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&display=swap');
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system_ui, sans-serif;
         }
         
-        .heading-font {
-            font-family: 'Playfair Display', sans-serif;
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-        }
-        
         .hero-bg {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
         }
 
         .service-card {
@@ -42,321 +31,214 @@
         }
         
         .service-card:hover {
-            transform: translateY(-15px) scale(1.03);
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px -15px rgb(0 0 0 / 0.2);
         }
 
-        .stat-number {
-            font-variant-numeric: tabular-nums;
+        .glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
         }
     </style>
 </head>
-<body class="bg-zinc-50 text-zinc-900">
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
 
-    <!-- NAVBAR -->
-    <nav class="bg-white border-b sticky top-0 z-50 shadow-sm">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-zinc-900 border-b sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">M</div>
-                <h1 class="text-2xl font-bold tracking-tight">MistriPoint</h1>
+                <div class="w-11 h-11 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-3xl flex items-center justify-center text-white text-3xl font-bold logo-font">M</div>
+                <h1 class="text-3xl font-bold tracking-tighter logo-font">MistriPoint</h1>
             </div>
             
             <div class="hidden md:flex items-center gap-8 text-sm font-medium">
                 <a href="#services" class="hover:text-indigo-600 transition-colors">Services</a>
                 <a href="#how" class="hover:text-indigo-600 transition-colors">How it Works</a>
-                <a href="#workers" class="hover:text-indigo-600 transition-colors">Workers</a>
-                <a href="#testimonials" class="hover:text-indigo-600 transition-colors">Reviews</a>
+                <a href="#workers" class="hover:text-indigo-600 transition-colors">Find Workers</a>
+                <a href="#reviews" class="hover:text-indigo-600 transition-colors">Reviews</a>
             </div>
 
             <div class="flex items-center gap-4">
-                <button onclick="toggleDarkMode()" 
-                        class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 transition-colors">
-                    <i class="fas fa-moon text-xl"></i>
+                <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
                 </button>
-                <button onclick="window.location.href='/auth/login'" 
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-3xl font-semibold transition-all">
-                    Login Now
-                </button>
-                <button onclick="window.location.href='#book-now'" 
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-3xl font-semibold transition-all">
-                    Book Now
-                </button>
+                <a href="/auth/login" class="hidden md:block px-7 py-3 font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">Login</a>
+                <a href="/auth/all-bookings" onclick="comingSoon(event)"bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-3xl font-semibold transition-all active:scale-95">Book Now</a>
             </div>
         </div>
     </nav>
 
-    <!-- HERO -->
-    <section class="hero-bg text-white min-h-screen flex items-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581578731548-0f0c1b3b3c3c')] bg-cover bg-center opacity-10"></div>
-        
-        <div class="max-w-7xl mx-auto px-6 pt-20 pb-16 relative z-10">
-            <div class="max-w-3xl" data-aos="fade-up">
-                <h1 class="text-6xl md:text-7xl font-bold leading-tight heading-font mb-6">
-                    Find Trusted <span class="text-yellow-300">Mistri</span> Near You
+    <!-- Hero Section -->
+    <section class="hero-bg text-white min-h-screen flex items-center relative">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <div data-aos="fade-right">
+                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2 rounded-3xl text-sm mb-6">
+                    <span class="bg-emerald-400 w-2 h-2 rounded-full animate-pulse"></span>
+                    <span>Now in 120+ Cities</span>
+                </div>
+                
+                <h1 class="text-6xl md:text-7xl font-bold leading-tight tracking-tighter logo-font mb-6">
+                    Hire Trusted <span class="text-emerald-400">Mistri</span><br> in Minutes
                 </h1>
-                <p class="text-xl text-white/80 mb-10">
-                    Book verified plumbers, electricians, painters, AC technicians &amp; more in minutes.
+                <p class="text-xl text-zinc-300 max-w-lg mb-10">
+                    Verified professionals at your doorstep. Instant booking. Transparent pricing.
                 </p>
 
-                <!-- Search Box -->
-                <div class="bg-white rounded-3xl p-2 shadow-2xl">
+                <div class="bg-white rounded-3xl p-2 shadow-2xl max-w-xl">
                     <div class="flex flex-col md:flex-row gap-3">
-                        <input type="text" id="hero-search" 
-                               class="flex-1 px-8 py-6 text-zinc-900 rounded-3xl focus:outline-none text-lg"
-                               placeholder="What service do you need? (e.g. Plumbing)">
-                        <button onclick="performSearch()" 
-                                class="bg-indigo-600 hover:bg-indigo-700 px-12 py-6 rounded-3xl text-white font-semibold text-lg transition-all">
-                            <i class="fas fa-search mr-2"></i> Search
+                        <input type="text" id="search-input" 
+                               class="flex-1 px-8 py-6 rounded-3xl text-zinc-900 focus:outline-none text-lg"
+                               placeholder="What service do you need?">
+                        <button onclick="searchService()" 
+                                class="bg-zinc-900 hover:bg-black text-white px-12 py-6 rounded-3xl font-semibold flex items-center gap-3">
+                            <i class="fas fa-search"></i>
+                            <span>Find Now</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="mt-8 flex flex-wrap gap-6 text-sm">
+                <div class="flex gap-8 mt-10 text-sm">
                     <div class="flex items-center gap-2">
-                        <i class="fas fa-check-circle text-green-400"></i>
-                        <span>Verified Professionals</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-check-circle text-green-400"></i>
-                        <span>30-Min Response</span>
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                        <span>Verified Workers</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <i class="fas fa-check-circle text-green-400"></i>
-                        <span>Secure Payments</span>
+                        <i class="fa-solid fa-clock text-emerald-400"></i>
+                        <span>30 Min Response</span>
                     </div>
+                </div>
+            </div>
+
+            <div data-aos="fade-left" class="relative">
+                <img src="https://images.unsplash.com/photo-1581578731548-0f0c1b3b3c3c" 
+                     alt="Worker" class="rounded-3xl shadow-2xl">
+                <div class="absolute -bottom-6 -left-6 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-xl">
+                    <p class="text-emerald-600 font-semibold">4.98 ★</p>
+                    <p class="text-sm">Average Rating</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SERVICES -->
-    <section id="services" class="py-20 bg-white">
+    <!-- Services -->
+    <section id="services" class="py-24 bg-white dark:bg-zinc-900">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-4" data-aos="fade-up">Our Services</h2>
-            <p class="text-center text-zinc-600 mb-12 max-w-md mx-auto">Professional services at your doorstep</p>
+            <h2 class="text-5xl font-bold text-center mb-4 logo-font" data-aos="fade-up">Our Services</h2>
+            <p class="text-center text-zinc-600 dark:text-zinc-400 mb-16">Professional services delivered with trust</p>
             
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="services-grid">
-                <!-- Populated by JS -->
-            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="services-grid"></div>
         </div>
     </section>
 
-    <!-- WHY CHOOSE US -->
-    <section class="py-20 bg-zinc-900 text-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-16" data-aos="fade-up">Why MistriPoint?</h2>
-            
-            <div class="grid md:grid-cols-3 gap-10">
-                <div class="glass border border-white/10 rounded-3xl p-8" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fas fa-shield-alt text-3xl text-indigo-400"></i>
-                    </div>
-                    <h3 class="text-2xl font-semibold mb-3">Background Verified</h3>
-                    <p class="text-zinc-400">Every worker undergoes police verification and skill assessment.</p>
-                </div>
-                
-                <div class="glass border border-white/10 rounded-3xl p-8" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fas fa-clock text-3xl text-emerald-400"></i>
-                    </div>
-                    <h3 class="text-2xl font-semibold mb-3">Instant Booking</h3>
-                    <p class="text-zinc-400">Book in 60 seconds. Get service within hours.</p>
-                </div>
-                
-                <div class="glass border border-white/10 rounded-3xl p-8" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-14 h-14 bg-amber-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fas fa-star text-3xl text-amber-400"></i>
-                    </div>
-                    <h3 class="text-2xl font-semibold mb-3">4.9/5 Rating</h3>
-                    <p class="text-zinc-400">Rated by 50,000+ happy customers across India.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- HOW IT WORKS -->
-    <section id="how" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-16" data-aos="fade-up">How It Works</h2>
-            
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-20 h-20 mx-auto bg-indigo-100 rounded-3xl flex items-center justify-center text-4xl mb-6">1️⃣</div>
-                    <h4 class="font-semibold text-xl mb-2">Describe Your Need</h4>
-                    <p class="text-zinc-600">Tell us what service you need</p>
-                </div>
-                <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-20 h-20 mx-auto bg-indigo-100 rounded-3xl flex items-center justify-center text-4xl mb-6">2️⃣</div>
-                    <h4 class="font-semibold text-xl mb-2">Get Matched</h4>
-                    <p class="text-zinc-600">We match you with nearby experts</p>
-                </div>
-                <div class="text-center" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-20 h-20 mx-auto bg-indigo-100 rounded-3xl flex items-center justify-center text-4xl mb-6">3️⃣</div>
-                    <h4 class="font-semibold text-xl mb-2">Book &amp; Pay</h4>
-                    <p class="text-zinc-600">Choose time and pay securely</p>
-                </div>
-                <div class="text-center" data-aos="fade-up" data-aos-delay="400">
-                    <div class="w-20 h-20 mx-auto bg-indigo-100 rounded-3xl flex items-center justify-center text-4xl mb-6">4️⃣</div>
-                    <h4 class="font-semibold text-xl mb-2">Get It Done</h4>
-                    <p class="text-zinc-600">Relax while we handle everything</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- STATS -->
-    <section class="py-16 bg-gradient-to-r from-indigo-600 to-violet-600 text-white">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
+    <!-- Stats -->
+    <section class="py-16 bg-zinc-900 text-white">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-10 text-center">
             <div data-aos="fade-up">
-                <h3 id="count-workers" class="text-5xl font-bold stat-number">12450</h3>
-                <p class="text-white/70 mt-2">Verified Workers</p>
+                <h3 class="text-6xl font-bold text-emerald-400">12,450</h3>
+                <p class="mt-3 text-zinc-400">Verified Mistri</p>
             </div>
             <div data-aos="fade-up" data-aos-delay="100">
-                <h3 id="count-jobs" class="text-5xl font-bold stat-number">89200</h3>
-                <p class="text-white/70 mt-2">Jobs Completed</p>
+                <h3 class="text-6xl font-bold text-emerald-400">89,200</h3>
+                <p class="mt-3 text-zinc-400">Jobs Completed</p>
             </div>
             <div data-aos="fade-up" data-aos-delay="200">
-                <h3 id="count-cities" class="text-5xl font-bold stat-number">142</h3>
-                <p class="text-white/70 mt-2">Cities Covered</p>
+                <h3 class="text-6xl font-bold text-emerald-400">142</h3>
+                <p class="mt-3 text-zinc-400">Cities</p>
             </div>
             <div data-aos="fade-up" data-aos-delay="300">
-                <h3 id="count-rating" class="text-5xl font-bold stat-number">4.9</h3>
-                <p class="text-white/70 mt-2">Average Rating</p>
+                <h3 class="text-6xl font-bold text-emerald-400">4.9</h3>
+                <p class="mt-3 text-zinc-400">Rating</p>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="bg-zinc-900 text-zinc-400 py-16">
+    <!-- Footer -->
+    <footer class="bg-zinc-900 text-zinc-400 py-20">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid md:grid-cols-5 gap-10">
                 <div>
                     <div class="flex items-center gap-3 text-white mb-6">
-                        <div class="w-9 h-9 bg-indigo-600 rounded-2xl flex items-center justify-center text-2xl">M</div>
-                        <span class="text-2xl font-bold">MistriPoint</span>
+                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl flex items-center justify-center text-3xl font-bold logo-font">M</div>
+                        <span class="text-3xl font-bold logo-font">MistriPoint</span>
                     </div>
-                    <p class="text-sm">India's most trusted home services platform.</p>
+                    <p class="text-sm">India's most trusted platform for home services.</p>
                 </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4">Company</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white">About Us</a></li>
-                        <li><a href="#" class="hover:text-white">Careers</a></li>
-                        <li><a href="#" class="hover:text-white">Blog</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4">For Customers</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white">Book a Service</a></li>
-                        <li><a href="#" class="hover:text-white">Track Booking</a></li>
-                        <li><a href="#" class="hover:text-white">Help Center</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4">For Workers</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white">Become a Partner</a></li>
-                        <li><a href="#" class="hover:text-white">Worker Dashboard</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4">Download App</h4>
-                    <div class="flex gap-3">
-                        <button class="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl text-sm">Google Play</button>
-                        <button class="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl text-sm">App Store</button>
+                <div class="md:col-span-4 grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-white mb-4">Company</h4>
+                        <ul class="space-y-3 text-sm">
+                            <li><a href="#" class="hover:text-white">About Us</a></li>
+                            <li><a href="#" class="hover:text-white">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-white mb-4">Services</h4>
+                        <ul class="space-y-3 text-sm">
+                            <li><a href="#" class="hover:text-white">Plumbing</a></li>
+                            <li><a href="#" class="hover:text-white">Electrical</a></li>
+                            <li><a href="#" class="hover:text-white">AC Repair</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-white mb-4">Get App</h4>
+                        <div class="flex gap-3">
+                            <button class="bg-zinc-800 px-6 py-3 rounded-2xl text-sm">Play Store</button>
+                            <button class="bg-zinc-800 px-6 py-3 rounded-2xl text-sm">App Store</button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="border-t border-zinc-800 mt-16 pt-8 text-center text-xs">
-                © 2026 MistriPoint Technologies Pvt Ltd. All rights reserved.
+            <div class="text-center text-xs border-t border-zinc-800 mt-16 pt-8">
+                © 2026 MistriPoint Technologies. All Rights Reserved.
             </div>
         </div>
     </footer>
 
-    <!-- Floating WhatsApp -->
-    <a href="https://wa.me/919876543210" target="_blank"
-       class="fixed bottom-8 right-8 w-14 h-14 bg-green-500 rounded-3xl flex items-center justify-center text-white shadow-2xl hover:scale-110 transition-transform z-50">
-        <i class="fab fa-whatsapp text-3xl"></i>
-    </a>
-
     <script>
-        // Tailwind Script
-        function initTailwind() {
-            // Already using CDN
-        }
+        AOS.init({ duration: 1000, once: true });
 
-        // AOS Initialization
-        AOS.init({
-            duration: 800,
-            once: true
-        });
-
-        // Dark Mode
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-        }
-
-        // Sample Services
         const services = [
-            { icon: "🪠", name: "Plumbing" },
-            { icon: "⚡", name: "Electrical" },
-            { icon: "🎨", name: "Painting" },
-            { icon: "❄️", name: "AC Repair" },
-            { icon: "🛠️", name: "Carpentry" },
-            { icon: "🧹", name: "Cleaning" },
-            { icon: "📱", name: "Appliance Repair" },
-            { icon: "🏠", name: "Home Renovation" }
+            {icon: "🔧", name: "Plumbing"},
+            {icon: "⚡", name: "Electrical"},
+            {icon: "❄️", name: "AC Service"},
+            {icon: "🎨", name: "Painting"},
+            {icon: "🛠️", name: "Carpentry"},
+            {icon: "🧹", name: "Cleaning"},
+            {icon: "📱", name: "Appliance Repair"},
+            {icon: "🏗️", name: "Renovation"}
         ];
 
         function renderServices() {
-            const container = document.getElementById('services-grid');
+            const container = document.getElementById("services-grid");
             container.innerHTML = services.map(s => `
-                <div class="service-card bg-white border border-zinc-100 rounded-3xl p-8 text-center cursor-pointer hover:border-indigo-200">
-                    <div class="text-5xl mb-4">${s.icon}</div>
-                    <h3 class="font-semibold">${s.name}</h3>
+                <div class="service-card bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-3xl p-8 text-center">
+                    <div class="text-6xl mb-6">${s.icon}</div>
+                    <h3 class="font-semibold text-xl">${s.name}</h3>
                 </div>
             `).join('');
         }
 
-        // Animated Counters
-        function animateCounters() {
-            const counters = document.querySelectorAll('.stat-number');
-            counters.forEach(counter => {
-                const target = parseFloat(counter.textContent);
-                let count = 0;
-                const increment = target / 60;
-                
-                const timer = setInterval(() => {
-                    count += increment;
-                    if (count >= target) {
-                        counter.textContent = target % 1 === 0 ? Math.floor(target) : target.toFixed(1);
-                        clearInterval(timer);
-                    } else {
-                        counter.textContent = count % 1 === 0 ? Math.floor(count) : count.toFixed(1);
-                    }
-                }, 30);
-            });
-        }
-
-        // Search Handler
-        function performSearch() {
-            const query = document.getElementById('hero-search').value;
-            if (query.trim()) {
+        function searchService() {
+            const query = document.getElementById("search-input").value;
+            if (query) {
                 alert(`Searching for "${query}" near you...`);
-                // In real app, this would redirect to search results
             }
         }
 
-        // Initialize everything
-        window.onload = function() {
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle("dark");
+        }
+
+        window.onload = () => {
             renderServices();
-            animateCounters();
-            
-            // Demo: Floating chat (optional)
-            console.log('%cMistriPoint Landing Page Loaded Successfully ✨', 'color: #6366f1; font-size: 14px; font-weight: bold');
+            console.log("%cMistriPoint - Professional Landing Page Loaded", "color: #6366f1; font-weight: bold");
         };
+        function comingSoon(event) {
+            event.preventDefault();
+            alert("🚧 Booking page is coming soon!");
+        }
     </script>
 </body>
 </html>
