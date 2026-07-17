@@ -68,18 +68,46 @@ def login_page(request: Request):
     )
 
 @router.get("/google/callback", name="google_callback")
-async def google_callback(request: Request):
-
+async def google_callback(
+    request: Request,
+    db: Session = Depends(get_db)
+):
     token = await oauth.google.authorize_access_token(request)
-
     user = token["userinfo"]
 
     email = user["email"]
-    name = user["name"]
 
-    # Database check yahan kar sakte ho
+    admin = db.query(Admin).filter(Admin.email == email).first()
 
-    return RedirectResponse("/auth/dashboard")
+    if not admin:
+        return templates.TemplateResponse(
+            request=request,
+            name="login.html",
+            context={
+                "error": "Email not found. Please contact administrator."
+            },
+            status_code=400
+        )
+
+    access_token = create_access_token({
+        "admin_id": admin.id,
+        "email": admin.email
+    })
+
+    response = RedirectResponse(
+        url="/auth/loading",
+        status_code=302
+    )
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+
+    return response
 # ---------------------------------------------------------------------------------------------------------------------------------
 
 @router.post("/login-view")
