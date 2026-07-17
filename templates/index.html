@@ -63,10 +63,15 @@
                     <i class="fas fa-moon dark:hidden"></i>
                     <i class="fas fa-sun hidden dark:block"></i>
                 </button>
-                <a href="/auth/login" class="hidden md:block px-7 py-3 font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">Login</a>
-                <a href="/auth/all-bookings" onclick="comingSoon(event)"bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-3xl font-semibold transition-all active:scale-95">Book Now</a>
-            </div>
-        </div>
+<a href="/auth/login"
+   class="px-4 py-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">
+    <i class="fas fa-user md:hidden"></i>
+    <span class="hidden md:inline">Login</span>
+</a>               
+<a href="https://stalwart-lamington-03bc94.netlify.app/"
+   class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-3xl font-semibold transition-all active:scale-95">
+    Book Now
+</a>
     </nav>
 
     <!-- Hero Section -->
@@ -235,10 +240,7 @@
             renderServices();
             console.log("%cMistriPoint - Professional Landing Page Loaded", "color: #6366f1; font-weight: bold");
         };
-        function comingSoon(event) {
-            event.preventDefault();
-            alert("🚧 Booking page is coming soon!");
-        }
+       
     </script>
 </body>
 </html>
