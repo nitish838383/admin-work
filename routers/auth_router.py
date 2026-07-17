@@ -19,6 +19,7 @@ from schemas import BookingCreate
 from fastapi.responses import JSONResponse
 import random
 from datetime import datetime, timedelta
+from sqlalchemy import func
 
 
 
@@ -183,8 +184,8 @@ def login_form(
 # --------------------------------------------------------------------------
 # Dashboard
 # --------------------------------------------------------------------------
-
-from models import User, Booking
+from sqlalchemy import func
+from models import User
 import requests
 
 @router.get("/dashboard")
@@ -202,18 +203,18 @@ def dashboard(
 
     # ---------------- Customers ----------------
     try:
-        customers_response = requests.get(
+        response = requests.get(
             "https://mistripoint-backend-1.onrender.com/auth/all-customers",
             timeout=10
         )
-        customers_response.raise_for_status()
+        response.raise_for_status()
 
-        data_customers = customers_response.json()
+        data = response.json()
 
-        if isinstance(data_customers, dict):
-            customers = data_customers.get("customers", [])
+        if isinstance(data, dict):
+            customers = data.get("customers", [])
         else:
-            customers = data_customers
+            customers = data
 
         total_customers = len(customers)
 
@@ -222,20 +223,50 @@ def dashboard(
         customers = []
         total_customers = 0
 
+    # ---------------- Bookings & Revenue ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-backend-1.onrender.com/auth/admin/bookings",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        if isinstance(data, dict):
+            bookings = data.get("booking", [])
+        else:
+            bookings = data
+
+        total_bookings = len(bookings)
+
+        total_revenue = sum(
+            float(b.get("amount", 0))
+            for b in bookings
+        )
+        print("Total Revenue:", total_revenue)
+        
+
+    except Exception as e:
+        print("Booking API Error:", e)
+        bookings = []
+        total_bookings = 0
+        total_revenue = 0
+
     # ---------------- Workers ----------------
     try:
-        workers_response = requests.get(
+        response = requests.get(
             "https://mistripoint-1.onrender.com/worker-profiles",
             timeout=10
         )
-        workers_response.raise_for_status()
+        response.raise_for_status()
 
-        data_workers = workers_response.json()
+        data = response.json()
 
-        if isinstance(data_workers, dict):
-            workers = data_workers.get("data", [])
+        if isinstance(data, dict):
+            workers = data.get("data", [])
         else:
-            workers = data_workers
+            workers = data
 
         total_workers = len(workers)
 
@@ -246,18 +277,18 @@ def dashboard(
 
     # ---------------- Skills ----------------
     try:
-        skills_response = requests.get(
+        response = requests.get(
             "https://mistripoint-1.onrender.com/skills",
             timeout=10
         )
-        skills_response.raise_for_status()
+        response.raise_for_status()
 
-        data_skills = skills_response.json()
+        data = response.json()
 
-        if isinstance(data_skills, dict):
-            skills = data_skills.get("data", [])
+        if isinstance(data, dict):
+            skills = data.get("data", [])
         else:
-            skills = data_skills
+            skills = data
 
         total_skills = len(skills)
 
@@ -268,18 +299,18 @@ def dashboard(
 
     # ---------------- Worker KYC ----------------
     try:
-        kycs_response = requests.get(
+        response = requests.get(
             "https://mistripoint-1.onrender.com/worker-kyc",
             timeout=10
         )
-        kycs_response.raise_for_status()
+        response.raise_for_status()
 
-        data_kycs = kycs_response.json()
+        data = response.json()
 
-        if isinstance(data_kycs, dict):
-            kycs = data_kycs.get("data", [])
+        if isinstance(data, dict):
+            kycs = data.get("data", [])
         else:
-            kycs = data_kycs
+            kycs = data
 
         total_kyc_workers = len(kycs)
 
@@ -290,18 +321,18 @@ def dashboard(
 
     # ---------------- Notifications ----------------
     try:
-        notification_response = requests.get(
+        response = requests.get(
             "https://mistripoint-1.onrender.com/notifications",
             timeout=10
         )
-        notification_response.raise_for_status()
+        response.raise_for_status()
 
-        data_notifications = notification_response.json()
+        data = response.json()
 
-        if isinstance(data_notifications, dict):
-            notifications = data_notifications.get("data", [])
+        if isinstance(data, dict):
+            notifications = data.get("data", [])
         else:
-            notifications = data_notifications
+            notifications = data
 
         total_notifications = len(notifications)
 
@@ -312,18 +343,18 @@ def dashboard(
 
     # ---------------- Reviews ----------------
     try:
-        reviews_response = requests.get(
+        response = requests.get(
             "https://mistripoint-1.onrender.com/reviews",
             timeout=10
         )
-        reviews_response.raise_for_status()
+        response.raise_for_status()
 
-        data_reviews = reviews_response.json()
+        data = response.json()
 
-        if isinstance(data_reviews, dict):
-            reviews = data_reviews.get("data", [])
+        if isinstance(data, dict):
+            reviews = data.get("data", [])
         else:
-            reviews = data_reviews
+            reviews = data
 
         total_reviews = len(reviews)
 
@@ -332,32 +363,8 @@ def dashboard(
         reviews = []
         total_reviews = 0
 
-    # ---------------- Customers ----------------
-    try:
-        booking_response = requests.get(
-            "https://mistripoint-backend-1.onrender.com/auth/admin/bookings",
-            timeout=10
-        )
-        booking_response.raise_for_status()
-
-        data_booking = booking_response.json()
-
-        if isinstance(data_booking, dict):
-            booking = data_booking.get("booking", [])
-        else:
-            booking = data_booking
-
-        total_bookings = len(booking)
-
-    except Exception as e:
-        print("booking API Error:", e)
-        booking = []
-        total_bookings = 0
-
-
     # ---------------- Local Database ----------------
     total_users = db.query(User).count()
-    total_bookings = db.query(Booking).count()
 
     # ---------------- Render ----------------
     return templates.TemplateResponse(
@@ -375,9 +382,11 @@ def dashboard(
             "total_reviews": total_reviews,
             "customers": customers,
             "reviews": reviews,
+            "total_revenue": total_revenue,
         }
     )
-# -------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------
+# ------------------------------------------------------------
 
 # get Logout
 @router.get("/logout")
