@@ -78,11 +78,11 @@
                 </div>
                 <div class="bg-emerald-600 text-white rounded-3xl p-6 shadow-lg">
                     <p class="text-sm opacity-90">Active Workers</p>
-                    <h2 class="text-5xl font-bold mt-3">{{ active_workers | default(189) }}</h2>
+                    <h2 class="text-5xl font-bold mt-3">{{ active_workers | default(0) }}</h2>
                 </div>
                 <div class="bg-amber-600 text-white rounded-3xl p-6 shadow-lg">
                     <p class="text-sm opacity-90">Pending Approval</p>
-                    <h2 class="text-5xl font-bold mt-3">{{ pending_workers | default(32) }}</h2>
+                    <h2 class="text-5xl font-bold mt-3">{{ pending_workers | default(0) }}</h2>
                 </div>
             </div>
 

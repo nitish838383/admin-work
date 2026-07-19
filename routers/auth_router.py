@@ -421,6 +421,7 @@ import requests
 
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
+
 async def send_otp_email(email: str, otp: str):
 
     url = "https://api.brevo.com/v3/smtp/email"
@@ -457,8 +458,9 @@ async def send_otp_email(email: str, otp: str):
         json=payload
     )
 
-    print(response.status_code)
-    print(response.text)
+    print("API KEY:", BREVO_API_KEY)
+    print("Status:", response.status_code)
+    print("Response:", response.text)
 # ----------------------------------------------------------------------------------------------------------------------------------
 # opt send
 @router.post("/send-otp")
@@ -473,6 +475,8 @@ async def send_otp(
         raise HTTPException(status_code=404, detail="Admin not found")
 
     otp = str(random.randint(100000, 999999))
+    print("Email:", email)
+    print("OTP:", otp)
  
 
     # Save in database
