@@ -417,13 +417,25 @@ def forgot_password(
        
     )
 import os
+import os
 import requests
+
+MCP_API_KEY = os.getenv("MCP_API_KEY")
+
+async def send_otp_email(email: str, otp: str):
+    headers = {
+        "api-key": MCP_API_KEY,
+        "content-type": "application/json"
+    }
+
+    # ...
+import requests
+import os
+
 
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
-
 async def send_otp_email(email: str, otp: str):
-
     url = "https://api.brevo.com/v3/smtp/email"
 
     headers = {
@@ -435,7 +447,7 @@ async def send_otp_email(email: str, otp: str):
     payload = {
         "sender": {
             "name": "UstadJi",
-            "email": "admin.ustadji@gmail.com"
+            "email": "nitishkumar971727@gmail.com"
         },
         "to": [
             {
@@ -445,18 +457,29 @@ async def send_otp_email(email: str, otp: str):
         "subject": "OTP Verification",
         "htmlContent": f"""
         <h2>Password Reset OTP</h2>
-
+        <p>Your OTP is:</p>
         <h1>{otp}</h1>
-
         <p>This OTP is valid for 10 minutes.</p>
         """
     }
 
-    response = requests.post(
-        url,
-        headers=headers,
-        json=payload
-    )
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+
+        print("Status Code:", response.status_code)
+        print("Response:", response.text)
+
+        response.raise_for_status()
+        return True
+
+    except requests.exceptions.RequestException as e:
+        print("Brevo Error:", str(e))
+        return False
 
     print("API KEY:", BREVO_API_KEY)
     print("Status:", response.status_code)
