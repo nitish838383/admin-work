@@ -15,6 +15,7 @@ from fastapi.responses import RedirectResponse
 from datetime import datetime
 import os
 from uuid import uuid4
+from config import SECRET_KEY, ALGORITHM
 from schemas import BookingCreate
 from fastapi.responses import JSONResponse
 import random
