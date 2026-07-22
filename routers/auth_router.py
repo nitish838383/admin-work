@@ -20,7 +20,6 @@ from fastapi.responses import JSONResponse
 import random
 from datetime import datetime, timedelta
 from sqlalchemy import func
-from config import SECRET_KEY, ALGORITHM
 
 
 
