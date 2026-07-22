@@ -190,19 +190,18 @@ from models import User
 import requests
 
 from jose import jwt, JWTError
-
 @router.get("/dashboard")
 def dashboard(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    token = request.cookies.get("access_token")
+    
 
+    token = request.cookies.get("access_token")
+    print("Token:", token)
     if not token:
-        return RedirectResponse(
-            url="/auth/login",
-            status_code=302
-        )
+        print("No token found")
+        return RedirectResponse("/auth/login", status_code=302)
 
     try:
         payload = jwt.decode(
@@ -211,24 +210,17 @@ def dashboard(
             algorithms=[ALGORITHM]
         )
 
-        admin_id = payload.get("admin_id")
+        
 
-        if admin_id is None:
-            raise JWTError()
+    except JWTError as e:
+        print("JWT Error:", e)
 
-        admin = db.query(Admin).filter(Admin.id == admin_id).first()
-
-        if not admin:
-            raise JWTError()
-
-    except JWTError:
         response = RedirectResponse(
             url="/auth/login",
             status_code=302
         )
         response.delete_cookie("access_token")
         return response
-
     # ↓ Iske baad tumhara existing dashboard code rahega
 
     # ---------------- Customers ----------------

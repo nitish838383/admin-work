@@ -3,8 +3,7 @@ from jose import jwt
 from datetime import datetime
 from datetime import timedelta
 
-SECRET_KEY = "super_secret_key"
-ALGORITHM = "HS256"
+from config import SECRET_KEY, ALGORITHM
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
