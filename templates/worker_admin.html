@@ -6,51 +6,71 @@
     <title>Worker Management - SRG Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-   
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-       
-        body { font-family: 'Poppins', sans-serif; }
-       
-        .table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
         }
-       
-        th {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background: #f8fafc;
+        
+        .main-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         }
-       
+        
+        .dark .main-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+        }
+        
+        th { position: sticky; top: 0; z-index: 20; }
+        
         .action-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         .action-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .modal {
+            animation: modalFade 0.3s ease forwards;
+        }
+        
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="main-bg text-gray-900 dark:text-gray-100 min-h-screen transition-all duration-300">
 
 <div class="flex h-screen">
 
     <!-- Sidebar -->
-    <div class="w-72 bg-[#1e3a8a] text-white p-6 hidden md:flex flex-col">
-        <div class="flex items-center gap-3 mb-10">
-            <div class="w-9 h-9 bg-white rounded-2xl flex items-center justify-center text-[#1e3a8a] font-bold text-xl">S</div>
-            <h1 class="text-2xl font-bold">SRG Admin</h1>
+    <div class="w-72 bg-gradient-to-b from-[#1e3a8a] to-[#1e40af] text-white p-6 hidden md:flex flex-col shadow-2xl">
+        <div class="flex items-center gap-3 mb-12">
+            <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-[#1e3a8a] font-bold text-2xl shadow-inner">S</div>
+            <h1 class="text-3xl font-bold tracking-tight">SRG Admin</h1>
         </div>
-       
-        <nav class="space-y-1">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-blue-700 transition-colors">
-                <i class="fas fa-users w-5"></i>
-                <span>Users</span>
+        
+        <nav class="space-y-2 flex-1">
+            <a href="#" class="flex items-center gap-3 px-5 py-4 rounded-2xl hover:bg-white/10 transition-all">
+                <i class="fas fa-users w-5"></i><span class="font-medium">Users</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-blue-700 font-medium">
-                <i class="fas fa-briefcase w-5"></i>
-                <span>Workers</span>
+            <a href="#" class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-white/20 font-medium shadow-inner">
+                <i class="fas fa-briefcase w-5"></i><span class="font-medium">Workers</span>
             </a>
         </nav>
     </div>
@@ -59,127 +79,227 @@
     <div class="flex-1 overflow-auto">
 
         <!-- Top Bar -->
-        <div class="bg-white shadow-sm border-b p-5 flex justify-between items-center sticky top-0 z-50">
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-slate-700 p-5 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-4">
-                <button onclick="goBack()" class="flex items-center gap-2 px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-2xl">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Back</span>
+                <button onclick="goBack()" class="flex items-center gap-3 px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl transition-all">
+                    <i class="fas fa-arrow-left"></i><span>Back</span>
                 </button>
-                <h1 class="text-2xl font-bold text-gray-800">Worker Management</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Worker Management</h1>
             </div>
+
+            <button onclick="toggleDarkMode()" id="darkModeToggle"
+                    class="w-11 h-11 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-2xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-all">
+                <i id="themeIcon" class="fas fa-moon text-xl"></i>
+            </button>
         </div>
 
-        <div class="p-6">
+        <div class="p-8">
+
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                <div class="bg-blue-600 text-white rounded-3xl p-6 shadow-lg">
-                    <p class="text-sm opacity-90">Total Workers</p>
-                    <h2 class="text-5xl font-bold mt-3">{{ total_workers | default(248) }}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-3xl p-8 shadow-sm">
+                    <p class="text-sm text-gray-500 dark:text-slate-400">Total Workers</p>
+                    <h2 class="text-5xl font-bold mt-3 text-gray-900 dark:text-white">{{ total_workers | default(248) }}</h2>
                 </div>
-                <div class="bg-emerald-600 text-white rounded-3xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-3xl p-8 shadow-lg">
                     <p class="text-sm opacity-90">Active Workers</p>
                     <h2 class="text-5xl font-bold mt-3">{{ active_workers | default(0) }}</h2>
                 </div>
-                <div class="bg-amber-600 text-white rounded-3xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-amber-600 to-orange-600 text-white rounded-3xl p-8 shadow-lg">
                     <p class="text-sm opacity-90">Pending Approval</p>
                     <h2 class="text-5xl font-bold mt-3">{{ pending_workers | default(0) }}</h2>
                 </div>
             </div>
 
-            <!-- Filters + Export -->
-            <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <!-- Filters -->
+            <div class="flex flex-col md:flex-row gap-4 mb-8">
                 <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-5 top-4 text-gray-400"></i>
-                    <input type="text" id="searchInput" placeholder="Search by name, mobile or skill..."
-                           class="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500">
+                    <i class="fas fa-search absolute left-6 top-5 text-gray-400 dark:text-slate-400 text-xl"></i>
+                    <input type="text" id="searchInput" 
+                           placeholder="Search by name, mobile, skill or email..."
+                           class="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 text-base">
                 </div>
                 
-                <!-- All Status Dropdown -->
                 <select id="statusFilter" 
-                        class="px-6 py-4 border border-gray-300 rounded-3xl focus:outline-none bg-white text-sm font-medium">
+                        class="px-8 py-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 text-base font-medium">
                     <option value="">All Status</option>
                     <option value="Approved">Approved</option>
                     <option value="Rejected">Rejected</option>
                     <option value="Pending">Pending</option>
                 </select>
 
-                <!-- Export Excel Button -->
-                <button onclick="exportToExcel()" 
-                        class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-3xl flex items-center gap-3 font-semibold shadow-lg transition-all">
-                    <i class="fas fa-file-excel"></i>
-                    <span>Export Excel</span>
+                <button onclick="exportToExcel()" id="exportBtn"
+                        class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-10 py-5 rounded-3xl flex items-center gap-3 font-semibold shadow-lg transition-all whitespace-nowrap">
+                    <span id="exportContent">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </span>
                 </button>
             </div>
 
             <!-- Table -->
-            <div class="bg-white rounded-3xl shadow table-wrapper">
-                <table class="w-full min-w-[1000px]">
-                    <thead>
-                        <tr class="border-b">
-                            <th class="px-6 py-5 text-left">ID</th>
-                            <th class="px-6 py-5 text-left">Name</th>
-                            <th class="px-6 py-5 text-left">Mobile</th>
-                            <th class="px-6 py-5 text-left">Email</th>
-                            <th class="px-6 py-5 text-left">Skill</th>
-                            <th class="px-6 py-5 text-left">Experience</th>
-                            <th class="px-6 py-5 text-center">Status</th>
-                            <th class="px-6 py-5 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100" id="tableBody">
-                        {% for worker in workers %}
-                        <tr class="hover:bg-slate-50 transition-all">
-                            <td class="px-6 py-5">{{ worker.id }}</td>
-                            <td class="px-6 py-5 font-semibold">{{ worker.name }}</td>
-                            <td class="px-6 py-5">{{ worker.mobile }}</td>
-                            <td class="px-6 py-5">{{ worker.email or '-' }}</td>
-                            <td class="px-6 py-5">{{ worker.skills }}</td>
-                            <td class="px-6 py-5">{{ worker.experience_years }} yrs</td>
-                            <td class="px-6 py-5 text-center">
-                                {% if worker.profile_status == 'Approved' %}
-                                    <span class="px-5 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">Approved</span>
-                                {% elif worker.profile_status == 'Rejected' %}
-                                    <span class="px-5 py-1.5 bg-red-100 text-red-700 rounded-full text-sm font-medium">Rejected</span>
-                                {% else %}
-                                    <span class="px-5 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">Pending</span>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-5 text-center">
-                                <div class="flex justify-center gap-3">
-                                    <a href="/auth/worker/{{ worker.id }}/approve" 
-                                       class="action-btn px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-2xl">
-                                        Approve
-                                    </a>
-                                    <a href="/auth/worker/{{ worker.id }}/reject" 
-                                       class="action-btn px-6 py-3 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-2xl">
-                                        Reject
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/60 dark:border-slate-700">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[1100px]">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white">
+                                <th class="px-8 py-6 text-left font-semibold">ID</th>
+                                <th class="px-8 py-6 text-left font-semibold">Name</th>
+                                <th class="px-8 py-6 text-left font-semibold">Mobile</th>
+                                <th class="px-8 py-6 text-left font-semibold">Email</th>
+                                <th class="px-8 py-6 text-left font-semibold">Skill</th>
+                                <th class="px-8 py-6 text-left font-semibold">Experience</th>
+                                <th class="px-8 py-6 text-center font-semibold">Status</th>
+                                <th class="px-8 py-6 text-center font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-slate-700" id="tableBody">
+                            {% for worker in workers %}
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
+                                <td class="px-8 py-6 font-medium">{{ worker.id }}</td>
+                                <td class="px-8 py-6 font-semibold">{{ worker.name }}</td>
+                                <td class="px-8 py-6">{{ worker.mobile }}</td>
+                                <td class="px-8 py-6 text-gray-600 dark:text-gray-400">{{ worker.email or '-' }}</td>
+                                <td class="px-8 py-6">{{ worker.skills }}</td>
+                                <td class="px-8 py-6">{{ worker.experience_years }} yrs</td>
+                                <td class="px-8 py-6 text-center">
+                                    {% if worker.profile_status == 'Approved' %}
+                                        <span class="inline-flex items-center px-6 py-2 bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-full text-sm font-medium">
+                                            <i class="fas fa-check-circle mr-1"></i> Approved
+                                        </span>
+                                    {% elif worker.profile_status == 'Rejected' %}
+                                        <span class="inline-flex items-center px-6 py-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-full text-sm font-medium">
+                                            <i class="fas fa-times-circle mr-1"></i> Rejected
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-6 py-2 bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 rounded-full text-sm font-medium">
+                                            <i class="fas fa-clock mr-1"></i> Pending
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-8 py-6 text-center">
+                                    <div class="flex justify-center gap-3">
+                                        <button onclick="viewWorkerProfile({{ worker | tojson }})" 
+                                                class="action-btn px-5 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-2xl">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <a href="/auth/worker/{{ worker.id }}/approve" 
+                                           class="action-btn px-7 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-2xl">
+                                            Approve
+                                        </a>
+                                        <a href="/auth/worker/{{ worker.id }}/reject" 
+                                           class="action-btn px-7 py-3 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-2xl">
+                                            Reject
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Worker Profile Modal -->
+<div id="profileModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100]">
+    <div class="modal bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 id="modalName" class="text-2xl font-bold"></h2>
+                    <p id="modalId" class="text-blue-200"></p>
+                </div>
+                <button onclick="closeModal()" 
+                        class="text-white hover:bg-white/20 p-2 rounded-xl transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-8 space-y-6">
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <p class="text-xs text-gray-500 dark:text-slate-400">Mobile</p>
+                    <p id="modalMobile" class="font-medium"></p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 dark:text-slate-400">Email</p>
+                    <p id="modalEmail" class="font-medium"></p>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-500 dark:text-slate-400">Skills</p>
+                <p id="modalSkills" class="font-medium"></p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <p class="text-xs text-gray-500 dark:text-slate-400">Experience</p>
+                    <p id="modalExperience" class="font-medium"></p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 dark:text-slate-400">Status</p>
+                    <p id="modalStatus" class="inline-block px-5 py-1.5 text-sm font-medium rounded-full"></p>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-500 dark:text-slate-400">Address</p>
+                <p id="modalAddress" class="text-gray-600 dark:text-gray-400"></p>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="border-t dark:border-slate-700 p-6 flex gap-4">
+            <button onclick="closeModal()" 
+                    class="flex-1 py-4 border border-gray-300 dark:border-slate-600 rounded-2xl font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+                Close
+            </button>
+            <button onclick="editWorker()" 
+                    class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-medium hover:bg-blue-700 transition-colors">
+                Edit Profile
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Search + Filter (Fixed)
+    // Dark Mode
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const icon = document.getElementById('themeIcon');
+        icon.classList.toggle('fa-moon', !document.documentElement.classList.contains('dark'));
+        icon.classList.toggle('fa-sun', document.documentElement.classList.contains('dark'));
+    }
+
+    if (localStorage.getItem('darkMode') === 'true' || 
+        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    }
+    updateThemeIcon();
+
+    // Filter Table (unchanged)
     function filterTable() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
         const statusFilter = document.getElementById('statusFilter').value;
-        
         const rows = document.querySelectorAll('#tableBody tr');
         
         rows.forEach(row => {
             const rowText = row.textContent.toLowerCase();
             const statusCell = row.querySelector('td:nth-child(7)').textContent.trim();
-            
             const matchesSearch = rowText.includes(searchTerm);
-            const matchesStatus = !statusFilter || statusCell === statusFilter;
-            
+            const matchesStatus = !statusFilter || statusCell.includes(statusFilter);
             row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
         });
     }
@@ -187,13 +307,73 @@
     document.getElementById('searchInput').addEventListener('keyup', filterTable);
     document.getElementById('statusFilter').addEventListener('change', filterTable);
 
+    // View Profile Modal
+    function viewWorkerProfile(worker) {
+        document.getElementById('modalName').textContent = worker.name;
+        document.getElementById('modalId').textContent = `ID: ${worker.id}`;
+        document.getElementById('modalMobile').textContent = worker.mobile;
+        document.getElementById('modalEmail').textContent = worker.email || 'Not provided';
+        document.getElementById('modalSkills').textContent = worker.skills;
+        document.getElementById('modalExperience').textContent = `${worker.experience_years} Years`;
+        
+        const statusEl = document.getElementById('modalStatus');
+        statusEl.textContent = worker.profile_status || 'Pending';
+        
+        if (worker.profile_status === 'Approved') {
+            statusEl.className = "inline-block px-5 py-1.5 bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-full text-sm font-medium";
+        } else if (worker.profile_status === 'Rejected') {
+            statusEl.className = "inline-block px-5 py-1.5 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-full text-sm font-medium";
+        } else {
+            statusEl.className = "inline-block px-5 py-1.5 bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 rounded-full text-sm font-medium";
+        }
+
+        document.getElementById('modalAddress').textContent = worker.address || "No address provided";
+        document.getElementById('profileModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('profileModal').classList.add('hidden');
+    }
+
+    function editWorker() {
+        alert("Redirecting to Edit Profile page...");
+        closeModal();
+        // window.location.href = `/auth/worker/edit/${currentWorkerId}`;
+    }
+
+    // Export
     function exportToExcel() {
-        alert("Exporting Excel file...");
+        const exportBtn = document.getElementById('exportBtn');
+        const exportContent = document.getElementById('exportContent');
+        
+        exportContent.innerHTML = `<span class="spinner inline-block mr-2"></span> Exporting...`;
+        exportBtn.disabled = true;
+
+        setTimeout(() => {
+            const csvContent = "data:text/csv;charset=utf-8,Sample Worker Data";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `workers_export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            setTimeout(() => {
+                exportContent.innerHTML = `<i class="fas fa-file-excel"></i> Export Excel`;
+                exportBtn.disabled = false;
+            }, 800);
+        }, 700);
     }
 
     function goBack() {
         window.history.back();
     }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") closeModal();
+    });
 </script>
 
 </body>

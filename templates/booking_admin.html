@@ -98,39 +98,63 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-800" id="tableBody">
-                    {% for booking in bookings %}
-                    <tr class="hover:bg-zinc-800 transition-all" id="row-{{ booking.id }}">
-                        <td class="px-6 py-5 font-medium text-emerald-400">#{{ booking.id }}</td>
-                        <td class="p-5 font-medium">{{ booking.customer_id }}</td>
-                        <td class="px-6 py-5">{{ booking.customer_name }}</td>
-                        <td class="px-6 py-5">{{ booking.worker_name or '<span class="text-amber-400">Not Assigned</span>' }}</td>
-                        <td class="px-6 py-5">{{ booking.category_name }}</td>
-                        <td class="px-6 py-5">{{ booking.booking_date }}</td>
-                        <td class="px-6 py-5 font-semibold text-emerald-400">₹{{ booking.amount }}</td>
-                        <td class="px-6 py-5 text-center">
-                            {% if booking.payment_status == "Paid" %}
-                                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Paid</span>
-                            {% else %}
-                                <span class="bg-amber-900 text-amber-400 px-4 py-1 rounded-full text-sm">Pending</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-5 text-center">
-                            {% if booking.status == "Completed" %}
-                                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Completed</span>
-                            {% else %}
-                                <span class="bg-blue-900 text-blue-400 px-4 py-1 rounded-full text-sm">Pending</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-5 text-center space-x-2">
-                            <a href="/auth/booking/{{ booking.id }}/assign" class="action-btn bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm">Assign</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+    {% for booking in bookings %}
+    <tr class="hover:bg-zinc-800 transition-all" id="row-{{ booking.id }}">
+
+        <td class="px-6 py-5 font-medium text-emerald-400">
+            #{{ booking.id }}
+        </td>
+
+        <td class="px-6 py-5">
+            {{ booking.customer_name }}
+        </td>
+
+        <td class="px-6 py-5">
+            {% if booking.worker_name %}
+                {{ booking.worker_name }}
+            {% else %}
+                <span class="text-amber-400">Not Assigned</span>
+            {% endif %}
+        </td>
+
+        <td class="px-6 py-5">
+            {{ booking.category_name }}
+        </td>
+
+        <td class="px-6 py-5">
+            {{ booking.booking_date }}
+        </td>
+
+        <td class="px-6 py-5 font-semibold text-emerald-400">
+            ₹{{ booking.amount }}
+        </td>
+
+        <td class="px-6 py-5 text-center">
+            {% if booking.payment_status == "Paid" %}
+                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Paid</span>
+            {% else %}
+                <span class="bg-amber-900 text-amber-400 px-4 py-1 rounded-full text-sm">Pending</span>
+            {% endif %}
+        </td>
+
+        <td class="px-6 py-5 text-center">
+            {% if booking.status == "Completed" %}
+                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Completed</span>
+            {% else %}
+                <span class="bg-blue-900 text-blue-400 px-4 py-1 rounded-full text-sm">Pending</span>
+            {% endif %}
+        </td>
+
+        <td class="px-6 py-5 text-center">
+            <a href="/auth/booking/{{ booking.id }}/assign"
+               class="action-btn bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm">
+                Assign
+            </a>
+        </td>
+
+    </tr>
+    {% endfor %}
+</tbody>
 
 <script>
     function filterTable() {

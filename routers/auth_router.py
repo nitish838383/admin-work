@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse
 import random
 from datetime import datetime, timedelta
 from sqlalchemy import func
+from config import SECRET_KEY, ALGORITHM
 
 
 
@@ -188,6 +189,8 @@ from sqlalchemy import func
 from models import User
 import requests
 
+from jose import jwt, JWTError
+
 @router.get("/dashboard")
 def dashboard(
     request: Request,
@@ -200,6 +203,33 @@ def dashboard(
             url="/auth/login",
             status_code=302
         )
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        admin_id = payload.get("admin_id")
+
+        if admin_id is None:
+            raise JWTError()
+
+        admin = db.query(Admin).filter(Admin.id == admin_id).first()
+
+        if not admin:
+            raise JWTError()
+
+    except JWTError:
+        response = RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+        response.delete_cookie("access_token")
+        return response
+
+    # ↓ Iske baad tumhara existing dashboard code rahega
 
     # ---------------- Customers ----------------
     try:
@@ -481,9 +511,7 @@ async def send_otp_email(email: str, otp: str):
         print("Brevo Error:", str(e))
         return False
 
-    print("API KEY:", BREVO_API_KEY)
-    print("Status:", response.status_code)
-    print("Response:", response.text)
+   
 # ----------------------------------------------------------------------------------------------------------------------------------
 # opt send
 @router.post("/send-otp")
@@ -498,8 +526,7 @@ async def send_otp(
         raise HTTPException(status_code=404, detail="Admin not found")
 
     otp = str(random.randint(100000, 999999))
-    print("Email:", email)
-    print("OTP:", otp)
+   
  
 
     # Save in database
@@ -700,6 +727,38 @@ def worker_admin_page(
     request: Request,
     db: Session = Depends(get_db)
 ):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        return RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        admin_id = payload.get("admin_id")
+
+        if admin_id is None:
+            raise JWTError()
+
+        admin = db.query(Admin).filter(Admin.id == admin_id).first()
+
+        if not admin:
+            raise JWTError()
+
+    except JWTError:
+        response = RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+        response.delete_cookie("access_token")
+        return response
     response = requests.get(
         "https://mistripoint-1.onrender.com/worker-profiles"
     )
@@ -839,6 +898,38 @@ def all_customers(
     request: Request,
     db: Session = Depends(get_db)
 ):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        return RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        admin_id = payload.get("admin_id")
+
+        if admin_id is None:
+            raise JWTError()
+
+        admin = db.query(Admin).filter(Admin.id == admin_id).first()
+
+        if not admin:
+            raise JWTError()
+
+    except JWTError:
+        response = RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+        response.delete_cookie("access_token")
+        return response
     response = requests.get(
         "https://mistripoint-backend-1.onrender.com/auth/all-customers"
     )
@@ -975,6 +1066,38 @@ def all_bookings(
     request: Request,
     db: Session = Depends(get_db)
 ):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        return RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        admin_id = payload.get("admin_id")
+
+        if admin_id is None:
+            raise JWTError()
+
+        admin = db.query(Admin).filter(Admin.id == admin_id).first()
+
+        if not admin:
+            raise JWTError()
+
+    except JWTError:
+        response = RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+        response.delete_cookie("access_token")
+        return response
 
     response=requests.get(
         "https://mistripoint-backend-1.onrender.com/auth/admin/bookings"
@@ -1016,31 +1139,69 @@ def payment_view_page(request:Request):
 
     )
 
-# ===================================================================================================================================
-# all- skills
+# # ===================================================================================================================================
+# all-skills
+from jose import jwt, JWTError
+
 @router.get("/all-skills")
 def all_skills(
     request: Request,
     db: Session = Depends(get_db)
 ):
-   response = requests.get(
-       "https://mistripoint-1.onrender.com/skills"
+    token = request.cookies.get("access_token")
+
+    if not token:
+        return RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        admin_id = payload.get("admin_id")
+
+        if admin_id is None:
+            raise JWTError()
+
+        admin = db.query(Admin).filter(
+            Admin.id == admin_id
+        ).first()
+
+        if not admin:
+            raise JWTError()
+
+    except JWTError:
+        response = RedirectResponse(
+            url="/auth/login",
+            status_code=302
+        )
+        response.delete_cookie("access_token")
+        return response
+
+    # ---------------- Skills API ----------------
+    response = requests.get(
+        "https://mistripoint-1.onrender.com/skills"
     )
-   
-   data = response.json()
-   total_skills = len(data)
-   skills = data
-   return templates.TemplateResponse(
+
+    data = response.json()
+
+    total_skills = len(data)
+    skills = data
+
+    return templates.TemplateResponse(
         request=request,
         name="skills.html",
         context={
             "request": request,
             "skills": skills,
-            "total_skills":total_skills,
+            "total_skills": total_skills,
         }
-        
     )
-
 # -----------------------------------------------------------------------------------------------------------------------------------
 # kyc-admin
 
@@ -1048,6 +1209,7 @@ def all_skills(
 def kyc_admin(
     request: Request
 ):
+    
     response = requests.get(
         "https://mistripoint-1.onrender.com/worker-kyc"
 

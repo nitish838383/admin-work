@@ -6,7 +6,7 @@
     <title>All Customers - LabourMitra Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-   
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
@@ -17,16 +17,7 @@
         .table-container {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            max-height: calc(100vh - 280px);
-        }
-        
-        .action-btn { 
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        
-        .action-btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            max-height: calc(100vh - 320px);
         }
         
         th {
@@ -34,69 +25,124 @@
             top: 0;
             z-index: 10;
         }
+
+        .main-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .dark .main-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+        }
+
+        tr:hover {
+            transition: all 0.2s ease;
+        }
+        
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .action-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="main-bg text-gray-900 dark:text-gray-100 min-h-screen transition-all duration-300">
 
-<div class="p-4 md:p-8 max-w-7xl mx-auto">
+<div class="p-6 md:p-10 max-w-7xl mx-auto">
 
-    <!-- Enhanced Header with Back Button -->
-    <div class="bg-white rounded-3xl shadow-xl p-6 mb-8">
+    <!-- Header -->
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 mb-10 border border-white/50 dark:border-slate-700">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             
-            <!-- Left Side with Back Button -->
-            <div class="flex items-center gap-4">
+            <!-- Left -->
+            <div class="flex items-center gap-5">
                 <button onclick="goBack()" 
-                        class="flex items-center gap-2 px-5 py-3 text-gray-700 hover:bg-gray-100 rounded-2xl transition-all hover:text-blue-600 font-medium">
+                        class="flex items-center gap-3 px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-slate-800 rounded-2xl transition-all hover:text-blue-600 font-medium text-lg">
                     <i class="fas fa-arrow-left"></i>
                     <span>Back</span>
                 </button>
                 
-                <div class="h-8 w-px bg-gray-200"></div>
+                <div class="h-9 w-px bg-gray-200 dark:bg-slate-700"></div>
                 
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-800">All Customers</h1>
-                    <p class="text-slate-500 text-sm">Manage and monitor all registered customers</p>
+                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white">All Customers</h1>
+                    <p class="text-slate-500 dark:text-slate-400 mt-1">Manage and monitor all registered customers</p>
                 </div>
             </div>
 
-            <!-- Right Side - Stats + Download -->
-            <div class="flex flex-wrap items-center gap-4">
-                <div class="bg-blue-50 text-blue-700 px-6 py-3 rounded-2xl text-center min-w-[170px] shadow-sm">
-                    <p class="text-sm font-medium">Total Customers</p>
-                    <p class="text-3xl font-bold">{{ total_customers | default(124) }}</p>
+            <!-- Right Side -->
+            <div class="flex flex-wrap items-center gap-5">
+                <!-- Stats -->
+                <div class="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 px-7 py-5 rounded-3xl text-center shadow-sm min-w-[160px]">
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Total Customers</p>
+                    <p class="text-4xl font-bold mt-1 text-gray-900 dark:text-white">{{ total_customers | default(124) }}</p>
                 </div>
                 
-                <div class="bg-emerald-600 text-white rounded-2xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-3xl p-6 shadow-lg">
                     <p class="text-sm opacity-90">Active Workers</p>
                     <h2 class="text-4xl font-bold mt-1">{{ active_workers | default(87) }}</h2>
                 </div>
                 
-                <div class="bg-amber-600 text-white rounded-2xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-amber-600 to-orange-600 text-white rounded-3xl p-6 shadow-lg">
                     <p class="text-sm opacity-90">Pending Approval</p>
                     <h2 class="text-4xl font-bold mt-1">{{ pending_workers | default(19) }}</h2>
                 </div>
 
-                <button onclick="exportToExcel()" 
-                        class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl flex items-center gap-3 font-semibold shadow-lg transition-all">
-                    <i class="fas fa-file-excel"></i> 
-                    <span>Export Excel</span>
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" id="darkModeToggle"
+                        class="w-12 h-12 flex items-center justify-center bg-white dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-2xl transition-all shadow-sm">
+                    <i id="themeIcon" class="fas fa-moon text-xl text-gray-600 dark:text-yellow-400"></i>
+                </button>
+
+                <!-- Export Button -->
+                <button onclick="exportToExcel()" id="exportBtn"
+                        class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-5 rounded-3xl flex items-center gap-3 font-semibold shadow-lg transition-all text-lg">
+                    <span id="exportContent">
+                        <i class="fas fa-file-excel"></i> 
+                        Export Excel
+                    </span>
                 </button>
             </div>
         </div>
 
-        <!-- Search + Filters -->
-        <div class="mt-8 flex flex-col md:flex-row gap-4">
+        <!-- Search & Filters -->
+        <div class="mt-10 flex flex-col md:flex-row gap-4">
             <div class="relative flex-1">
-                <i class="fas fa-search absolute left-5 top-4 text-gray-400"></i>
+                <i class="fas fa-search absolute left-6 top-5 text-gray-400 dark:text-slate-400 text-xl"></i>
                 <input type="text" id="searchInput"
-                       class="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-1 text-base shadow-sm"
-                       placeholder="Search customers by name, phone or city...">
+                       class="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100/50 text-base shadow-sm"
+                       placeholder="Search by name, phone, city or ID...">
             </div>
             
             <div class="flex gap-3">
                 <select id="statusFilter" 
-                        class="px-5 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:border-blue-500 bg-white text-sm font-medium">
+                        class="px-8 py-5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 text-base font-medium shadow-sm">
                     <option value="">All Status</option>
                     <option value="Approved">Approved</option>
                     <option value="Pending">Pending</option>
@@ -104,71 +150,75 @@
                 </select>
                 
                 <button onclick="clearFilters()" 
-                        class="px-6 py-4 border border-gray-200 hover:bg-gray-50 rounded-3xl text-gray-600 font-medium flex items-center gap-2 transition-colors">
+                        class="px-8 py-5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-3xl text-gray-600 dark:text-gray-400 font-medium flex items-center gap-3 transition-all">
                     <i class="fas fa-sync-alt"></i>
-                    <span class="hidden sm:inline">Reset</span>
+                    <span>Reset</span>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/60 dark:border-slate-700">
         <div class="table-container">
-            <table class="w-full min-w-[1100px]" id="customerTable">
-                <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
-                    <tr>
-                        <th>S.No.</th>
-                        <th class="p-5 text-left">ID</th>
-                        <th class="p-5 text-left">Customer Name</th>
-                        <th class="p-5 text-left">Phone</th>
-                        <th class="p-5 text-left">City</th>
-                        <th class="p-5 text-left">Address</th>
-                        <th class="p-5 text-left">Pincode</th>
-                        <th class="p-5 text-center">Status</th>
-                        <th class="p-5 text-center">Actions</th>
+            <table class="w-full min-w-[1200px]" id="customerTable">
+                <thead>
+                    <tr class="text-white text-left bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800">
+                        <th class="p-6 font-semibold">S.No.</th>
+                        <th class="p-6 font-semibold">ID</th>
+                        <th class="p-6 font-semibold">Customer Name</th>
+                        <th class="p-6 font-semibold">Phone</th>
+                        <th class="p-6 font-semibold">City</th>
+                        <th class="p-6 font-semibold">Address</th>
+                        <th class="p-6 font-semibold">Pincode</th>
+                        <th class="p-6 text-center font-semibold">Status</th>
+                        <th class="p-6 text-center font-semibold">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y" id="tableBody">
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700" id="tableBody">
                     {% for customer in customers %}
-                    <tr class="hover:bg-slate-50 transition-all group" id="row-{{ customer['id'] }}">
-                            <td>{{ loop.index }}</td>
-                            <td class="p-5 font-medium">{{ customer["S.No."] }}</td>
-
-                        <td class="p-5 font-medium">{{ customer["id"] }}</td>
-                        <td class="p-5">{{ customer["first_name"] or "-" }} {{ customer["last_name"] or "" }}</td>
-                        <td class="p-5">{{ customer["phone"] }}</td>
-                        <td class="p-5">{{ customer["city"] or "-" }}</td>
-                        <td class="p-5 text-slate-600">{{ customer["address"] or "-" }}</td>
-                        <td class="p-5">{{ customer["pincode"] or "-" }}</td>
-                        <td class="p-5 text-center">
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-all group" id="row-{{ customer['id'] }}">
+                        <td class="p-6 font-medium text-gray-500 dark:text-slate-400">{{ loop.index }}</td>
+                        <td class="p-6 font-semibold text-gray-800 dark:text-white">{{ customer['id'] }}</td>
+                        <td class="p-6">
+                            {{ customer["first_name"] or "-" }} {{ customer["last_name"] or "" }}
+                        </td>
+                        <td class="p-6 font-medium">{{ customer["phone"] }}</td>
+                        <td class="p-6">{{ customer["city"] or "-" }}</td>
+                        <td class="p-6 text-slate-600 dark:text-slate-400 max-w-xs truncate">{{ customer["address"] or "-" }}</td>
+                        <td class="p-6">{{ customer["pincode"] or "-" }}</td>
+                        <td class="p-6 text-center">
                             {% if customer["status"] == "Approved" %}
-                                <span class="inline-flex items-center bg-green-100 text-green-700 px-5 py-1.5 rounded-full text-sm font-medium">
-                                    <i class="fas fa-check-circle mr-1"></i> Approved
+                                <span class="status-badge bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">
+                                    <i class="fas fa-check-circle"></i> Approved
                                 </span>
                             {% elif customer["status"] == "Rejected" %}
-                                <span class="inline-flex items-center bg-red-100 text-red-700 px-5 py-1.5 rounded-full text-sm font-medium">
-                                    <i class="fas fa-times-circle mr-1"></i> Rejected
+                                <span class="status-badge bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300">
+                                    <i class="fas fa-times-circle"></i> Rejected
                                 </span>
                             {% else %}
-                                <span class="inline-flex items-center bg-amber-100 text-amber-700 px-5 py-1.5 rounded-full text-sm font-medium">
-                                    <i class="fas fa-clock mr-1"></i> Pending
+                                <span class="status-badge bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300">
+                                    <i class="fas fa-clock"></i> Pending
                                 </span>
                             {% endif %}
                         </td>
-                        <td class="p-5 text-center">
-                            <div class="flex items-center justify-center gap-2">
+                        <td class="p-6 text-center">
+                            <div class="flex items-center justify-center gap-3">
                                 <a href="/auth/customer_approved/{{ customer['id'] }}/approve" 
-                                   class="action-btn bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl text-sm">Approve</a>
+                                   class="action-btn bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-2xl text-sm font-medium">
+                                    Approve
+                                </a>
                                 <a href="/auth/customer_rejected/{{ customer['id'] }}/reject" 
-                                   class="action-btn bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-2xl text-sm">Reject</a>
+                                   class="action-btn bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-2xl text-sm font-medium">
+                                    Reject
+                                </a>
                                 <button onclick="editCustomer({{ customer['id'] }})" 
-                                        class="action-btn bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-2xl text-sm">
+                                        class="action-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-2xl">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <a href="/auth/customer_delete/{{ customer['id'] }}/delete"
                                    onclick="return confirm('Delete this customer? This action cannot be undone.')"
-                                   class="action-btn bg-slate-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-2xl text-sm">
+                                   class="action-btn bg-slate-700 hover:bg-red-600 text-white px-4 py-3 rounded-2xl">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -182,7 +232,33 @@
 </div>
 
 <script>
-    // Search + Status Filter
+    // Dark Mode
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('darkMode', isDark);
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const icon = document.getElementById('themeIcon');
+        if (document.documentElement.classList.contains('dark')) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    }
+
+    // Load saved theme
+    if (localStorage.getItem('darkMode') === 'true' || 
+        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    }
+    updateThemeIcon();
+
+    // Filter Function
     function filterTable() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
         const statusFilter = document.getElementById('statusFilter').value;
@@ -191,7 +267,7 @@
         
         rows.forEach(row => {
             const rowText = row.textContent.toLowerCase();
-            const statusCell = row.querySelector('td:nth-child(7)').textContent.trim();
+            const statusCell = row.querySelector('td:nth-child(8)').textContent.trim();
             
             const matchesSearch = rowText.includes(searchTerm);
             const matchesStatus = !statusFilter || statusCell.includes(statusFilter);
@@ -209,29 +285,47 @@
         filterTable();
     }
 
-    // Export to Excel (CSV)
+    // Export with Loading Spinner
     function exportToExcel() {
-        const table = document.getElementById("customerTable");
-        let csvContent = "\uFEFFdata:text/csv;charset=utf-8,";
+        const exportBtn = document.getElementById('exportBtn');
+        const exportContent = document.getElementById('exportContent');
+        
+        exportContent.innerHTML = `
+            <span class="spinner inline-block mr-2"></span>
+            Exporting...
+        `;
+        exportBtn.disabled = true;
 
-        const rows = table.querySelectorAll("tr");
-        rows.forEach(row => {
-            const cols = row.querySelectorAll("td, th");
-            const rowData = [];
-            cols.forEach(col => {
-                let text = col.textContent.trim().replace(/,/g, " ").replace(/"/g, '""');
-                rowData.push(`"${text}"`);
+        setTimeout(() => {
+            const table = document.getElementById("customerTable");
+            let csvContent = "\uFEFFdata:text/csv;charset=utf-8,";
+
+            const rows = table.querySelectorAll("tr");
+            rows.forEach(row => {
+                const cols = row.querySelectorAll("td, th");
+                const rowData = Array.from(cols).map(col => {
+                    let text = col.textContent.trim().replace(/,/g, " ").replace(/"/g, '""');
+                    return `"${text}"`;
+                });
+                csvContent += rowData.join(",") + "\n";
             });
-            csvContent += rowData.join(",") + "\n";
-        });
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `customers_export_${new Date().toISOString().slice(0,10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `customers_export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            setTimeout(() => {
+                exportContent.innerHTML = `
+                    <i class="fas fa-file-excel"></i> 
+                    Export Excel
+                `;
+                exportBtn.disabled = false;
+            }, 800);
+        }, 600);
     }
 
     function editCustomer(id) {
@@ -240,16 +334,14 @@
         }
     }
 
-    // Back Button Function
     function goBack() {
         if (window.history.length > 1) {
             window.history.back();
         } else {
-            window.location.href = '/dashboard';   // Change this to your actual dashboard URL
+            window.location.href = '/dashboard';
         }
     }
 
-    // Keyboard shortcut
     document.addEventListener('keydown', function(e) {
         if (e.key === "/" && document.getElementById('searchInput') !== document.activeElement) {
             e.preventDefault();

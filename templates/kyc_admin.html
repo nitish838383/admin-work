@@ -10,187 +10,202 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
-        body { font-family: 'Poppins', sans-serif; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        .main-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .dark .main-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+        }
         
         .kyc-card {
             transition: all 0.3s ease;
         }
+        
+        .document-chip {
+            transition: all 0.2s ease;
+        }
+        
+        .document-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="main-bg text-gray-900 dark:text-gray-100 min-h-screen transition-all duration-300">
 
-<div class="max-w-7xl mx-auto p-4">
+<div class="max-w-7xl mx-auto p-4 md:p-8">
 
     <!-- Header -->
-    <div class="bg-white rounded-3xl shadow-xl p-5 mb-6">
-        <div class="flex items-center justify-between">
-            <button onclick="goBack()" 
-                    class="flex items-center gap-2 px-5 py-3 text-gray-700 hover:bg-gray-100 rounded-2xl transition-all">
-                <i class="fas fa-arrow-left"></i>
-                <span class="font-medium">Back</span>
-            </button>
-            
-            <div class="bg-emerald-600 text-white px-6 py-3 rounded-3xl flex items-center gap-3">
-                <i class="fas fa-id-card"></i>
-                <div>
-                    <p class="text-xs opacity-90">Total</p>
-                    <h2 class="text-2xl font-bold">{{ kycs|length | default(42) }}</h2>
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 mb-8 border border-white/60 dark:border-slate-700">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <a href="/auth/dashboard"
+   class="flex items-center gap-2 px-5 py-3 text-gray-700 hover:bg-gray-100 rounded-2xl transition-all">
+    <i class="fas fa-arrow-left"></i>
+    <span class="font-medium">Back</span>
+</a>
+                <h1 class="text-3xl font-bold">KYC Management</h1>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="bg-emerald-600 text-white px-6 py-4 rounded-3xl flex items-center gap-3 shadow-lg">
+                    <i class="fas fa-id-card text-2xl"></i>
+                    <div>
+                        <p class="text-xs opacity-90">Total KYC</p>
+                        <h2 class="text-3xl font-bold">{{ kycs|length | default(42) }}</h2>
+                    </div>
                 </div>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" id="darkModeToggle"
+                        class="w-12 h-12 flex items-center justify-center bg-white dark:bg-slate-800 rounded-2xl shadow hover:bg-gray-100 dark:hover:bg-slate-700 transition-all">
+                    <i id="themeIcon" class="fas fa-moon text-xl"></i>
+                </button>
             </div>
         </div>
 
-        <div class="mt-6">
+        <!-- Search -->
+        <div class="mt-8">
             <div class="relative">
-                <i class="fas fa-search absolute left-5 top-4 text-gray-400"></i>
+                <i class="fas fa-search absolute left-6 top-5 text-gray-400 dark:text-slate-400 text-xl"></i>
                 <input type="text" id="searchInput"
-                       placeholder="Search by name or worker ID..."
-                       class="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:border-blue-500">
+                       placeholder="Search by name, worker ID or account number..."
+                       class="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base">
             </div>
         </div>
     </div>
 
-    <!-- Mobile Cards View -->
-    <div class="md:hidden space-y-4">
+    <!-- KYC Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="kycContainer">
         {% for kyc in kycs %}
-        <div class="kyc-card bg-white rounded-3xl shadow p-6">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <p class="text-xs text-gray-500">ID: {{ kyc.id }}</p>
-                    <p class="font-semibold text-lg">{{ kyc.account_holder_name }}</p>
-                    <p class="text-sm text-gray-600">{{ kyc.worker_id }}</p>
+        <div class="kyc-card bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-3xl shadow-xl overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-5">
+                    <div>
+                        <p class="text-xs text-gray-500 dark:text-slate-400">ID: {{ kyc.id }}</p>
+                        <p class="font-semibold text-xl mt-1">{{ kyc.account_holder_name }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ kyc.worker_id }}</p>
+                    </div>
+                    <span class="px-5 py-2 text-sm font-medium rounded-2xl 
+                        {% if kyc.kyc_status == 'Approved' %}bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300
+                        {% elif kyc.kyc_status == 'Rejected' %}bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300
+                        {% else %}bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300{% endif %}">
+                        {{ kyc.kyc_status }}
+                    </span>
                 </div>
-                <span class="px-4 py-1 text-xs rounded-full 
-                    {% if kyc.kyc_status == 'Approved' %}bg-emerald-100 text-emerald-700
-                    {% elif kyc.kyc_status == 'Rejected' %}bg-red-100 text-red-700
-                    {% else %}bg-amber-100 text-amber-700{% endif %}">
-                    {{ kyc.kyc_status }}
-                </span>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4 text-sm mb-6">
-                <div>
-                    <p class="text-gray-500 text-xs">Bank</p>
-                    <p class="font-medium">{{ kyc.bank_name }}</p>
-                </div>
-                <div>
-                    <p class="text-gray-500 text-xs">A/c No</p>
-                    <p class="font-mono">{{ kyc.account_number }}</p>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-slate-400">Bank</p>
+                            <p class="font-medium">{{ kyc.bank_name }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500 dark:text-slate-400">A/c Number</p>
+                            <p class="font-mono text-sm">{{ kyc.account_number }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex gap-3">
+            <!-- Documents -->
+            <div class="border-t dark:border-slate-700 px-6 py-5 bg-gray-50 dark:bg-slate-800">
+                <p class="text-xs text-gray-500 dark:text-slate-400 mb-3">Documents</p>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ kyc.Profile_Photo }}" target="_blank"
+                       class="document-chip bg-blue-100 text-blue-700 px-4 py-2 rounded-2xl text-xs flex items-center gap-1 hover:bg-blue-200">
+                        <i class="fas fa-user"></i> Photo
+                    </a>
+                    <a href="{{ kyc.aadhaar_front }}" target="_blank"
+                       class="document-chip bg-blue-100 text-blue-700 px-4 py-2 rounded-2xl text-xs flex items-center gap-1 hover:bg-blue-200">
+                        Aadhaar
+                    </a>
+                    <a href="{{ kyc.aadhaar_back }}" target="_blank"
+                       class="document-chip bg-cyan-100 text-cyan-700 px-4 py-2 rounded-2xl text-xs flex items-center gap-1 hover:bg-cyan-200">
+                        Aadhaar Back
+                    </a>
+                    <a href="{{ kyc.pan_card_image }}" target="_blank"
+                       class="document-chip bg-purple-100 text-purple-700 px-4 py-2 rounded-2xl text-xs flex items-center gap-1 hover:bg-purple-200">
+                        PAN
+                    </a>
+                    <a href="{{ kyc.passbook_image }}" target="_blank"
+                       class="document-chip bg-green-100 text-green-700 px-4 py-2 rounded-2xl text-xs flex items-center gap-1 hover:bg-green-200">
+                        Passbook
+                    </a>
+                    <a href="{{ kyc.selfie_image }}" target="_blank"
+                       class="document-chip bg-orange-100 text-orange-700 px-4 py-2 rounded-2xl text-xs flex items-center gap-1 hover:bg-orange-200">
+                        Selfie
+                    </a>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="p-6 pt-0 flex gap-3">
                 <a href="/auth/kyc/{{ kyc.id }}/approve" 
-                   class="flex-1 text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-2xl text-sm font-medium">
+                   class="flex-1 text-center bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-medium transition-all">
                     Approve
                 </a>
                 <a href="/auth/kyc/{{ kyc.id }}/reject" 
-                   class="flex-1 text-center bg-red-500 hover:bg-red-600 text-white py-3 rounded-2xl text-sm font-medium">
+                   class="flex-1 text-center bg-red-500 hover:bg-red-600 text-white py-4 rounded-2xl font-medium transition-all">
                     Reject
                 </a>
             </div>
         </div>
         {% endfor %}
     </div>
-
-    <!-- Desktop Table (Hidden on Mobile) -->
-    <div class="hidden md:block bg-white rounded-3xl shadow-xl overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
-                <tr>
-                    <th class="px-6 py-5 text-left">ID</th>
-                    <th class="px-6 py-5 text-left">Worker</th>
-                    <th class="px-6 py-5 text-left">Bank</th>
-                    <th class="px-6 py-5 text-left">Account No.</th>
-                    <th class="px-6 py-5 text-left">Documents</th>
-                    <th class="px-6 py-5 text-center">Status</th>
-                    <th class="px-6 py-5 text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y" id="tableBody">
-                {% for kyc in kycs %}
-                <tr class="hover:bg-slate-50">
-                    <td class="px-6 py-5 font-medium">{{ kyc.id }}</td>
-                    <td class="px-6 py-5">
-                        <div class="font-medium">{{ kyc.worker_id }}</div>
-                        <div class="text-sm text-gray-500">{{ kyc.account_holder_name }}</div>
-                    </td>
-                    <td class="px-6 py-5">{{ kyc.bank_name }}</td>
-                    <td class="px-6 py-5 font-mono">{{ kyc.account_number }}</td>
-                    <td class="px-6 py-5">
-    <div class="flex flex-wrap gap-2">
-         <a href="{{ kyc.Profile_Photo }}" target="_blank"
-           class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs">
-           Profile Photo
-        </a>
-
-        <a href="{{ kyc.aadhaar_front }}" target="_blank"
-           class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs">
-            Aadhaar Front
-        </a>
-
-        <a href="{{ kyc.aadhaar_back }}" target="_blank"
-           class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded text-xs">
-            Aadhaar Back
-        </a>
-
-        <a href="{{ kyc.pan_card_image }}" target="_blank"
-           class="bg-purple-100 text-purple-700 px-3 py-1 rounded text-xs">
-            PAN Card
-        </a>
-
-        <a href="{{ kyc.passbook_image }}" target="_blank"
-           class="bg-green-100 text-green-700 px-3 py-1 rounded text-xs">
-            Passbook
-        </a>
-
-        <a href="{{ kyc.selfie_image }}" target="_blank"
-           class="bg-orange-100 text-orange-700 px-3 py-1 rounded text-xs">
-            Selfie
-        </a>
-
-    </div>
-</td>
-                    <td class="px-6 py-5 text-center">
-                        {% if kyc.kyc_status == "Approved" %}
-                            <span class="px-4 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full">Approved</span>
-                        {% elif kyc.kyc_status == "Rejected" %}
-                            <span class="px-4 py-1 text-xs bg-red-100 text-red-700 rounded-full">Rejected</span>
-                        {% else %}
-                            <span class="px-4 py-1 text-xs bg-amber-100 text-amber-700 rounded-full">Pending</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-5 text-center">
-    <div class="flex justify-center gap-3">
-        <a href="/auth/kyc/{{ kyc.worker_id }}/approve"
-           class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl text-sm">
-            Approve
-        </a>
-
-        <a href="/auth/kyc/{{ kyc.worker_id }}/reject"
-           class="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-2xl text-sm">
-            Reject
-        </a>
-    </div>
-</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 </div>
 
 <script>
+    // Dark Mode
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const icon = document.getElementById('themeIcon');
+        if (document.documentElement.classList.contains('dark')) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    }
+
+    if (localStorage.getItem('darkMode') === 'true' || 
+        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    }
+    updateThemeIcon();
+
+    // Search Functionality
     document.getElementById("searchInput").addEventListener("keyup", function() {
-        const term = this.value.toLowerCase();
-        const rows = document.querySelectorAll("#tableBody tr, .kyc-card");
-        rows.forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(term) ? "" : "none";
+        const term = this.value.toLowerCase().trim();
+        const cards = document.querySelectorAll(".kyc-card");
+        
+        cards.forEach(card => {
+            card.style.display = card.textContent.toLowerCase().includes(term) ? "block" : "none";
         });
     });
 
     function goBack() {
         window.history.back();
     }
+
+    // Keyboard shortcut for search
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "/" && document.getElementById('searchInput') !== document.activeElement) {
+            e.preventDefault();
+            document.getElementById('searchInput').focus();
+        }
+    });
 </script>
 
 </body>

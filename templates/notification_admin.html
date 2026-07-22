@@ -10,91 +10,98 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
-        body { font-family: 'Poppins', sans-serif; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+        }
         
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        .main-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .dark .main-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
         }
         
         .action-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         .action-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+        }
+        
+        .page-btn {
+            transition: all 0.2s ease;
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="main-bg text-gray-900 dark:text-gray-100 min-h-screen transition-all duration-300">
 
 <div class="max-w-7xl mx-auto p-4 md:p-8">
 
-    <!-- Header with Back Button -->
-    <div class="bg-white rounded-3xl shadow-xl p-6 mb-8">
+    <!-- Header -->
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 mb-8 border border-white/60 dark:border-slate-700">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            
             <div class="flex items-center gap-4">
-                <!-- Back Button -->
                 <button onclick="goBack()" 
-                        class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-2xl transition-all hover:text-blue-600 font-medium">
+                        class="flex items-center gap-3 px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl transition-all font-medium">
                     <i class="fas fa-arrow-left"></i>
                     <span>Back</span>
                 </button>
                 
-                <div class="h-8 w-px bg-gray-200"></div>
+                <div class="h-9 w-px bg-gray-200 dark:bg-slate-700"></div>
                 
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Notifications</h1>
-                    <p class="text-slate-500">Manage Worker Notifications</p>
+                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+                    <p class="text-slate-500 dark:text-slate-400">Manage Worker Notifications</p>
                 </div>
             </div>
 
-            <!-- Stats -->
-            <div class="bg-blue-600 text-white px-8 py-4 rounded-3xl shadow-lg flex items-center gap-4">
-                <i class="fas fa-bell text-3xl opacity-80"></i>
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white px-8 py-6 rounded-3xl shadow-lg flex items-center gap-5">
+                <i class="fas fa-bell text-4xl opacity-80"></i>
                 <div>
                     <p class="text-sm opacity-90">Total Notifications</p>
-                    <h2 class="text-4xl font-bold">{{ total_notifications | default(47) }}</h2>
+                    <h2 class="text-4xl font-bold">{{ total_notifications }}</h2>
                 </div>
             </div>
         </div>
 
         <!-- Search -->
-        <div class="mt-8">
-            <div class="relative max-w-lg">
-                <i class="fas fa-search absolute left-5 top-4 text-gray-400"></i>
+        <div class="mt-8 max-w-lg">
+            <div class="relative">
+                <i class="fas fa-search absolute left-6 top-5 text-gray-400 dark:text-slate-400 text-xl"></i>
                 <input type="text" id="searchInput"
-                       placeholder="Search notifications by title, message or worker ID..."
-                       class="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:border-blue-500 text-base">
+                       placeholder="Search by title, message or worker ID..."
+                       class="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base">
             </div>
         </div>
     </div>
 
     <!-- Notifications Table -->
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
-        <div class="table-container">
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/60 dark:border-slate-700">
+        <div class="overflow-x-auto">
             <table class="w-full min-w-[900px]">
-                <thead class="bg-gradient-to-r from-slate-800 to-slate-900 text-white sticky top-0">
-                    <tr>
-                        <th class="p-5 text-left">ID</th>
-                        <th class="p-5 text-left">Worker ID</th>
-                        <th class="p-5 text-left">Title</th>
-                        <th class="p-5 text-left">Message</th>
-                        <th class="p-5 text-left">Date</th>
-                        <th class="p-5 text-center">Action</th>
+                <thead>
+                    <tr class="bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white">
+                        <th class="p-6 text-left font-semibold">ID</th>
+                        <th class="p-6 text-left font-semibold">Worker ID</th>
+                        <th class="p-6 text-left font-semibold">Title</th>
+                        <th class="p-6 text-left font-semibold">Message</th>
+                        <th class="p-6 text-left font-semibold">Date</th>
+                        <th class="p-6 text-center font-semibold">Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100" id="tableBody">
+                <tbody class="divide-y divide-gray-100 dark:divide-slate-700" id="tableBody">
                     {% for notification in notifications %}
-                    <tr class="hover:bg-slate-50 transition-all group">
-                        <td class="p-5 font-mono text-slate-500">{{ notification.id }}</td>
-                        <td class="p-5 font-medium">{{ notification.worker_id }}</td>
-                        <td class="p-5 font-semibold text-gray-800">{{ notification.title }}</td>
-                        <td class="p-5 text-slate-600 max-w-md truncate">{{ notification.message }}</td>
-                        <td class="p-5 text-slate-500">{{ notification.created_at }}</td>
-                        <td class="p-5 text-center">
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group" data-search="{{ notification.title }} {{ notification.message }} {{ notification.worker_id }}">
+                        <td class="p-6 font-mono text-slate-500 dark:text-slate-400">{{ notification.id }}</td>
+                        <td class="p-6 font-medium">{{ notification.worker_id }}</td>
+                        <td class="p-6 font-semibold text-gray-800 dark:text-white">{{ notification.title }}</td>
+                        <td class="p-6 text-slate-600 dark:text-slate-400 max-w-md truncate">{{ notification.message }}</td>
+                        <td class="p-6 text-slate-500 dark:text-slate-400">{{ notification.created_at }}</td>
+                        <td class="p-6 text-center">
                             <a href="/auth/delete-notification/{{ notification.id }}"
-                               onclick="return confirm('Delete this notification?')"
+                               onclick="return confirm('Delete this notification? This action cannot be undone.')"
                                class="action-btn inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-2xl text-sm font-medium">
                                 <i class="fas fa-trash"></i>
                                 <span>Delete</span>
@@ -106,35 +113,140 @@
             </table>
         </div>
     </div>
+
+    <!-- Pagination -->
+    <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-sm text-gray-500 dark:text-slate-400">
+            Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalItems">{{ total_notifications | default(47) }}</span>
+        </div>
+        
+        <div class="flex items-center gap-2" id="pagination">
+            <!-- JS will populate this -->
+        </div>
+    </div>
 </div>
 
 <script>
-    // Search Functionality
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    // Dark Mode
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const icon = document.getElementById('themeIcon');
+        if (document.documentElement.classList.contains('dark')) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    }
+
+    if (localStorage.getItem('darkMode') === 'true' || 
+        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    }
+    updateThemeIcon();
+
+    // Pagination Logic
+    function renderPagination(totalRows) {
+        const totalPages = Math.ceil(totalRows / itemsPerPage);
+        let html = '';
+
+        // Previous Button
+        html += `
+            <button onclick="changePage(${currentPage - 1})" 
+                    class="px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                    ${currentPage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        `;
+
+        // Page Numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === currentPage) {
+                html += `<button onclick="changePage(${i})" class="px-5 py-3 bg-blue-600 text-white rounded-2xl font-medium">${i}</button>`;
+            } else {
+                html += `<button onclick="changePage(${i})" class="px-5 py-3 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all">${i}</button>`;
+            }
+        }
+
+        // Next Button
+        html += `
+            <button onclick="changePage(${currentPage + 1})" 
+                    class="px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                    ${currentPage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        `;
+
+        document.getElementById('pagination').innerHTML = html;
+        updateShowingInfo(totalRows);
+    }
+
+    function updateShowingInfo(totalRows) {
+        const start = (currentPage - 1) * itemsPerPage + 1;
+        const end = Math.min(currentPage * itemsPerPage, totalRows);
+        document.getElementById('showingStart').textContent = start;
+        document.getElementById('showingEnd').textContent = end;
+    }
+
+    function changePage(page) {
+        const rows = document.querySelectorAll('#tableBody tr');
+        const totalRows = rows.length;
+        const totalPages = Math.ceil(totalRows / itemsPerPage);
+
+        if (page < 1 || page > totalPages) return;
+
+        currentPage = page;
+
+        rows.forEach((row, index) => {
+            if (index >= (currentPage - 1) * itemsPerPage && index < currentPage * itemsPerPage) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        renderPagination(totalRows);
+    }
+
+    // Search + Pagination Combined
     document.getElementById('searchInput').addEventListener('keyup', function() {
-        const term = this.value.toLowerCase();
+        const term = this.value.toLowerCase().trim();
         const rows = document.querySelectorAll('#tableBody tr');
         
+        let visibleCount = 0;
+        
         rows.forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+            const matches = row.textContent.toLowerCase().includes(term);
+            row.style.display = matches ? '' : 'none';
+            if (matches) visibleCount++;
         });
+
+        currentPage = 1;
+        renderPagination(visibleCount);
     });
 
-    // Back Button Function
+    // Initialize
+    window.onload = function() {
+        const rows = document.querySelectorAll('#tableBody tr');
+        changePage(1);
+    };
+
     function goBack() {
         if (window.history.length > 1) {
             window.history.back();
         } else {
-            window.location.href = '/dashboard'; // Change to your dashboard URL
+            window.location.href = '/auth/dashboard';
         }
     }
-
-    // Keyboard shortcut: Press '/' to focus search
-    document.addEventListener('keydown', function(e) {
-        if (e.key === '/' && document.getElementById('searchInput') !== document.activeElement) {
-            e.preventDefault();
-            document.getElementById('searchInput').focus();
-        }
-    });
 </script>
 
 </body>
