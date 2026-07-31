@@ -71,23 +71,23 @@
             <div class="flex-1 overflow-y-auto py-8 px-4 space-y-8">
                 <!-- Menu -->
                 <nav class="space-y-1">
-                    <a href="#" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
+                    <a href="dashboard" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
                         <i class="fa-solid fa-gauge w-5"></i>
                         <span class="font-medium">Dashboard</span>
                     </a>
-                    <a href="#" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
+                    <a href="all-bookings" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
                         <i class="fa-solid fa-calendar-check w-5"></i>
                         <span class="font-medium">Bookings</span>
                     </a>
-                    <a href="#" class="flex items-center gap-x-3 px-4 py-3 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 rounded-3xl nav-link font-semibold">
+                    <a href="report" class="flex items-center gap-x-3 px-4 py-3 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 rounded-3xl nav-link font-semibold">
                         <i class="fa-solid fa-chart-pie w-5"></i>
                         <span>Reports &amp; Analytics</span>
                     </a>
-                    <a href="#" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
+                    <a href="workers" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
                         <i class="fa-solid fa-users w-5"></i>
                         <span class="font-medium">Workers</span>
                     </a>
-                    <a href="#" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
+                    <a href="all-customers" class="flex items-center gap-x-3 px-4 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl nav-link">
                         <i class="fa-solid fa-user-group w-5"></i>
                         <span class="font-medium">Customers</span>
                     </a>
@@ -125,6 +125,49 @@
                             </div>
                         </div>
                     </div>
+                    <div class="flex items-center gap-3">
+
+    <select id="reportType"
+class="px-4 py-2.5 rounded-3xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm">
+
+    <option value="">Select Report</option>
+
+    <option value="monthly_revenue">
+        Monthly Revenue Trend
+    </option>
+
+    <option value="notifications">
+        Notifications Report
+    </option>
+
+    <option value="service_category">
+        Bookings by Service Category
+    </option>
+
+    <option value="customers">
+        Customer Report
+    </option>
+
+    <option value="workers">
+        Worker Report
+    </option>
+
+    <option value="kyc">
+        Worker KYC Report
+    </option>
+
+</select>
+
+    <button onclick="downloadPDF()"
+        class="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-3xl transition">
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        Download PDF
+
+    </button>
+
+</div>  
                     
                     <div class="flex items-center gap-x-6">
                         <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-3xl px-4 py-2 text-sm">
@@ -139,11 +182,8 @@
                                 <span class="hidden sm:inline">Refresh</span>
                             </button>
                             
-                            <button onclick="exportToPDF()" 
-                                    class="flex items-center gap-x-2 px-5 py-2.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-3xl text-sm font-medium transition-all active:scale-95">
-                                <i class="fa-solid fa-file-pdf text-red-500"></i>
-                                <span class="hidden sm:inline">PDF</span>
-                            </button>
+                           
+                            
                             
                             <button onclick="exportToExcel()" 
                                     class="flex items-center gap-x-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl text-sm font-medium transition-all active:scale-95">
@@ -227,82 +267,86 @@
                     </div>
                 </div>
 
-                <!-- KPI Cards -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                    <!-- Total Bookings -->
-                    <div class="glass border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 card-hover">
+                <!-- Stats Grid - Vibrant Colored Boxes -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+                    <!-- 1. Total Customers - Blue Theme -->
+                    <div class="bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 rounded-3xl p-8 card-hover shadow-xl">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="text-sm text-zinc-500 font-medium">Total Bookings</div>
-                                <div id="kpi-bookings" class="text-4xl font-semibold mt-3">{{ total_bookings }}</div>
+                                <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Customers</p>
+                                <h2 class="text-5xl font-bold mt-5 text-blue-700 dark:text-blue-200 stat-number">{{ total_customers }}</h2>
                             </div>
-                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl">
-                                <i class="fa-solid fa-calendar-check"></i>
+                            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                                👥
                             </div>
                         </div>
-                        <div class="flex items-center gap-x-2 mt-6 text-emerald-500 text-sm font-medium">
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                            <span id="bookings-change">+12%</span> from last period
-                        </div>
+                        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+                            <i class="fas fa-arrow-trend-up"></i> +12% this month
+                        </p>
                     </div>
-                    
-                    <!-- Total Revenue -->
-                    <div class="glass border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 card-hover">
+
+                    <!-- 2. Total Workers - Emerald Theme -->
+                    <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-3xl p-8 card-hover shadow-xl">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="text-sm text-zinc-500 font-medium">Total Revenue</div>
-                                <div id="kpi-revenue" class="text-4xl font-semibold mt-3">₹{{ total_revenue }}</div>
+                                <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Total Workers</p>
+                                <h2 class="text-5xl font-bold mt-5 text-emerald-700 dark:text-emerald-200 stat-number">{{ total_workers }}</h2>
                             </div>
-                            <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl">
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                                🛠️
                             </div>
                         </div>
-                        <div class="flex items-center gap-x-2 mt-6 text-emerald-500 text-sm font-medium">
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                            <span id="revenue-change">+18%</span> from last period
-                        </div>
+                        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+                            <i class="fas fa-arrow-trend-up"></i> +8% this month
+                        </p>
                     </div>
-                    
-                    <!-- Completed -->
-                    <div class="glass border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 card-hover">
+
+                    <!-- 3. Total KYC Workers - Teal Theme -->
+                   <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-3xl p-8 card-hover shadow-xl">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="text-sm text-zinc-500 font-medium">Completed</div>
-                                <div id="kpi-completed" class="text-4xl font-semibold mt-3">{{ completed_jobs }}</div>
+                                <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Total Workers</p>
+                                <h2 class="text-5xl font-bold mt-5 text-emerald-700 dark:text-emerald-200 stat-number">{{ total_kyc_workers }}</h2>
                             </div>
-                            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 text-green-600 rounded-2xl flex items-center justify-center text-3xl">
-                                <i class="fa-solid fa-circle-check"></i>
+                            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                                🛠️
                             </div>
                         </div>
-                        <div class="flex items-center gap-x-2 mt-6 text-emerald-500 text-sm font-medium">
-                            <span id="completed-rate">94%</span> Success Rate
-                        </div>
+                        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+                            <i class="fas fa-arrow-trend-up"></i> +8% this month
+                        </p>
                     </div>
-                    
-                    <!-- Pending -->
-                    <div class="glass border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 card-hover">
+                    <!-- 4. Total Skills - Purple Theme -->
+                    <div class="bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 rounded-3xl p-8 card-hover shadow-xl">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="text-sm text-zinc-500 font-medium">Pending</div>
-                                <div id="kpi-pending" class="text-4xl font-semibold mt-3">{{ pending_jobs }}</div>
+                                <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Total Skills</p>
+                                <h2 class="text-5xl font-bold mt-5 text-purple-700 dark:text-purple-200 stat-number">{{ total_skills }}</h2>
                             </div>
-                            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 text-orange-600 rounded-2xl flex items-center justify-center text-3xl">
-                                <i class="fa-solid fa-clock"></i>
+                            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                                🔧
                             </div>
                         </div>
+                        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+                            <i class="fas fa-arrow-trend-up"></i> +15% this month
+                        </p>
                     </div>
-                    
-                    <!-- Avg Rating -->
-                    <div class="glass border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 card-hover">
+
+                    <!-- 5. Total Bookings - Indigo Theme -->
+                    <div class="bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-3xl p-8 card-hover shadow-xl">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="text-sm text-zinc-500 font-medium">Avg Rating</div>
-                                <div id="kpi-rating" class="text-4xl font-semibold mt-3">{{ avg_rating }} <span class="text-2xl">★</span></div>
+                                <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Total Bookings</p>
+                                <h2 class="text-5xl font-bold mt-5 text-indigo-700 dark:text-indigo-200 stat-number">{{ total_bookings }}</h2>
                             </div>
-                            <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/50 text-amber-600 rounded-2xl flex items-center justify-center text-3xl">
-                                <i class="fa-solid fa-star"></i>
+                            <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
+                                📅
                             </div>
                         </div>
+                        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
+                            <i class="fas fa-arrow-trend-up"></i> +23% this month
+                        </p>
                     </div>
                 </div>
 
@@ -382,7 +426,7 @@
                                 <!-- Populated by JS from backend data -->
                                 {% for booking in bookings %}
                                 <tr class="table-row hover:bg-zinc-50 dark:hover:bg-zinc-900/70">
-                                    <td class="py-5 px-8 font-mono text-sm">#{{ booking.id }}</td>
+                                    <td class="py-5 px-8 font-mono text-sm">{{ booking.id }}</td>
                                     <td class="py-5 px-8">{{ booking.customer_name }}</td>
                                     <td class="py-5 px-8">{{ booking.worker_name }}</td>
                                     <td class="py-5 px-8">{{ booking.service_category }}</td>
@@ -512,11 +556,6 @@
     </div>
 
     <script>
-        // Tailwind script init
-        function initTailwind() {
-            // Already initialized via CDN
-        }
-        
         // Current Date
         function setCurrentDate() {
             const dateEl = document.getElementById('current-date');
@@ -525,11 +564,10 @@
             dateEl.textContent = now.toLocaleDateString('en-US', options);
         }
         
-        // Sample Chart Data (will be replaced by backend values)
+        // Sample Chart Data
         let revenueChart, statusPieChart, categoryBarChart;
         
         function initializeCharts() {
-            // Revenue Line Chart
             const revenueCtx = document.getElementById('revenueChart');
             revenueChart = new Chart(revenueCtx, {
                 type: 'line',
@@ -559,7 +597,6 @@
                 }
             });
             
-            // Status Pie
             const pieCtx = document.getElementById('statusPieChart');
             statusPieChart = new Chart(pieCtx, {
                 type: 'doughnut',
@@ -585,7 +622,6 @@
                 }
             });
             
-            // Category Bar
             const barCtx = document.getElementById('categoryBarChart');
             categoryBarChart = new Chart(barCtx, {
                 type: 'bar',
@@ -610,22 +646,18 @@
         }
         
         function updateRevenueChart() {
-            // Simulate data change
             if (revenueChart) {
                 revenueChart.data.datasets[0].data = [98000, 145000, 167000, 132000, 210000, 198000, 245000, 278000];
                 revenueChart.update();
             }
         }
         
-        // Filter functions
         function applyQuickRange() {
-            // Logic for quick ranges would go here
             console.log("Quick range applied");
         }
         
         function applyFilters() {
             showToast("Filters applied successfully", "success");
-            // In real app - fetch new data via API and re-render
         }
         
         function resetFilters() {
@@ -633,9 +665,7 @@
             showToast("Filters reset", "info");
         }
         
-        // Table helpers
         function filterTable() {
-            // Client side search demo
             console.log("Table filtered");
         }
         
@@ -646,20 +676,23 @@
         function prevPage() { console.log("Previous page"); }
         function nextPage() { console.log("Next page"); }
         
-        // Export functions
-        function exportToPDF() {
-            showToast("Generating PDF report...", "info");
-            // Backend would trigger PDF generation
-            setTimeout(() => {
-                showToast("PDF downloaded successfully", "success");
-            }, 1200);
-        }
+function downloadPDF() {
+
+    const type = document.getElementById("reportType").value;
+
+    if(type === "kyc"){
+        window.location.href = "/auth/worker-kyc-search";
+        return;
+    }
+
+    window.location.href = "/auth/download-pdf?type=" + type;
+}
+
+
         
         function exportToExcel() {
             showToast("Exporting Excel report...", "info");
-            setTimeout(() => {
-                showToast("Excel file ready", "success");
-            }, 900);
+            setTimeout(() => showToast("Excel file ready", "success"), 900);
         }
         
         function exportTableCSV() {
@@ -676,10 +709,8 @@
         
         function refreshData() {
             showToast("Data refreshed", "success");
-            // Would re-fetch data here
         }
         
-        // Toast notification
         function showToast(message, type = "success") {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-message');
@@ -694,52 +725,25 @@
             }
             
             toast.classList.remove('hidden');
-            toast.style.transform = 'translateY(0)';
-            
             setTimeout(() => {
-                toast.style.transform = 'translateY(80px)';
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                }, 400);
+                toast.classList.add('hidden');
             }, 3000);
         }
         
         function toggleSidebar() {
-            // For mobile - would toggle sidebar visibility
             showToast("Sidebar toggled (mobile)", "info");
         }
         
-        // Dark mode toggle (demo)
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
         }
         
-        // Keyboard shortcuts
-        function handleKeyboard(e) {
-            if (e.metaKey && e.key === "k") {
-                e.preventDefault();
-                document.getElementById('table-search').focus();
-            }
-        }
-        
-        // Main initialization
         function initializePage() {
             setCurrentDate();
             initializeCharts();
-            
-            // Demo data updates
-            setTimeout(() => {
-                document.getElementById('kpi-revenue').textContent = "₹8,45,920";
-            }, 800);
-            
-            // Keyboard listener
-            document.addEventListener('keydown', handleKeyboard);
-            
-            // Make tables interactive
             console.log('%c✅ ServiceBook Reports Dashboard initialized successfully', 'color:#6366f1; font-family:monospace');
         }
         
-        // Auto initialize
         window.onload = initializePage;
     </script>
 </body>

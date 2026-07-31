@@ -105,7 +105,7 @@ async def google_callback(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
 
@@ -266,7 +266,7 @@ def dashboard(
             float(b.get("amount", 0))
             for b in bookings
         )
-        print("Total Revenue:", total_revenue)
+       
         
 
     except Exception as e:
@@ -1364,62 +1364,190 @@ def report(
     db: Session = Depends(get_db)
     ):
     
-    try:
-        customers_response = requests.get(
-            "https://mistripoint-backend-1.onrender.com/auth/all-customers",
-            timeout=10
+     # ---------------- Customers ----------------
+        try:
+            response = requests.get(
+                "https://mistripoint-backend-1.onrender.com/auth/all-customers",
+                timeout=10
+            )
+            response.raise_for_status()
+    
+            data = response.json()
+    
+            if isinstance(data, dict):
+                customers = data.get("customers", [])
+            else:
+                customers = data
+    
+            total_customers = len(customers)
+    
+        except Exception as e:
+            print("Customers API Error:", e)
+            customers = []
+            total_customers = 0
+    
+        # ---------------- Bookings & Revenue ----------------
+        try:
+            response = requests.get(
+                "https://mistripoint-backend-1.onrender.com/auth/admin/bookings",
+                timeout=10
+            )
+            response.raise_for_status()
+    
+            data = response.json()
+    
+            if isinstance(data, dict):
+                bookings = data.get("booking", [])
+            else:
+                bookings = data
+    
+            total_bookings = len(bookings)
+    
+            total_revenue = sum(
+                float(b.get("amount", 0))
+                for b in bookings
+            )
+            print("Total Revenue:", total_revenue)
+            
+    
+        except Exception as e:
+            print("Booking API Error:", e)
+            bookings = []
+            total_bookings = 0
+            total_revenue = 0
+    
+        # ---------------- Workers ----------------
+        try:
+            response = requests.get(
+                "https://mistripoint-1.onrender.com/worker-profiles",
+                timeout=10
+            )
+            response.raise_for_status()
+    
+            data = response.json()
+    
+            if isinstance(data, dict):
+                workers = data.get("data", [])
+            else:
+                workers = data
+    
+            total_workers = len(workers)
+    
+        except Exception as e:
+            print("Workers API Error:", e)
+            workers = []
+            total_workers = 0
+    
+        # ---------------- Skills ----------------
+        try:
+            response = requests.get(
+                "https://mistripoint-1.onrender.com/skills",
+                timeout=10
+            )
+            response.raise_for_status()
+    
+            data = response.json()
+    
+            if isinstance(data, dict):
+                skills = data.get("data", [])
+            else:
+                skills = data
+    
+            total_skills = len(skills)
+    
+        except Exception as e:
+            print("Skills API Error:", e)
+            skills = []
+            total_skills = 0
+    
+        # ---------------- Worker KYC ----------------
+        try:
+            response = requests.get(
+                "https://mistripoint-1.onrender.com/worker-kyc",
+                timeout=10
+            )
+            response.raise_for_status()
+    
+            data = response.json()
+    
+            if isinstance(data, dict):
+                kycs = data.get("data", [])
+            else:
+                kycs = data
+    
+            total_kyc_workers = len(kycs)
+    
+        except Exception as e:
+            print("KYC API Error:", e)
+            kycs = []
+            total_kyc_workers = 0
+    
+        # ---------------- Notifications ----------------
+        try:
+            response = requests.get(
+                "https://mistripoint-1.onrender.com/notifications",
+                timeout=10
+            )
+            response.raise_for_status()
+    
+            data = response.json()
+    
+            if isinstance(data, dict):
+                notifications = data.get("data", [])
+            else:
+                notifications = data
+    
+            total_notifications = len(notifications)
+    
+        except Exception as e:
+            print("Notification API Error:", e)
+            notifications = []
+            total_notifications = 0
+    
+        # ---------------- Reviews ----------------
+        try:
+            response = requests.get(
+                "https://mistripoint-1.onrender.com/reviews",
+                timeout=10
+            )
+            response.raise_for_status()
+    
+            data = response.json()
+    
+            if isinstance(data, dict):
+                reviews = data.get("data", [])
+            else:
+                reviews = data
+    
+            total_reviews = len(reviews)
+    
+        except Exception as e:
+            print("Reviews API Error:", e)
+            reviews = []
+            total_reviews = 0
+    
+        # ---------------- Local Database ----------------
+        total_users = db.query(User).count()
+    
+        # ---------------- Render ----------------
+        return templates.TemplateResponse(
+            request=request,
+            name="report.html",
+            context={
+                "request": request,
+                "total_users": total_users,
+                "total_bookings": total_bookings,
+                "total_customers": total_customers,
+                "total_workers": total_workers,
+                "total_skills": total_skills,
+                "total_kyc_workers": total_kyc_workers,
+                "total_notifications": total_notifications,
+                "total_reviews": total_reviews,
+                "customers": customers,
+                "reviews": reviews,
+                "total_revenue": total_revenue,
+            }
         )
-        customers_response.raise_for_status()
-
-        data_customers = customers_response.json()
-
-        if isinstance(data_customers, dict):
-            customers = data_customers.get("customers", [])
-        else:
-            customers = data_customers
-
-        total_customers = len(customers)
-
-    except Exception as e:
-        print("Customers API Error:", e)
-        customers = []
-        total_customers = 0
-
-    try:
-        workers_response = requests.get(
-            "https://mistripoint-1.onrender.com/worker-profiles",
-            timeout=10
-        )
-        workers_response.raise_for_status()
-
-        data_workers = workers_response.json()
-
-        if isinstance(data_workers, dict):
-            workers = data_workers.get("data", [])
-        else:
-            workers = data_workers
-
-        total_workers = len(workers)
-
-    except Exception as e:
-        print("Workers API Error:", e)
-        workers = []
-        total_workers = 0
-    return templates.TemplateResponse(
-        name = "report.html",
-        request=request,
-        context={
-            "request":request,
-            
-            "total_customers": total_customers,
-            "total_workers": total_workers,
-            
-            "customers": customers,
-           
-            
-        }
-
-    )
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1464,3 +1592,382 @@ def category(
             ),
         }
     )
+@router.get("/download-pdf")
+def download_pdf(
+    request: Request,
+    type: str,
+    worker_id: int = None
+):
+
+    if type == "notifications":
+
+        response = requests.get(
+            "https://mistripoint-1.onrender.com/notifications",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="reports/notifications_report.html",
+            context={
+                "request": request,
+                "data": data["data"],
+                "total": data["total_notifications"],
+                "total_notifications": data["total_notifications"],
+            }
+        )
+
+    elif type == "kyc":
+
+        response = requests.get(
+            "https://mistripoint-1.onrender.com/worker-kyc"
+        )
+
+        data = response.json()
+
+        kyc = None
+
+        for item in data["data"]:
+            if item["worker_id"] == worker_id:
+                kyc = item
+                break
+
+        if not kyc:
+            return {"message":"Worker Not Found"}
+
+        return templates.TemplateResponse(
+            request=request,
+            name="reports/worker_kyc_report.html",
+            context=
+            {
+                "request":request,
+                "kyc":kyc
+            }
+        )
+    elif type == "kyc":
+    
+            response = requests.get(
+                "https://mistripoint-1.onrender.com/worker-kyc"
+            )
+    
+            data = response.json()
+    
+            kyc = None
+    
+            for item in data["data"]:
+                if item["worker_id"] == worker_id:
+                    kyc = item
+                    break
+    
+            if not kyc:
+                return {"message":"Worker Not Found"}
+    
+            return templates.TemplateResponse(
+                request=request,
+                name="reports/worker_kyc_report.html",
+                context=
+                {
+                    "request":request,
+                    "kyc":kyc
+                }
+            )
+    
+
+ 
+    
+@router.get("/worker-kyc-search")
+def worker_kyc_search(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="worker_kyc_search.html",
+        context=
+        {
+            "request": request
+        }
+    )
+
+
+
+
+@router.get("/worker-kyc-search")
+def worker_kyc_search(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="worker_kyc_search.html",
+        context=
+        {
+            "request": request
+        }
+    )
+
+
+
+# =====================================================================
+# IMPROVED AI CHAT ASSISTANT (replace old /chat-ai)
+# =====================================================================
+import re
+from typing import Any, Dict, List, Optional
+
+@router.get("/chat-ai")
+def chat_ai(message: str):
+    """
+    Natural language AI assistant for Bookings / Workers / Customers / Revenue etc.
+    Supports:
+    - Booking 15 / Booking ID 15 / Show booking 15
+    - Worker 20 / Worker ID 20
+    - Customer 8 / Customer ID 8
+    - Pending / Completed / Cancelled bookings
+    - Today's bookings / Today's revenue / Monthly revenue
+    - Top workers / Top customers / Top categories
+    - Pending payments / Pending KYC etc.
+    """
+    if not message or not message.strip():
+        return {"reply": "Please type a question, e.g. Booking 15, Pending bookings, Today's revenue"}
+
+    msg = message.lower().strip()
+
+    # ---------- Helper: safe API call ----------
+    def safe_get(url: str, key: Optional[str] = None) -> List[Dict]:
+        try:
+            r = requests.get(url, timeout=12)
+            r.raise_for_status()
+            data = r.json()
+            if key and isinstance(data, dict):
+                return data.get(key, []) if isinstance(data.get(key), list) else []
+            if isinstance(data, list):
+                return data
+            if isinstance(data, dict):
+                # try common keys
+                for k in ("data", "booking", "bookings", "customers", "workers"):
+                    if k in data and isinstance(data[k], list):
+                        return data[k]
+            return []
+        except Exception as e:
+            print(f"API Error [{url}]: {e}")
+            return []
+
+    # ---------- Correct APIs (same as your dashboard) ----------
+    workers   = safe_get("https://mistripoint-1.onrender.com/worker-profiles", "data")
+    bookings  = safe_get("https://mistripoint-backend-1.onrender.com/auth/admin/bookings")  # FIXED URL
+    customers = safe_get("https://mistripoint-backend-1.onrender.com/auth/all-customers", "customers")
+    kycs      = safe_get("https://mistripoint-1.onrender.com/worker-kyc", "data")
+    categories= safe_get("https://mistripoint-backend-1.onrender.com/auth/categories")
+    notifications = safe_get("https://mistripoint-1.onrender.com/notifications", "data")
+
+    # ---------- Regex ID extraction ----------
+    def extract_id(patterns: List[str]) -> Optional[int]:
+        for p in patterns:
+            m = re.search(p, msg, re.IGNORECASE)
+            if m:
+                try:
+                    return int(m.group(1))
+                except:
+                    pass
+        return None
+
+    booking_id  = extract_id([r"booking\s*(?:id)?\s*[#:]?\s*(\d+)", r"show\s+booking\s+(\d+)", r"booking\s+(\d+)"])
+    worker_id   = extract_id([r"worker\s*(?:id)?\s*[#:]?\s*(\d+)", r"show\s+worker\s+(\d+)", r"worker\s+(\d+)"])
+    customer_id = extract_id([r"customer\s*(?:id)?\s*[#:]?\s*(\d+)", r"show\s+customer\s+(\d+)", r"customer\s+(\d+)"])
+
+    # ---------- Format helpers ----------
+    def fmt_booking(b: dict) -> str:
+        return (
+            f"📦 **Booking #{b.get('id')}**\n"
+            f"• Customer : {b.get('customer_name') or b.get('customer') or 'N/A'}\n"
+            f"• Worker   : {b.get('worker_name') or b.get('worker') or 'N/A'}\n"
+            f"• Service  : {b.get('service') or b.get('service_name') or 'N/A'}\n"
+            f"• Category : {b.get('category') or 'N/A'}\n"
+            f"• Date     : {b.get('booking_date') or b.get('date') or 'N/A'}\n"
+            f"• Time     : {b.get('booking_time') or b.get('time') or 'N/A'}\n"
+            f"• Address  : {b.get('address') or 'N/A'}\n"
+            f"• Amount   : ₹{float(b.get('amount', 0)):,.2f}\n"
+            f"• Payment  : {b.get('payment_status') or 'N/A'}\n"
+            f"• Status   : {b.get('status') or 'N/A'}"
+        )
+
+    def fmt_worker(w: dict) -> str:
+        return (
+            f"👷 **Worker #{w.get('id')} – {w.get('name')}**\n"
+            f"• Mobile     : {w.get('mobile') or 'N/A'}\n"
+            f"• Email      : {w.get('email') or 'N/A'}\n"
+            f"• Skills     : {w.get('skills') or 'N/A'}\n"
+            f"• Experience : {w.get('experience_years') or w.get('experience') or 'N/A'} yrs\n"
+            f"• Category   : {w.get('category') or 'N/A'}\n"
+            f"• City       : {w.get('city') or 'N/A'}\n"
+            f"• Status     : {w.get('profile_status') or w.get('status') or 'N/A'}\n"
+            f"• KYC Status : {w.get('kyc_status') or 'N/A'}"
+        )
+
+    def fmt_customer(c: dict) -> str:
+        name = f"{c.get('first_name', '')} {c.get('last_name', '')}".strip() or c.get('name') or 'N/A'
+        return (
+            f"👤 **Customer #{c.get('id')} – {name}**\n"
+            f"• Mobile  : {c.get('phone') or c.get('mobile') or 'N/A'}\n"
+            f"• Email   : {c.get('email') or 'N/A'}\n"
+            f"• City    : {c.get('city') or 'N/A'}\n"
+            f"• Address : {c.get('address') or 'N/A'}\n"
+            f"• Total Bookings : {c.get('total_bookings') or 'N/A'}"
+        )
+
+    # ===================== LOGIC =====================
+
+    # 1. Single Booking by ID
+    if booking_id is not None:
+        b = next((x for x in bookings if x.get("id") == booking_id), None)
+        if b:
+            return {"reply": fmt_booking(b)}
+        return {"reply": f"❌ Booking #{booking_id} not found."}
+
+    # 2. Single Worker by ID
+    if worker_id is not None:
+        w = next((x for x in workers if x.get("id") == worker_id), None)
+        if w:
+            return {"reply": fmt_worker(w)}
+        return {"reply": f"❌ Worker #{worker_id} not found."}
+
+    # 3. Single Customer by ID
+    if customer_id is not None:
+        c = next((x for x in customers if x.get("id") == customer_id), None)
+        if c:
+            return {"reply": fmt_customer(c)}
+        return {"reply": f"❌ Customer #{customer_id} not found."}
+
+    # 4. Status-based bookings
+    if any(k in msg for k in ["pending booking", "pending bookings"]):
+        items = [b for b in bookings if str(b.get("status", "")).lower() == "pending"]
+        if not items:
+            return {"reply": "No pending bookings found."}
+        lines = [fmt_booking(b) for b in items[:8]]
+        return {"reply": f"🟡 **Pending Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
+
+    if any(k in msg for k in ["completed booking", "completed bookings"]):
+        items = [b for b in bookings if str(b.get("status", "")).lower() == "completed"]
+        if not items:
+            return {"reply": "No completed bookings found."}
+        lines = [fmt_booking(b) for b in items[:8]]
+        return {"reply": f"✅ **Completed Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
+
+    if any(k in msg for k in ["cancelled booking", "cancelled bookings", "cancel booking"]):
+        items = [b for b in bookings if str(b.get("status", "")).lower() in ("cancelled", "canceled")]
+        if not items:
+            return {"reply": "No cancelled bookings found."}
+        lines = [fmt_booking(b) for b in items[:8]]
+        return {"reply": f"❌ **Cancelled Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
+
+    # 5. Today's bookings / revenue
+    if "today" in msg and "booking" in msg:
+        from datetime import date
+        today = date.today().isoformat()
+        items = [b for b in bookings if str(b.get("booking_date", b.get("date", "")))[:10] == today]
+        if not items:
+            return {"reply": "No bookings for today."}
+        lines = [fmt_booking(b) for b in items[:10]]
+        return {"reply": f"📅 **Today's Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
+
+    if "today" in msg and "revenue" in msg:
+        from datetime import date
+        today = date.today().isoformat()
+        total = sum(float(b.get("amount", 0)) for b in bookings
+                    if str(b.get("booking_date", b.get("date", "")))[:10] == today)
+        return {"reply": f"💰 **Today's Revenue : ₹{total:,.2f}**"}
+
+    # 6. Monthly / Total revenue
+    if any(k in msg for k in ["monthly revenue", "this month revenue", "month revenue"]):
+        from datetime import date
+        today = date.today()
+        total = sum(float(b.get("amount", 0)) for b in bookings
+                    if str(b.get("booking_date", b.get("date", "")))[:7] == today.strftime("%Y-%m"))
+        return {"reply": f"💰 **This Month's Revenue : ₹{total:,.2f}**"}
+
+    if "total revenue" in msg or "revenue" in msg:
+        total = sum(float(b.get("amount", 0)) for b in bookings)
+        return {"reply": f"💰 **Total Revenue : ₹{total:,.2f}**"}
+
+    # 7. Pending payments
+    if "pending payment" in msg or "pending payments" in msg:
+        items = [b for b in bookings if str(b.get("payment_status", "")).lower() in ("pending", "unpaid")]
+        if not items:
+            return {"reply": "No pending payments."}
+        lines = [fmt_booking(b) for b in items[:8]]
+        return {"reply": f"💳 **Pending Payments ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
+
+    # 8. Totals
+    if any(k in msg for k in ["total worker", "total workers", "how many worker"]):
+        return {"reply": f"👷 **Total Workers : {len(workers)}**"}
+
+    if any(k in msg for k in ["total booking", "total bookings", "how many booking"]):
+        return {"reply": f"📦 **Total Bookings : {len(bookings)}**"}
+
+    if any(k in msg for k in ["total customer", "total customers", "how many customer"]):
+        return {"reply": f"👤 **Total Customers : {len(customers)}**"}
+
+    if any(k in msg for k in ["total category", "total categories"]):
+        return {"reply": f"🛠 **Total Categories : {len(categories)}**"}
+
+    # 9. Worker status counts
+    if "approved worker" in msg:
+        total = len([w for w in workers if str(w.get("profile_status", "")).lower() == "approved"])
+        return {"reply": f"✅ **Approved Workers : {total}**"}
+
+    if "pending worker" in msg:
+        total = len([w for w in workers if str(w.get("profile_status", "")).lower() == "pending"])
+        return {"reply": f"🟡 **Pending Workers : {total}**"}
+
+    # 10. KYC
+    if "pending kyc" in msg:
+        total = len([k for k in kycs if str(k.get("kyc_status", "")).lower() == "pending"])
+        return {"reply": f"📄 **Pending KYC : {total}**"}
+
+    if "approved kyc" in msg:
+        total = len([k for k in kycs if str(k.get("kyc_status", "")).lower() == "approved"])
+        return {"reply": f"✅ **Approved KYC : {total}**"}
+
+    if "rejected kyc" in msg:
+        total = len([k for k in kycs if str(k.get("kyc_status", "")).lower() == "rejected"])
+        return {"reply": f"❌ **Rejected KYC : {total}**"}
+
+    # 11. Top lists (simple)
+    if "top worker" in msg or "top workers" in msg:
+        # count bookings per worker if possible, else just first 5
+        top = workers[:5]
+        lines = [f"• {w.get('name')} (ID: {w.get('id')}) – {w.get('city', '')}" for w in top]
+        return {"reply": "🏆 **Top Workers**\n" + "\n".join(lines)}
+
+    if "top customer" in msg or "top customers" in msg:
+        top = customers[:5]
+        lines = []
+        for c in top:
+            name = f"{c.get('first_name','')} {c.get('last_name','')}".strip() or c.get('name') or 'N/A'
+            lines.append(f"• {name} (ID: {c.get('id')})")
+        return {"reply": "🏆 **Top Customers**\n" + "\n".join(lines)}
+
+    if "top categor" in msg:
+        top = categories[:5]
+        lines = [f"• {c.get('name') or c.get('category_name')}" for c in top]
+        return {"reply": "🏆 **Top Categories**\n" + "\n".join(lines)}
+
+    # 12. Notifications
+    if "notification" in msg:
+        return {"reply": f"🔔 **Total Notifications : {len(notifications)}**"}
+
+    # ---------- Default help ----------
+    return {
+        "reply": (
+            "🤖 Main aapki madad kar sakta hoon:\n\n"
+            "• Booking 15 / Booking ID 15 / Show booking 15\n"
+            "• Worker 20 / Worker ID 20\n"
+            "• Customer 8 / Customer ID 8\n"
+            "• Pending bookings / Completed bookings / Cancelled bookings\n"
+            "• Today's bookings / Today's revenue\n"
+            "• Monthly revenue / Total revenue\n"
+            "• Pending payments\n"
+            "• Top workers / Top customers / Top categories\n"
+            "• Pending KYC / Approved workers\n\n"
+            "Bas natural language mein type kijiye!"
+        )
+    }

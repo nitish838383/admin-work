@@ -97,3 +97,8 @@ class ReviewCreate(BaseModel):
     booking_id: int
     rating: int
     review: str
+
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    message:str

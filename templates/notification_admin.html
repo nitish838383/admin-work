@@ -22,16 +22,13 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
         }
         
-        .action-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        .new-notification {
+            animation: slideIn 0.4s ease forwards;
         }
         
-        .action-btn:hover {
-            transform: translateY(-3px);
-        }
-        
-        .page-btn {
-            transition: all 0.2s ease;
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
     </style>
 </head>
@@ -43,36 +40,38 @@
     <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-xl p-6 md:p-8 mb-8 border border-white/60 dark:border-slate-700">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex items-center gap-4">
-                <button onclick="goBack()" 
-                        class="flex items-center gap-3 px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl transition-all font-medium">
+                <button onclick="goBack()" class="flex items-center gap-3 px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl transition-all font-medium">
                     <i class="fas fa-arrow-left"></i>
                     <span>Back</span>
                 </button>
                 
-                <div class="h-9 w-px bg-gray-200 dark:bg-slate-700"></div>
-                
                 <div>
                     <h1 class="text-4xl font-bold text-gray-900 dark:text-white">Notifications</h1>
-                    <p class="text-slate-500 dark:text-slate-400">Manage Worker Notifications</p>
+                    <p class="text-slate-500 dark:text-slate-400">Live Updates Enabled</p>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white px-8 py-6 rounded-3xl shadow-lg flex items-center gap-5">
-                <i class="fas fa-bell text-4xl opacity-80"></i>
-                <div>
-                    <p class="text-sm opacity-90">Total Notifications</p>
-                    <h2 class="text-4xl font-bold">{{ total_notifications }}</h2>
+            <div class="flex items-center gap-4">
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white px-8 py-6 rounded-3xl shadow-lg flex items-center gap-5">
+                    <i class="fas fa-bell text-4xl opacity-80"></i>
+                    <div>
+                        <p class="text-sm opacity-90">Total Notifications</p>
+<h2 class="text-4xl font-bold">{{ total_notifications }}</h2>
+                    </div>
                 </div>
+                
+                <button onclick="toggleDarkMode()" id="darkModeToggle"
+                        class="w-12 h-12 flex items-center justify-center bg-white dark:bg-slate-800 rounded-2xl shadow hover:bg-gray-100 dark:hover:bg-slate-700 transition-all">
+                    <i id="themeIcon" class="fas fa-moon text-xl"></i>
+                </button>
             </div>
         </div>
 
-        <!-- Search -->
         <div class="mt-8 max-w-lg">
             <div class="relative">
                 <i class="fas fa-search absolute left-6 top-5 text-gray-400 dark:text-slate-400 text-xl"></i>
-                <input type="text" id="searchInput"
-                       placeholder="Search by title, message or worker ID..."
-                       class="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-base">
+                <input type="text" id="searchInput" placeholder="Search notifications..." 
+                       class="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl focus:outline-none focus:border-blue-500 text-base">
             </div>
         </div>
     </div>
@@ -84,51 +83,79 @@
                 <thead>
                     <tr class="bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 text-white">
                         <th class="p-6 text-left font-semibold">ID</th>
-                        <th class="p-6 text-left font-semibold">Worker ID</th>
                         <th class="p-6 text-left font-semibold">Title</th>
                         <th class="p-6 text-left font-semibold">Message</th>
-                        <th class="p-6 text-left font-semibold">Date</th>
-                        <th class="p-6 text-center font-semibold">Action</th>
+                        <th class="p-6 text-left font-semibold">Worker</th>
+                        <th class="p-6 text-left font-semibold">Time</th>
+                        <th class="p-6 text-center font-semibold">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-slate-700" id="tableBody">
-                    {% for notification in notifications %}
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group" data-search="{{ notification.title }} {{ notification.message }} {{ notification.worker_id }}">
-                        <td class="p-6 font-mono text-slate-500 dark:text-slate-400">{{ notification.id }}</td>
-                        <td class="p-6 font-medium">{{ notification.worker_id }}</td>
-                        <td class="p-6 font-semibold text-gray-800 dark:text-white">{{ notification.title }}</td>
-                        <td class="p-6 text-slate-600 dark:text-slate-400 max-w-md truncate">{{ notification.message }}</td>
-                        <td class="p-6 text-slate-500 dark:text-slate-400">{{ notification.created_at }}</td>
-                        <td class="p-6 text-center">
-                            <a href="/auth/delete-notification/{{ notification.id }}"
-                               onclick="return confirm('Delete this notification? This action cannot be undone.')"
-                               class="action-btn inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-2xl text-sm font-medium">
-                                <i class="fas fa-trash"></i>
-                                <span>Delete</span>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                <tbody id="notifications-body">
+{% for notification in notifications %}
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800">
+    <td class="p-6">{{ notification.id }}</td>
+    <td class="p-6">{{ notification.title }}</td>
+    <td class="p-6">{{ notification.message }}</td>
+    <td class="p-6">{{ notification.worker_id }}</td>
+    <td class="p-6">{{ notification.created_at }}</td>
+    <td class="p-6 text-center">
+        {% if notification.is_read %}
+            <span class="bg-green-100 text-green-700 px-4 py-1 rounded-xl">
+                Read
+            </span>
+        {% else %}
+            <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-xl">
+                Unread
+            </span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- Pagination -->
-    <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="text-sm text-gray-500 dark:text-slate-400">
-            Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalItems">{{ total_notifications | default(47) }}</span>
-        </div>
-        
-        <div class="flex items-center gap-2" id="pagination">
-            <!-- JS will populate this -->
         </div>
     </div>
 </div>
 
+<!-- Real-time Toast -->
+<div id="live-toast" class="hidden fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-50">
+    <i class="fas fa-bell"></i>
+    <span id="toast-text" class="font-medium"></span>
+</div>
+
 <script>
-    let currentPage = 1;
-    const itemsPerPage = 10;
+ 
+
+   
+
+    function renderNotifications() {
+        const tbody = document.getElementById('notifications-body');
+        tbody.innerHTML = '';
+
+        notifications.forEach(notif => {
+            const row = document.createElement('tr');
+            row.className = `hover:bg-slate-50 dark:hover:bg-slate-800 transition-all ${notif.status === 'Unread' ? 'new-notification bg-emerald-50 dark:bg-emerald-900/20' : ''}`;
+            row.innerHTML = `
+                <td class="p-6 font-mono text-slate-500">${notif.id}</td>
+                <td class="p-6 font-semibold">${notif.title}</td>
+                <td class="p-6 text-slate-600 dark:text-slate-400">${notif.message}</td>
+                <td class="p-6">${notif.worker}</td>
+                <td class="p-6 text-slate-500">${notif.time}</td>
+                <td class="p-6 text-center">
+                    <span class="inline-flex px-5 py-2 text-xs font-medium rounded-2xl ${notif.status === 'Unread' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300'}">
+                        ${notif.status}
+                    </span>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function updateTotalCount() {
+        document.getElementById('total-count').textContent = totalNotifications;
+    }
+
+
 
     // Dark Mode
     function toggleDarkMode() {
@@ -148,105 +175,21 @@
         }
     }
 
-    if (localStorage.getItem('darkMode') === 'true' || 
-        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    }
-    updateThemeIcon();
-
-    // Pagination Logic
-    function renderPagination(totalRows) {
-        const totalPages = Math.ceil(totalRows / itemsPerPage);
-        let html = '';
-
-        // Previous Button
-        html += `
-            <button onclick="changePage(${currentPage - 1})" 
-                    class="px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
-                    ${currentPage === 1 ? 'disabled' : ''}>
-                <i class="fas fa-chevron-left"></i>
-            </button>
-        `;
-
-        // Page Numbers
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === currentPage) {
-                html += `<button onclick="changePage(${i})" class="px-5 py-3 bg-blue-600 text-white rounded-2xl font-medium">${i}</button>`;
-            } else {
-                html += `<button onclick="changePage(${i})" class="px-5 py-3 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all">${i}</button>`;
-            }
-        }
-
-        // Next Button
-        html += `
-            <button onclick="changePage(${currentPage + 1})" 
-                    class="px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
-                    ${currentPage === totalPages ? 'disabled' : ''}>
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        `;
-
-        document.getElementById('pagination').innerHTML = html;
-        updateShowingInfo(totalRows);
-    }
-
-    function updateShowingInfo(totalRows) {
-        const start = (currentPage - 1) * itemsPerPage + 1;
-        const end = Math.min(currentPage * itemsPerPage, totalRows);
-        document.getElementById('showingStart').textContent = start;
-        document.getElementById('showingEnd').textContent = end;
-    }
-
-    function changePage(page) {
-        const rows = document.querySelectorAll('#tableBody tr');
-        const totalRows = rows.length;
-        const totalPages = Math.ceil(totalRows / itemsPerPage);
-
-        if (page < 1 || page > totalPages) return;
-
-        currentPage = page;
-
-        rows.forEach((row, index) => {
-            if (index >= (currentPage - 1) * itemsPerPage && index < currentPage * itemsPerPage) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        renderPagination(totalRows);
-    }
-
-    // Search + Pagination Combined
+    // Search
     document.getElementById('searchInput').addEventListener('keyup', function() {
-        const term = this.value.toLowerCase().trim();
-        const rows = document.querySelectorAll('#tableBody tr');
-        
-        let visibleCount = 0;
+        const term = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#notifications-body tr');
         
         rows.forEach(row => {
-            const matches = row.textContent.toLowerCase().includes(term);
-            row.style.display = matches ? '' : 'none';
-            if (matches) visibleCount++;
+            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
         });
-
-        currentPage = 1;
-        renderPagination(visibleCount);
     });
 
-    // Initialize
-    window.onload = function() {
-        const rows = document.querySelectorAll('#tableBody tr');
-        changePage(1);
-    };
-
     function goBack() {
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            window.location.href = '/auth/dashboard';
-        }
+        window.history.back();
     }
+
+   
 </script>
 
 </body>

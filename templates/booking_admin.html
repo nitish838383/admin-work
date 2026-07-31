@@ -80,82 +80,143 @@
         </div>
     </div>
 
-    <!-- Table -->
-    <div class="bg-zinc-900 rounded-3xl shadow-xl overflow-hidden border border-zinc-800">
-        <div class="table-container">
-            <table class="w-full min-w-[1100px]" id="bookingsTable">
-                <thead class="bg-zinc-800 text-zinc-300 sticky top-0">
-                    <tr>
-                        <th class="px-6 py-5 text-left">Booking ID</th>
-                        <th class="px-6 py-5 text-left">Customer</th>
-                        <th class="px-6 py-5 text-left">Worker</th>
-                        <th class="px-6 py-5 text-left">Service</th>
-                        <th class="px-6 py-5 text-left">Date</th>
-                        <th class="px-6 py-5 text-left">Amount</th>
-                        <th class="px-6 py-5 text-center">Payment</th>
-                        <th class="px-6 py-5 text-center">Status</th>
-                        <th class="px-6 py-5 text-center">Actions</th>
+   <div class="bg-zinc-900 rounded-3xl shadow-xl overflow-hidden border border-zinc-800">
+    <div class="table-container">
+
+        <table class="w-full min-w-[1100px]">
+
+            <thead class="bg-zinc-800 text-zinc-300">
+                <tr>
+                    <th class="px-6 py-5 text-left">Booking ID</th>
+                    <th class="px-6 py-5 text-left">Customer</th>
+                    <th class="px-6 py-5 text-left">Worker</th>
+                    <th class="px-6 py-5 text-left">Service</th>
+                    <th class="px-6 py-5 text-left">Date</th>
+                    <th class="px-6 py-5 text-left">Amount</th>
+                    <th class="px-6 py-5 text-center">Payment</th>
+                    <th class="px-6 py-5 text-center">Status</th>
+                    <th class="px-6 py-5 text-center">Action</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-zinc-800" id="tableBody">
+
+                {% if bookings %}
+
+                    {% for booking in bookings %}
+                    <tr class="hover:bg-zinc-800 transition-all">
+
+                        <td class="px-6 py-5 font-medium text-emerald-400">
+                            #{{ booking.id }}
+                        </td>
+
+                        <td class="px-6 py-5">
+                            {{ booking.customer_name or "N/A" }}
+                        </td>
+
+                        <td class="px-6 py-5">
+                            {% if booking.worker_name %}
+                                {{ booking.worker_name }}
+                            {% else %}
+                                <span class="text-amber-400">Not Assigned</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-5">
+                            {{ booking.category_name or "N/A" }}
+                        </td>
+
+                        <td class="px-6 py-5">
+                            {{ booking.booking_date or "N/A" }}
+                        </td>
+
+                        <td class="px-6 py-5 font-semibold text-emerald-400">
+                            ₹{{ booking.amount or 0 }}
+                        </td>
+
+                        <td class="px-6 py-5 text-center">
+
+                            {% if booking.payment_status == "Paid" %}
+
+                                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">
+                                    Paid
+                                </span>
+
+                            {% elif booking.payment_status == "Failed" %}
+
+                                <span class="bg-red-900 text-red-400 px-4 py-1 rounded-full text-sm">
+                                    Failed
+                                </span>
+
+                            {% else %}
+
+                                <span class="bg-amber-900 text-amber-400 px-4 py-1 rounded-full text-sm">
+                                    Pending
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="px-6 py-5 text-center">
+
+                            {% if booking.status == "Completed" %}
+
+                                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">
+                                    Completed
+                                </span>
+
+                            {% elif booking.status == "Assigned" %}
+
+                                <span class="bg-blue-900 text-blue-400 px-4 py-1 rounded-full text-sm">
+                                    Assigned
+                                </span>
+
+                            {% elif booking.status == "Cancelled" %}
+
+                                <span class="bg-red-900 text-red-400 px-4 py-1 rounded-full text-sm">
+                                    Cancelled
+                                </span>
+
+                            {% else %}
+
+                                <span class="bg-amber-900 text-amber-400 px-4 py-1 rounded-full text-sm">
+                                    Pending
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="px-6 py-5 text-center">
+                            <a href="/auth/booking/{{ booking.id }}/assign"
+                               class="action-btn bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm">
+                                Assign
+                            </a>
+                        </td>
+
                     </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-800" id="tableBody">
-    {% for booking in bookings %}
-    <tr class="hover:bg-zinc-800 transition-all" id="row-{{ booking.id }}">
+                    {% endfor %}
 
-        <td class="px-6 py-5 font-medium text-emerald-400">
-            #{{ booking.id }}
-        </td>
+                {% else %}
 
-        <td class="px-6 py-5">
-            {{ booking.customer_name }}
-        </td>
+                    <tr>
+                        <td colspan="9" class="py-12 text-center text-zinc-400">
+                            <i class="fa-solid fa-calendar-xmark text-5xl mb-4 block"></i>
+                            No Bookings Found
+                        </td>
+                    </tr>
 
-        <td class="px-6 py-5">
-            {% if booking.worker_name %}
-                {{ booking.worker_name }}
-            {% else %}
-                <span class="text-amber-400">Not Assigned</span>
-            {% endif %}
-        </td>
+                {% endif %}
 
-        <td class="px-6 py-5">
-            {{ booking.category_name }}
-        </td>
+            </tbody>
 
-        <td class="px-6 py-5">
-            {{ booking.booking_date }}
-        </td>
+        </table>
 
-        <td class="px-6 py-5 font-semibold text-emerald-400">
-            ₹{{ booking.amount }}
-        </td>
+    </div>
+</div>
 
-        <td class="px-6 py-5 text-center">
-            {% if booking.payment_status == "Paid" %}
-                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Paid</span>
-            {% else %}
-                <span class="bg-amber-900 text-amber-400 px-4 py-1 rounded-full text-sm">Pending</span>
-            {% endif %}
-        </td>
-
-        <td class="px-6 py-5 text-center">
-            {% if booking.status == "Completed" %}
-                <span class="bg-emerald-900 text-emerald-400 px-4 py-1 rounded-full text-sm">Completed</span>
-            {% else %}
-                <span class="bg-blue-900 text-blue-400 px-4 py-1 rounded-full text-sm">Pending</span>
-            {% endif %}
-        </td>
-
-        <td class="px-6 py-5 text-center">
-            <a href="/auth/booking/{{ booking.id }}/assign"
-               class="action-btn bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm">
-                Assign
-            </a>
-        </td>
-
-    </tr>
-    {% endfor %}
 </tbody>
-
 <script>
     function filterTable() {
         const term = document.getElementById('searchInput').value.toLowerCase();

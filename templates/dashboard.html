@@ -59,6 +59,238 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+       /* ========== CHAT FAB ========== */
+.chat-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.45);
+    cursor: pointer;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.25s ease;
+}
+.chat-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.6);
+}
+.badge-chat {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+/* ========== CHAT PANEL ========== */
+.chat-panel {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    width: 380px;
+    max-width: calc(100vw - 24px);
+    height: 560px;
+    max-height: calc(100vh - 140px);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+    display: none;
+    flex-direction: column;
+    z-index: 9999;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.4);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+.chat-panel.open {
+    display: flex;
+    animation: chatSlideUp 0.28s ease;
+}
+@keyframes chatSlideUp {
+    from { opacity: 0; transform: translateY(18px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header */
+.chat-header {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Messages */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f8fafc;
+    scroll-behavior: smooth;
+}
+.chat-bubble {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.45;
+    position: relative;
+    word-break: break-word;
+}
+.chat-bubble.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+.chat-bubble.bot {
+    align-self: flex-start;
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    border-bottom-left-radius: 4px;
+}
+.chat-time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 4px;
+    text-align: right;
+}
+
+/* Typing dots */
+.chat-bubble.typing {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    display: flex;
+    gap: 5px;
+    width: fit-content;
+}
+.chat-bubble.typing span {
+    width: 7px;
+    height: 7px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: typingBounce 1.2s infinite ease-in-out;
+}
+.chat-bubble.typing span:nth-child(2) { animation-delay: 0.15s; }
+.chat-bubble.typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typingBounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-5px); }
+}
+
+/* Quick Replies */
+.chat-quick-replies {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    background: #f1f5f9;
+    border-top: 1px solid #e2e8f0;
+}
+.chat-quick-btn {
+    flex-shrink: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.chat-quick-btn:hover {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+/* Input Area */
+.chat-input-area {
+    display: flex;
+    gap: 8px;
+    padding: 12px 14px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+}
+#chatInput {
+    flex: 1;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+    background: #ffffff !important;   /* white background */
+    color: #1e293b !important;        /* dark text – IMPORTANT */
+    transition: border 0.2s;
+}
+
+#chatInput::placeholder {
+    color: #94a3b8 !important;        /* light gray placeholder */
+}
+
+#chatInput:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+.chat-send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+.chat-send-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .chat-panel {
+        right: 8px;
+        left: 8px;
+        width: auto;
+        bottom: 80px;
+        height: 70vh;
+    }
+    .chat-fab {
+        bottom: 16px;
+        right: 16px;
+        width: 54px;
+        height: 54px;
+    }
+}
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -593,6 +825,67 @@ class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-8
 </div>
 
 </div>
+<!-- ==================== MISTRI POINT AI CHATBOX ==================== -->
+
+<!-- Floating Button -->
+<button class="chat-fab" id="chatFab" onclick="toggleChatbox()" title="Support Chat">
+    <i class="far fa-comment" id="chatFabIcon"></i>
+    <span class="badge-chat" id="chatBadge">2</span>
+</button>
+
+<!-- Chat Panel -->
+<div class="chat-panel" id="chatPanel">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <i class="fas fa-headset"></i>
+            </div>
+            <div>
+                <div class="font-semibold text-sm">MistriPoint Support</div>
+                <div class="text-xs opacity-90 flex items-center gap-1">
+                    <span class="w-2 h-2 bg-green-400 rounded-full inline-block"></span>
+                    Online
+                </div>
+            </div>
+        </div>
+        <button onclick="toggleChatbox()" class="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+        <div class="chat-bubble bot">
+            👋 Namaste! Main MistriPoint Support Assistant hoon.
+            <div class="chat-time">Just now</div>
+        </div>
+        <div class="chat-bubble bot">
+            Bookings, Workers, Customers, KYC, payments ya koi bhi sawal poochiye.
+            <div class="chat-time">Just now</div>
+        </div>
+    </div>
+
+    <!-- Quick Replies -->
+    <div class="chat-quick-replies">
+        <button class="chat-quick-btn" onclick="sendQuickReply('Pending bookings')">Pending Bookings</button>
+        <button class="chat-quick-btn" onclick="sendQuickReply('Today\'s revenue')">Today's Revenue</button>
+        <button class="chat-quick-btn" onclick="sendQuickReply('Help')">Help</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+    <input 
+        type="text" 
+        id="chatInput" 
+        placeholder="Type message... (e.g. Booking 15)" 
+        autocomplete="off"
+        style="background:#ffffff; color:#1e293b;"
+    >
+    <button class="chat-send-btn" onclick="sendChatMessage()">
+        <i class="fas fa-paper-plane"></i>
+    </button>
+</div>
     
     <!-- --------------------------------------------------------------------------------------------------------------------------- -->
    
@@ -790,6 +1083,100 @@ document.addEventListener('click', function(e) {
             
             console.log("%c✅ MistriPoint Admin Panel Loaded Successfully", "color: #eab308; font-size: 14px; font-weight: bold");
         };
+
+ function toggleChatbox() {
+    const panel = document.getElementById('chatPanel');
+    const icon  = document.getElementById('chatFabIcon');
+    const badge = document.getElementById('chatBadge');
+
+    panel.classList.toggle('open');
+
+    if (panel.classList.contains('open')) {
+        icon.className = 'fas fa-times';
+        if (badge) badge.style.display = 'none';
+        document.getElementById('chatInput').focus();
+    } else {
+        icon.className = 'far fa-comment';
+    }
+}
+
+function appendBubble(text, type) {
+    const box = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'chat-bubble ' + type;
+
+    // simple **bold** support
+    let html = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+
+    const time = new Date().toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    div.innerHTML = html + '<div class="chat-time">' + time + '</div>';
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+    const box = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.id = 'typingIndicator';
+    div.className = 'chat-bubble bot typing';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function hideTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text  = input.value.trim();
+    if (!text) return;
+
+    appendBubble(text, 'user');
+    input.value = '';
+
+    showTyping();
+
+    try {
+        const response = await fetch(`/auth/chat-ai?message=${encodeURIComponent(text)}`);
+        if (!response.ok) throw new Error('Network error');
+
+        const data = await response.json();
+        hideTyping();
+        appendBubble(data.reply || 'Kuch problem aa gayi.', 'bot');
+    } catch (err) {
+        hideTyping();
+        console.error(err);
+        appendBubble('❌ Server se connection nahi ho paya. Phir se try karein.', 'bot');
+    }
+}
+
+function sendQuickReply(text) {
+    document.getElementById('chatInput').value = text;
+    sendChatMessage();
+}
+
+// Enter key
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('chatInput');
+    if (input) {
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+    }
+});
+
     </script>
 </body>
 </html>
