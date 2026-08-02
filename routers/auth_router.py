@@ -130,7 +130,6 @@ def login_view(
         "admin_id": admin.id,
         "email": admin.email
     })
-
 @router.post("/api/login")
 def api_login(
     email: str = Form(...),
@@ -141,6 +140,11 @@ def api_login(
 
     if not admin:
         raise HTTPException(status_code=404, detail="Email not found")
+
+    print("Entered Password:", password)
+    print("DB Password:", admin.password)
+
+    print("Verify Result:", verify_password(password, admin.password))
 
     if not verify_password(password, admin.password):
         raise HTTPException(status_code=401, detail="Invalid Password")
