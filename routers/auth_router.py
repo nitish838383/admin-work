@@ -211,10 +211,157 @@ def login_form(
 
     return response
 
+
+# dashboard hai app ka
+from fastapi import Depends
+from sqlalchemy.orm import Session
+import requests
+
+@router.get("/api/dashboard")
+def dashboard_api(db: Session = Depends(get_db)):
+
+    # ---------------- Customers ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-backend-1.onrender.com/auth/all-customers",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        customers = data.get("customers", []) if isinstance(data, dict) else data
+        total_customers = len(customers)
+
+    except Exception:
+        total_customers = 0
+
+    # ---------------- Bookings ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-backend-1.onrender.com/auth/admin/bookings",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        bookings = data.get("booking", []) if isinstance(data, dict) else data
+
+        total_bookings = len(bookings)
+
+        total_revenue = sum(
+            float(item.get("amount", 0))
+            for item in bookings
+        )
+
+    except Exception:
+        total_bookings = 0
+        total_revenue = 0
+
+    # ---------------- Workers ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-1.onrender.com/worker-profiles",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        workers = data.get("data", []) if isinstance(data, dict) else data
+        total_workers = len(workers)
+
+    except Exception:
+        total_workers = 0
+
+    # ---------------- Skills ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-1.onrender.com/skills",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        skills = data.get("data", []) if isinstance(data, dict) else data
+        total_skills = len(skills)
+
+    except Exception:
+        total_skills = 0
+
+    # ---------------- KYC ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-1.onrender.com/worker-kyc",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        kycs = data.get("data", []) if isinstance(data, dict) else data
+        total_kyc_workers = len(kycs)
+
+    except Exception:
+        total_kyc_workers = 0
+
+    # ---------------- Notifications ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-1.onrender.com/notifications",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        notifications = data.get("data", []) if isinstance(data, dict) else data
+        total_notifications = len(notifications)
+
+    except Exception:
+        total_notifications = 0
+
+    # ---------------- Reviews ----------------
+    try:
+        response = requests.get(
+            "https://mistripoint-1.onrender.com/reviews",
+            timeout=10
+        )
+        response.raise_for_status()
+
+        data = response.json()
+
+        reviews = data.get("data", []) if isinstance(data, dict) else data
+        total_reviews = len(reviews)
+
+    except Exception:
+        total_reviews = 0
+
+    # ---------------- Local Users ----------------
+    total_users = db.query(User).count()
+
+    # ---------------- JSON Response ----------------
+    return {
+        "success": True,
+        "dashboard": {
+            "total_users": total_users,
+            "total_customers": total_customers,
+            "total_bookings": total_bookings,
+            "total_workers": total_workers,
+            "total_skills": total_skills,
+            "total_kyc_workers": total_kyc_workers,
+            "total_notifications": total_notifications,
+            "total_reviews": total_reviews,
+            "total_revenue": total_revenue
+        }
+    }
+
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 # get dashboard
 # --------------------------------------------------------------------------
-# Dashboard
+# Dashboard website ka hai
 # --------------------------------------------------------------------------
 from sqlalchemy import func
 from models import User
