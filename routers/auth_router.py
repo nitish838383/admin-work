@@ -131,6 +131,33 @@ def login_view(
         "email": admin.email
     })
 
+@router.post("/api/login")
+def api_login(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    admin = db.query(Admin).filter(Admin.email == email).first()
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Email not found")
+
+    if not verify_password(password, admin.password):
+        raise HTTPException(status_code=401, detail="Invalid Password")
+
+    token = create_access_token({
+        "admin_id": admin.id,
+        "email": admin.email
+    })
+
+    return {
+        "success": True,
+        "message": "Login Successful",
+        "token": token,
+        "admin_id": admin.id,
+        "email": admin.email
+    }
+
 @router.post("/login")
 def login_form(
     request: Request,
