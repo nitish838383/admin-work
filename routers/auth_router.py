@@ -1119,6 +1119,17 @@ def all_customers(
         }
     )
 
+# app customer api
+
+@router.get("/api/all-customers")
+def get_all_customers():
+
+    response = requests.get(
+        "https://mistripoint-backend-1.onrender.com/auth/all-customers"
+    )
+
+    return response.json()
+
 @router.get("/customer_approved/{customer_id}/approve")
 def approve_customer(
     customer_id: int,
