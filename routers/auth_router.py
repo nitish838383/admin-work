@@ -1120,27 +1120,30 @@ def all_customers(
     )
 
 # app customer api
+from fastapi import Header
 
 @router.get("/api/all-customers")
 def api_all_customers(
-    request: Request,
-    db: Session = Depends(get_db)
+    authorization: str | None = Header(default=None)
 ):
-    token = request.cookies.get("access_token")
 
-    if not token:
-        return {"success": False, "message": "Unauthorized"}
+    if not authorization:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
 
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
-        return {"success": False, "message": "Invalid Token"}
+    token = authorization.replace("Bearer ", "")
+
+    payload = jwt.decode(
+        token,
+        SECRET_KEY,
+        algorithms=[ALGORITHM]
+    )
 
     response = requests.get(
         "https://mistripoint-backend-1.onrender.com/auth/all-customers"
     )
-
-    return response.json()
 
     return response.json()
 
