@@ -1122,11 +1122,25 @@ def all_customers(
 # app customer api
 
 @router.get("/api/all-customers")
-def get_all_customers():
+def api_all_customers(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        return {"success": False, "message": "Unauthorized"}
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        return {"success": False, "message": "Invalid Token"}
 
     response = requests.get(
         "https://mistripoint-backend-1.onrender.com/auth/all-customers"
     )
+
+    return response.json()
 
     return response.json()
 
