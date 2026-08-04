@@ -1355,7 +1355,14 @@ def all_bookings(
     )
 
 
+@router.get("/api/all-bookings")
+def get_all_bookings_api():
 
+    response = requests.get(
+        "https://mistripoint-backend-1.onrender.com/auth/admin/bookings"
+    )
+
+    return response.json()
 # ______________________________________________________________________________________________________________________________________
 # service-selections
 @router.get("/service-selection")
