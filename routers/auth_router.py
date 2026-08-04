@@ -1041,7 +1041,62 @@ def inactive_worker(
         status_code=303
     )
 # __________________________________________________________________________________________________________________________________________
+
+@router.put("/api/worker/{worker_id}/approve")
+def approve_worker_api(worker_id: int):
+
+    response = requests.put(
+        f"https://mistripoint-1.onrender.com/admin/worker-profile/approve/{worker_id}"
+    )
+
+    return response.json()
+@router.put("/api/worker/{worker_id}/reject")
+def reject_worker_api(worker_id: int):
+
+    response = requests.put(
+        f"https://mistripoint-1.onrender.com/admin/worker-profile/reject/{worker_id}"
+    )
+
+    return response.json()
+@router.put("/api/worker/{worker_id}/active")
+def active_worker_api(
+    worker_id: int,
+    db: Session = Depends(get_db)
+):
+
+    worker = db.query(Worker).filter(
+        Worker.id == worker_id
+    ).first()
+
+    if worker:
+        worker.status = "Active"
+        db.commit()
+
+    return {
+        "success": True,
+        "message": "Worker Activated"
+    }
+@router.put("/api/worker/{worker_id}/inactive")
+def inactive_worker_api(
+    worker_id: int,
+    db: Session = Depends(get_db)
+):
+
+    worker = db.query(Worker).filter(
+        Worker.id == worker_id
+    ).first()
+
+    if worker:
+        worker.status = "Inactive"
+        db.commit()
+
+    return {
+        "success": True,
+        "message": "Worker Inactivated"
+    }
+
 # users detail
+
 
 @router.get("/users")
 def users_page(
