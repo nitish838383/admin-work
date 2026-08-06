@@ -1,221 +1,290 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in - MistriPoint Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        body { 
-            font-family: 'Inter', system_ui, sans-serif; 
-        }
-        
-        .glass {
-            background: rgba(255, 255, 255, 0.09);
-            backdrop-filter: blur(28px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sign in to MistriPoint Admin Dashboard" />
+  <meta name="theme-color" content="#3B5BFF" />
+  <title>Sign In – MistriPoint</title>
 
-        /* Smooth Fade-In Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeInUp 1s ease-out forwards;
-        }
-
-        /* Mobile Improvements */
-        @media (max-width: 768px) {
-            .login-card {
-                margin: 0 16px;
-                padding: 2rem 1.75rem;
-            }
-        }
-    </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="/static/css/login.css" />
 </head>
-<body class="bg-zinc-950 min-h-screen flex items-center justify-center overflow-hidden">
-    
-    <!-- Background Gradient -->
-    <div class="absolute inset-0 bg-[radial-gradient(at_50%_30%,rgba(59,130,246,0.15),transparent_70%)]"></div>
-    
-    <div class="max-w-6xl w-full mx-auto grid md:grid-cols-2 gap-10 lg:gap-16 items-center px-4 sm:px-6 py-12 relative z-10">
-        
-        <!-- Left Side - Hidden on Mobile -->
-        <div class="hidden md:flex flex-col justify-center">
-            <div class="max-w-md">
-                <div class="inline-flex items-center gap-3 mb-8">
-                    <div class="w-14 h-14 bg-blue-600 rounded-3xl flex items-center justify-center">
-                        <i class="fas fa-hard-hat text-4xl text-white"></i>
-                    </div>
-                    <span class="text-4xl font-bold text-white tracking-tight">MistriPoint</span>
-                </div>
-                
-                <h1 class="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                    Welcome back, <span class="text-blue-400">Admin</span>
-                </h1>
-                <p class="text-xl text-zinc-400 mb-12">
-                    Sign in to manage workers, bookings, and operations across Ghaziabad.
-                </p>
-                
-                <div class="space-y-8">
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-users text-2xl text-blue-400"></i>
-                        </div>
-                        <div>
-                            <p class="text-white font-medium text-lg">Manage 1200+ Workers</p>
-                            <p class="text-zinc-400">Real-time verification & assignments</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-calendar-check text-2xl text-emerald-400"></i>
-                        </div>
-                        <div>
-                            <p class="text-white font-medium text-lg">Live Bookings</p>
-                            <p class="text-zinc-400">Track every job in real time</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<body>
+  <div class="login-bg" aria-hidden="true">
+    <div class="login-bg-shape login-bg-shape-1"></div>
+    <div class="login-bg-shape login-bg-shape-2"></div>
+    <div class="login-bg-shape login-bg-shape-3"></div>
+  </div>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div class="login-container">
+    <!-- Left Brand Panel -->
+    <div class="login-brand">
+      <div class="brand-top">
+        <div class="brand-logo">
+          <div class="brand-logo-icon">
+            <i class="fas fa-hard-hat"></i>
+          </div>
+          <span class="brand-logo-text">MistriPoint</span>
         </div>
 
-        <!-- Login Card -->
-        <div class="w-full max-w-md mx-auto">
-            <div class="glass rounded-3xl login-card p-8 sm:p-10 fade-in">
-                
-                <!-- Logo -->
-                <div class="flex justify-center mb-8">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-hard-hat text-3xl text-white"></i>
-                        </div>
-                        <div class="text-3xl font-bold text-white tracking-tighter">MistriPoint</div>
-                    </div>
-                </div>
+        <h2 class="brand-headline">Welcome back, Admin</h2>
+        <p class="brand-sub">
+          Sign in to manage workers, bookings, and operations across your service marketplace.
+        </p>
 
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl font-semibold text-white">Sign in</h2>
-                    <p class="text-zinc-400 mt-2">Access your admin dashboard</p>
-                </div>
-
-                {% if error %}
-                <div class="mb-6 flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400">
-                    <i class="fas fa-circle-exclamation"></i>
-                    <span>{{ error }}</span>
-                </div>
-                {% endif %}
-
-                <form id="loginForm" action="/auth/login" method="post" class="space-y-6">
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-2">Email address</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
-                                <i class="fas fa-envelope"></i>
-                            </span>
-                            <input type="email" name="email" id="email" required
-                                   class="w-full pl-11 pr-4 py-4 bg-zinc-900 border border-zinc-700 rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-all">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-2">Password</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                            <input type="password" name="password" id="password" required
-                                   class="w-full pl-11 pr-12 py-4 bg-zinc-900 border border-zinc-700 rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-all">
-                            <button type="button" onclick="togglePassword()" 
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white">
-                                <i id="eyeIcon" class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center gap-2 cursor-pointer text-zinc-400">
-                            <input type="checkbox" class="accent-blue-500 w-4 h-4">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="/auth/forgot-password" class="text-blue-400 hover:text-blue-300">Forgot password?</a>
-                    </div>
-
-                    <button type="submit" id="loginBtn"
-                            class="w-full bg-white text-zinc-900 font-semibold py-4 rounded-2xl text-lg hover:bg-zinc-100 active:scale-95 transition-all flex items-center justify-center gap-3">
-                        <span id="btnText">Sign in</span>
-                        <span id="loader" class="hidden animate-spin w-5 h-5 border-2 border-zinc-900 border-t-transparent rounded-full"></span>
-                    </button>
-                </form>
-
-                <div class="flex items-center gap-4 my-8">
-                    <div class="flex-1 h-px bg-zinc-700"></div>
-                    <span class="text-zinc-500 text-sm">or</span>
-                    <div class="flex-1 h-px bg-zinc-700"></div>
-                </div>
-
-                <a href="/auth/google"
-   class="w-full border border-zinc-700 hover:bg-zinc-900 text-white py-4 rounded-2xl flex items-center justify-center gap-3 text-base font-medium">
-    <i class="fab fa-google"></i>
-    Continue with Google
-</a>
-            </div>
-
-            <!-- Footer -->
-            <div class="text-center mt-8 text-xs text-zinc-500">
-                © 2026 MistriPoint. All rights reserved.
-            </div>
+        <div class="brand-features">
+          <div class="brand-feature">
+            <div class="brand-feature-icon"><i class="fas fa-users"></i></div>
+            <span>Manage 1200+ Workers — real-time verification</span>
+          </div>
+          <div class="brand-feature">
+            <div class="brand-feature-icon"><i class="fas fa-calendar-check"></i></div>
+            <span>Live Bookings — track every job in real time</span>
+          </div>
+          <div class="brand-feature">
+            <div class="brand-feature-icon"><i class="fas fa-shield-alt"></i></div>
+            <span>Secure payments & role-based access</span>
+          </div>
         </div>
+      </div>
+
+      <div class="brand-bottom">
+        <div class="brand-avatars">
+          <img src="https://ui-avatars.com/api/?name=Priya+S&background=ffffff&color=3B5BFF&size=72" alt="" />
+          <img src="https://ui-avatars.com/api/?name=Ramesh+K&background=ffffff&color=6C63FF&size=72" alt="" />
+          <img src="https://ui-avatars.com/api/?name=Neha+G&background=ffffff&color=00C853&size=72" alt="" />
+          <img src="https://ui-avatars.com/api/?name=Amit+V&background=ffffff&color=FFA726&size=72" alt="" />
+        </div>
+        <div class="brand-trust">
+          <strong>2,400+ businesses</strong>
+          trust MistriPoint daily
+        </div>
+      </div>
     </div>
 
-<script>
-    function togglePassword() {
-        const pass = document.getElementById("password");
-        const icon = document.getElementById("eyeIcon");
-        if (pass.type === "password") {
-            pass.type = "text";
-            icon.classList.replace("fa-eye", "fa-eye-slash");
-        } else {
-            pass.type = "password";
-            icon.classList.replace("fa-eye-slash", "fa-eye");
+    <!-- Right Form Panel -->
+    <div class="login-form-panel">
+      <div class="form-header">
+        <h1>Sign in</h1>
+        <p>Access your admin dashboard</p>
+      </div>
+
+      <!-- Server / client error message -->
+      <div class="form-message error" id="formMessage" role="alert" style="display:none;">
+        <i class="fas fa-circle-exclamation"></i>
+        <span id="formMessageText"></span>
+      </div>
+
+      <!-- Google OAuth -->
+      <div class="social-buttons" style="grid-template-columns: 1fr; margin-bottom: 24px;">
+        <a href="/auth/google" class="social-btn" id="googleLogin" style="text-decoration:none;">
+          <i class="fab fa-google"></i>
+          Continue with Google
+        </a>
+      </div>
+
+      <div class="divider">or continue with email</div>
+
+      <!-- API Form: POST /auth/login -->
+      <form id="loginForm" action="/auth/login" method="post" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              class="form-control"
+              placeholder="admin@mistropoint.com"
+              autocomplete="email"
+              required
+              aria-required="true"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              class="form-control"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+              aria-required="true"
+              minlength="6"
+            />
+            <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+              <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" name="remember" id="remember" value="1" />
+            <span>Remember me</span>
+          </label>
+          <a href="/auth/forgot-password" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">
+          <span class="btn-text" id="btnText">Sign in</span>
+          <span class="spinner" id="loader" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <div class="form-footer">
+        © 2026 MistriPoint. All rights reserved. · <a href="#">Help Center</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Theme */
+      var html = document.documentElement;
+      var themeToggle = document.getElementById('themeToggle');
+
+      function setTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        if (themeToggle) {
+          themeToggle.innerHTML = theme === 'dark'
+            ? '<i class="fas fa-sun"></i>'
+            : '<i class="fas fa-moon"></i>';
         }
-    }
+      }
 
-    const form = document.getElementById("loginForm");
-    const btn = document.getElementById("loginBtn");
-    const btnText = document.getElementById("btnText");
-    const loader = document.getElementById("loader");
+      var saved = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      setTheme(saved);
 
-    function resetButton() {
-        btn.disabled = false;
-        btnText.classList.remove("hidden");
-        loader.classList.add("hidden");
-    }
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+          setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+      }
 
-    window.addEventListener("load", resetButton);
-    window.addEventListener("pageshow", resetButton);
+      /* Password show / hide */
+      var passwordInput = document.getElementById('password');
+      var togglePassword = document.getElementById('togglePassword');
+      var eyeIcon = document.getElementById('eyeIcon');
 
-    form.addEventListener("submit", function () {
-        btn.disabled = true;
-        btnText.classList.add("hidden");
-        loader.classList.remove("hidden");
-    });
+      if (togglePassword && passwordInput && eyeIcon) {
+        togglePassword.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
 
-   
-</script>
+          if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+            togglePassword.setAttribute('aria-label', 'Hide password');
+          } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+            togglePassword.setAttribute('aria-label', 'Show password');
+          }
+        });
+      }
 
+      /* Error helpers */
+      var formMessage = document.getElementById('formMessage');
+      var formMessageText = document.getElementById('formMessageText');
+
+      function showError(text) {
+        if (!formMessage || !formMessageText) return;
+        formMessageText.textContent = text;
+        formMessage.className = 'form-message error show';
+        formMessage.style.display = 'flex';
+      }
+
+      function hideError() {
+        if (!formMessage) return;
+        formMessage.className = 'form-message';
+        formMessage.style.display = 'none';
+      }
+
+      /* Error from URL ?error=... */
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var err = params.get('error');
+        if (err) showError(decodeURIComponent(err));
+      } catch (e) {}
+
+      /* Form → POST /auth/login */
+      var form = document.getElementById('loginForm');
+      var loginBtn = document.getElementById('loginBtn');
+      var btnText = document.getElementById('btnText');
+      var loader = document.getElementById('loader');
+
+      function setLoading(loading) {
+        if (!loginBtn) return;
+        if (loading) {
+          loginBtn.classList.add('loading');
+          loginBtn.disabled = true;
+          if (btnText) btnText.style.display = 'none';
+          if (loader) loader.style.display = 'block';
+        } else {
+          loginBtn.classList.remove('loading');
+          loginBtn.disabled = false;
+          if (btnText) btnText.style.display = '';
+          if (loader) loader.style.display = 'none';
+        }
+      }
+
+      window.addEventListener('load', function () { setLoading(false); });
+      window.addEventListener('pageshow', function () { setLoading(false); });
+
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          hideError();
+
+          var emailEl = document.getElementById('email');
+          var passEl = document.getElementById('password');
+          var email = emailEl ? emailEl.value.trim() : '';
+          var password = passEl ? passEl.value : '';
+
+          if (!email || !password) {
+            e.preventDefault();
+            showError('Please fill in all fields.');
+            return;
+          }
+
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            e.preventDefault();
+            showError('Please enter a valid email address.');
+            return;
+          }
+
+          if (password.length < 6) {
+            e.preventDefault();
+            showError('Password must be at least 6 characters.');
+            return;
+          }
+
+          // Valid → native POST to action="/auth/login"
+          setLoading(true);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

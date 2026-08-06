@@ -1957,268 +1957,801 @@ def worker_kyc_search(request: Request):
     )
 
 
+# =====================================================================
+# ENTERPRISE AI CHAT ASSISTANT  –  Drop-in replacement for /chat-ai
+# Fully compatible with existing endpoint + response shape
+# =====================================================================
 
-# =====================================================================
-# IMPROVED AI CHAT ASSISTANT (replace old /chat-ai)
-# =====================================================================
 import re
-from typing import Any, Dict, List, Optional
+import hashlib
+import json
+from abc import ABC, abstractmethod
+from datetime import datetime, date, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple, Union
+from functools import lru_cache
 
-@router.get("/chat-ai")
-def chat_ai(message: str):
-    """
-    Natural language AI assistant for Bookings / Workers / Customers / Revenue etc.
-    Supports:
-    - Booking 15 / Booking ID 15 / Show booking 15
-    - Worker 20 / Worker ID 20
-    - Customer 8 / Customer ID 8
-    - Pending / Completed / Cancelled bookings
-    - Today's bookings / Today's revenue / Monthly revenue
-    - Top workers / Top customers / Top categories
-    - Pending payments / Pending KYC etc.
-    """
-    if not message or not message.strip():
-        return {"reply": "Please type a question, e.g. Booking 15, Pending bookings, Today's revenue"}
+import requests
+from fastapi import APIRouter, Query
+from pydantic import BaseModel, Field
+from rapidfuzz import fuzz, process
+from cachetools import TTLCache
+from loguru import logger
+from dateutil import parser as date_parser
 
-    msg = message.lower().strip()
 
-    # ---------- Helper: safe API call ----------
-    def safe_get(url: str, key: Optional[str] = None) -> List[Dict]:
-        try:
-            r = requests.get(url, timeout=12)
-            r.raise_for_status()
-            data = r.json()
-            if key and isinstance(data, dict):
-                return data.get(key, []) if isinstance(data.get(key), list) else []
-            if isinstance(data, list):
-                return data
-            if isinstance(data, dict):
-                # try common keys
-                for k in ("data", "booking", "bookings", "customers", "workers"):
-                    if k in data and isinstance(data[k], list):
-                        return data[k]
+
+# ------------------------------------------------------------------
+# 1. CONFIG – Real endpoints (exactly as your dashboard)
+# ------------------------------------------------------------------
+API = {
+    "workers":       "https://mistripoint-1.onrender.com/worker-profiles",
+    "bookings":      "https://mistripoint-backend-1.onrender.com/auth/admin/bookings",
+    "customers":     "https://mistripoint-backend-1.onrender.com/auth/all-customers",
+    "kycs":          "https://mistripoint-1.onrender.com/worker-kyc",
+    "categories":    "https://mistripoint-backend-1.onrender.com/auth/categories",
+    "notifications": "https://mistripoint-1.onrender.com/notifications",
+}
+
+# ------------------------------------------------------------------
+# 2. MODELS
+# ------------------------------------------------------------------
+class Intent(str, Enum):
+    BOOKING = "booking"
+    WORKER = "worker"
+    CUSTOMER = "customer"
+    REVENUE = "revenue"
+    STATISTICS = "statistics"
+    PAYMENT = "payment"
+    CATEGORY = "category"
+    NOTIFICATION = "notification"
+    KYC = "kyc"
+    SEARCH = "search"
+    HELP = "help"
+    UNKNOWN = "unknown"
+
+class EntityType(str, Enum):
+    BOOKING_ID = "booking_id"
+    WORKER_ID = "worker_id"
+    CUSTOMER_ID = "customer_id"
+    NAME = "name"
+    PHONE = "phone"
+    EMAIL = "email"
+    CITY = "city"
+    SKILL = "skill"
+    STATUS = "status"
+    DATE = "date"
+    DATE_RANGE = "date_range"
+    SORT = "sort"
+
+class ExtractedEntity(BaseModel):
+    type: EntityType
+    value: Any
+    confidence: float = 1.0
+    raw: Optional[str] = None
+
+class IntentResult(BaseModel):
+    intent: Intent
+    confidence: float
+    entities: List[ExtractedEntity] = Field(default_factory=list)
+    raw_query: str
+    normalized_query: str
+
+class HandlerResult(BaseModel):
+    success: bool
+    title: str
+    data: Any = None
+    message: Optional[str] = None
+
+# ------------------------------------------------------------------
+# 3. CACHE (in-memory, 45 s TTL)
+# ------------------------------------------------------------------
+_query_cache = TTLCache(maxsize=256, ttl=45)
+_data_cache  = TTLCache(maxsize=32,  ttl=30)   # raw API responses
+
+def _cache_key(intent: str, entities: dict) -> str:
+    payload = json.dumps({"i": intent, "e": entities}, sort_keys=True, default=str)
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+# ------------------------------------------------------------------
+# 4. LAZY DATA PROVIDER (loads ONLY what the intent needs)
+# ------------------------------------------------------------------
+def _safe_get(url: str, key: Optional[str] = None) -> List[Dict]:
+    cache_k = f"{url}|{key}"
+    if cache_k in _data_cache:
+        return _data_cache[cache_k]
+    try:
+        r = requests.get(url, timeout=10)
+        r.raise_for_status()
+        data = r.json()
+        result = []
+        if key and isinstance(data, dict):
+            result = data.get(key, []) if isinstance(data.get(key), list) else []
+        elif isinstance(data, list):
+            result = data
+        elif isinstance(data, dict):
+            for k in ("data", "booking", "bookings", "customers", "workers"):
+                if k in data and isinstance(data[k], list):
+                    result = data[k]
+                    break
+        _data_cache[cache_k] = result
+        return result
+    except Exception as e:
+        logger.error(f"API Error [{url}]: {e}")
+        return []
+
+class DataHub:
+    """Lazy-load façade – never loads everything."""
+    @staticmethod
+    def workers() -> List[Dict]:
+        return _safe_get(API["workers"], "data")
+
+    @staticmethod
+    def bookings() -> List[Dict]:
+        return _safe_get(API["bookings"])
+
+    @staticmethod
+    def customers() -> List[Dict]:
+        return _safe_get(API["customers"], "customers")
+
+    @staticmethod
+    def kycs() -> List[Dict]:
+        return _safe_get(API["kycs"], "data")
+
+    @staticmethod
+    def categories() -> List[Dict]:
+        return _safe_get(API["categories"])
+
+    @staticmethod
+    def notifications() -> List[Dict]:
+        return _safe_get(API["notifications"], "data")
+
+# ------------------------------------------------------------------
+# 5. ENTITY EXTRACTOR (fuzzy + regex)
+# ------------------------------------------------------------------
+PHONE_RE   = re.compile(r"(?:\+91[-\s]?)?[6-9]\d{9}")
+EMAIL_RE   = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+ID_RE      = re.compile(r"\b(?:id|booking|worker|customer)?\s*[#:]?\s*(\d+)\b", re.I)
+
+STATUS_MAP = {
+    "pending": "pending", "completed": "completed",
+    "cancelled": "cancelled", "canceled": "cancelled",
+    "approved": "approved", "rejected": "rejected",
+    "paid": "paid", "unpaid": "unpaid",
+}
+
+SKILL_KW = [
+    "electrician", "plumber", "carpenter", "painter", "cleaner",
+    "ac technician", "mechanic", "mason", "welder", "gardener",
+]
+CITY_KW = [
+    "delhi", "noida", "gurgaon", "gurugram", "mumbai", "bangalore",
+    "bengaluru", "hyderabad", "pune", "chennai", "kolkata", "jaipur",
+    "lucknow", "ahmedabad", "chandigarh", "faridabad", "ghaziabad",
+]
+SORT_KW = {
+    "latest": "desc", "newest": "desc", "recent": "desc",
+    "oldest": "asc", "highest": "desc", "lowest": "asc",
+    "top": "desc", "maximum": "desc", "minimum": "asc",
+}
+
+class EntityExtractor:
+    def extract(self, query: str, known_names: Optional[List[str]] = None) -> List[ExtractedEntity]:
+        q = query.strip()
+        ents: List[ExtractedEntity] = []
+        ents += self._ids(q)
+        ents += self._phone(q)
+        ents += self._email(q)
+        ents += self._status(q)
+        ents += self._skill(q)
+        ents += self._city(q)
+        ents += self._dates(q)
+        ents += self._sort(q)
+        ents += self._name(q, known_names or [])
+        return self._dedup(ents)
+
+    def _ids(self, q: str) -> List[ExtractedEntity]:
+        out = []
+        for m in ID_RE.finditer(q):
+            val = int(m.group(1))
+            low = m.group(0).lower()
+            if "worker" in low:
+                et = EntityType.WORKER_ID
+            elif "customer" in low:
+                et = EntityType.CUSTOMER_ID
+            else:
+                et = EntityType.BOOKING_ID
+            out.append(ExtractedEntity(type=et, value=val, raw=m.group(0)))
+        return out
+
+    def _phone(self, q: str) -> List[ExtractedEntity]:
+        return [
+            ExtractedEntity(type=EntityType.PHONE, value=re.sub(r"[^\d]", "", m.group(0))[-10:], raw=m.group(0))
+            for m in PHONE_RE.finditer(q)
+        ]
+
+    def _email(self, q: str) -> List[ExtractedEntity]:
+        return [
+            ExtractedEntity(type=EntityType.EMAIL, value=m.group(0).lower(), raw=m.group(0))
+            for m in EMAIL_RE.finditer(q)
+        ]
+
+    def _status(self, q: str) -> List[ExtractedEntity]:
+        low = q.lower()
+        return [
+            ExtractedEntity(type=EntityType.STATUS, value=v, raw=k)
+            for k, v in STATUS_MAP.items() if re.search(rf"\b{k}\b", low)
+        ]
+
+    def _skill(self, q: str) -> List[ExtractedEntity]:
+        low = q.lower()
+        return [
+            ExtractedEntity(type=EntityType.SKILL, value=s, raw=s)
+            for s in SKILL_KW if s in low
+        ]
+
+    def _city(self, q: str) -> List[ExtractedEntity]:
+        low = q.lower()
+        return [
+            ExtractedEntity(type=EntityType.CITY, value=c.title(), raw=c)
+            for c in CITY_KW if c in low
+        ]
+
+    def _dates(self, q: str) -> List[ExtractedEntity]:
+        low = q.lower()
+        today = date.today()
+        out = []
+        if "today" in low:
+            out.append(ExtractedEntity(type=EntityType.DATE, value=today.isoformat(), raw="today"))
+        if "yesterday" in low:
+            out.append(ExtractedEntity(type=EntityType.DATE, value=(today - timedelta(days=1)).isoformat(), raw="yesterday"))
+        if "this month" in low or "current month" in low:
+            start = today.replace(day=1)
+            out.append(ExtractedEntity(type=EntityType.DATE_RANGE, value=(start.isoformat(), today.isoformat()), raw="this month"))
+        if "last month" in low:
+            first = today.replace(day=1)
+            end = first - timedelta(days=1)
+            start = end.replace(day=1)
+            out.append(ExtractedEntity(type=EntityType.DATE_RANGE, value=(start.isoformat(), end.isoformat()), raw="last month"))
+        return out
+
+    def _sort(self, q: str) -> List[ExtractedEntity]:
+        low = q.lower()
+        return [
+            ExtractedEntity(type=EntityType.SORT, value=v, raw=k)
+            for k, v in SORT_KW.items() if re.search(rf"\b{k}\b", low)
+        ]
+
+    def _name(self, q: str, known: List[str]) -> List[ExtractedEntity]:
+        cleaned = PHONE_RE.sub(" ", q)
+        cleaned = EMAIL_RE.sub(" ", cleaned)
+        cleaned = ID_RE.sub(" ", cleaned)
+        cleaned = re.sub(
+            r"\b(?:show|open|get|find|search|worker|customer|booking|id|phone|email|address|city|of|the|a|an|details|profile|history|top|pending|approved|rejected)\b",
+            " ", cleaned, flags=re.I
+        )
+        cleaned = re.sub(r"[^\w\s']", " ", cleaned)
+        tokens = [t.strip() for t in cleaned.split() if len(t.strip()) > 1]
+        if not tokens:
             return []
-        except Exception as e:
-            print(f"API Error [{url}]: {e}")
+        candidate = " ".join(tokens).strip()
+        if not candidate or candidate.isdigit():
             return []
 
-    # ---------- Correct APIs (same as your dashboard) ----------
-    workers   = safe_get("https://mistripoint-1.onrender.com/worker-profiles", "data")
-    bookings  = safe_get("https://mistripoint-backend-1.onrender.com/auth/admin/bookings")  # FIXED URL
-    customers = safe_get("https://mistripoint-backend-1.onrender.com/auth/all-customers", "customers")
-    kycs      = safe_get("https://mistripoint-1.onrender.com/worker-kyc", "data")
-    categories= safe_get("https://mistripoint-backend-1.onrender.com/auth/categories")
-    notifications = safe_get("https://mistripoint-1.onrender.com/notifications", "data")
+        if known:
+            match = process.extractOne(candidate, known, scorer=fuzz.token_set_ratio)
+            if match and match[1] >= 70:
+                return [ExtractedEntity(type=EntityType.NAME, value=match[0], confidence=match[1]/100, raw=candidate)]
 
-    # ---------- Regex ID extraction ----------
-    def extract_id(patterns: List[str]) -> Optional[int]:
-        for p in patterns:
-            m = re.search(p, msg, re.IGNORECASE)
-            if m:
-                try:
-                    return int(m.group(1))
-                except:
-                    pass
+        if len(tokens) <= 3:
+            return [ExtractedEntity(type=EntityType.NAME, value=candidate.title(), confidence=0.75, raw=candidate)]
+        return []
+
+    def _dedup(self, ents: List[ExtractedEntity]) -> List[ExtractedEntity]:
+        seen, unique = set(), []
+        for e in ents:
+            key = (e.type, str(e.value))
+            if key not in seen:
+                seen.add(key)
+                unique.append(e)
+        return unique
+
+# ------------------------------------------------------------------
+# 6. INTENT DETECTOR (pattern registry – no long if-else)
+# ------------------------------------------------------------------
+INTENT_PATTERNS: List[Tuple[Intent, List[str], float]] = [
+    (Intent.HELP,         [r"\bhelp\b", r"\bwhat can you do\b", r"\bcommands\b"], 0.95),
+    (Intent.NOTIFICATION, [r"\bnotification", r"\bunread", r"\balert"], 0.9),
+    (Intent.KYC,          [r"\bkyc\b"], 0.9),
+    (Intent.REVENUE,      [r"\brevenue\b", r"\bearning", r"\bincome\b"], 0.9),
+    (Intent.PAYMENT,      [r"\bpayment", r"\bpaid\b", r"\bunpaid\b", r"\bpending payment"], 0.85),
+    (Intent.STATISTICS,   [r"\btotal\s+(workers?|customers?|bookings?|revenue|categories?)", r"\bstats?\b", r"\bstatistics\b"], 0.9),
+    (Intent.CATEGORY,     [r"\bcategor", r"\bmost booked", r"\btop categor"], 0.85),
+    (Intent.BOOKING,      [r"\bbooking", r"\border\b", r"\bjob\b"], 0.85),
+    (Intent.WORKER,       [r"\bworker", r"\btechnician", r"\belectrician", r"\bplumber", r"\bcarpenter", r"\bmistri"], 0.85),
+    (Intent.CUSTOMER,     [r"\bcustomer", r"\bclient\b"], 0.85),
+    (Intent.SEARCH,       [r"\bsearch\b", r"\bfind\b", r"\blookup\b"], 0.7),
+]
+
+class IntentDetector:
+    def __init__(self, extractor: EntityExtractor):
+        self.extractor = extractor
+
+    def detect(self, query: str) -> IntentResult:
+        normalized = re.sub(r"\s+", " ", query.strip().lower())
+        entities = self.extractor.extract(normalized)
+
+        scores = {i: 0.0 for i in Intent}
+        for intent, patterns, base in INTENT_PATTERNS:
+            for p in patterns:
+                if re.search(p, normalized, re.I):
+                    scores[intent] = max(scores[intent], base)
+
+        for e in entities:
+            if e.type == EntityType.BOOKING_ID:
+                scores[Intent.BOOKING] += 0.35
+            elif e.type == EntityType.WORKER_ID or e.type == EntityType.SKILL:
+                scores[Intent.WORKER] += 0.3
+            elif e.type == EntityType.CUSTOMER_ID:
+                scores[Intent.CUSTOMER] += 0.3
+            elif e.type == EntityType.STATUS and e.value in ("pending", "approved", "rejected"):
+                scores[Intent.WORKER] += 0.15
+                scores[Intent.BOOKING] += 0.1
+
+        # pure name → universal search
+        name_only = (
+            any(e.type == EntityType.NAME for e in entities)
+            and not any(e.type in (EntityType.BOOKING_ID, EntityType.WORKER_ID, EntityType.CUSTOMER_ID) for e in entities)
+            and scores[Intent.BOOKING] < 0.5
+            and scores[Intent.WORKER] < 0.5
+            and scores[Intent.CUSTOMER] < 0.5
+        )
+        if name_only:
+            scores[Intent.SEARCH] = max(scores[Intent.SEARCH], 0.85)
+
+        best = max(scores, key=scores.get)
+        conf = scores[best]
+        if conf < 0.4:
+            best, conf = Intent.UNKNOWN, 0.0
+
+        return IntentResult(
+            intent=best,
+            confidence=min(conf, 1.0),
+            entities=entities,
+            raw_query=query,
+            normalized_query=normalized,
+        )
+
+# ------------------------------------------------------------------
+# 7. FORMATTERS (beautiful replies – same style as your old code)
+# ------------------------------------------------------------------
+def fmt_booking(b: dict) -> str:
+    return (
+        f"📦 **Booking #{b.get('id')}**\n"
+        f"• Customer : {b.get('customer_name') or b.get('customer') or 'N/A'}\n"
+        f"• Worker   : {b.get('worker_name') or b.get('worker') or 'N/A'}\n"
+        f"• Service  : {b.get('service') or b.get('service_name') or 'N/A'}\n"
+        f"• Category : {b.get('category') or 'N/A'}\n"
+        f"• Date     : {b.get('booking_date') or b.get('date') or 'N/A'}\n"
+        f"• Time     : {b.get('booking_time') or b.get('time') or 'N/A'}\n"
+        f"• Address  : {b.get('address') or 'N/A'}\n"
+        f"• Amount   : ₹{float(b.get('amount', 0)):,.2f}\n"
+        f"• Payment  : {b.get('payment_status') or 'N/A'}\n"
+        f"• Status   : {b.get('status') or 'N/A'}"
+    )
+
+def fmt_worker(w: dict) -> str:
+    return (
+        f"👷 **Worker #{w.get('id')} – {w.get('name')}**\n"
+        f"• Mobile     : {w.get('mobile') or 'N/A'}\n"
+        f"• Email      : {w.get('email') or 'N/A'}\n"
+        f"• Skills     : {w.get('skills') or 'N/A'}\n"
+        f"• Experience : {w.get('experience_years') or w.get('experience') or 'N/A'} yrs\n"
+        f"• Category   : {w.get('category') or 'N/A'}\n"
+        f"• City       : {w.get('city') or 'N/A'}\n"
+        f"• Status     : {w.get('profile_status') or w.get('status') or 'N/A'}\n"
+        f"• KYC Status : {w.get('kyc_status') or 'N/A'}"
+    )
+
+def fmt_customer(c: dict) -> str:
+    name = f"{c.get('first_name', '')} {c.get('last_name', '')}".strip() or c.get('name') or 'N/A'
+    return (
+        f"👤 **Customer #{c.get('id')} – {name}**\n"
+        f"• Mobile  : {c.get('phone') or c.get('mobile') or 'N/A'}\n"
+        f"• Email   : {c.get('email') or 'N/A'}\n"
+        f"• City    : {c.get('city') or 'N/A'}\n"
+        f"• Address : {c.get('address') or 'N/A'}\n"
+        f"• Total Bookings : {c.get('total_bookings') or 'N/A'}"
+    )
+
+def _list_reply(title: str, items: List[str], total: int) -> str:
+    if not items:
+        return f"No records found for {title}."
+    body = "\n\n────────────────\n\n".join(items)
+    return f"{title} ({total})\n\n{body}"
+
+# ------------------------------------------------------------------
+# 8. HANDLERS (one class per intent – SOLID)
+# ------------------------------------------------------------------
+class BaseHandler(ABC):
+    def __init__(self, hub: DataHub):
+        self.hub = hub
+
+    @abstractmethod
+    def handle(self, result: IntentResult) -> str:
+        ...
+
+    def _ent(self, entities: List[ExtractedEntity], et: EntityType):
+        for e in entities:
+            if e.type == et:
+                return e.value
         return None
 
-    booking_id  = extract_id([r"booking\s*(?:id)?\s*[#:]?\s*(\d+)", r"show\s+booking\s+(\d+)", r"booking\s+(\d+)"])
-    worker_id   = extract_id([r"worker\s*(?:id)?\s*[#:]?\s*(\d+)", r"show\s+worker\s+(\d+)", r"worker\s+(\d+)"])
-    customer_id = extract_id([r"customer\s*(?:id)?\s*[#:]?\s*(\d+)", r"show\s+customer\s+(\d+)", r"customer\s+(\d+)"])
+class BookingHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        ents = result.entities
+        bid = self._ent(ents, EntityType.BOOKING_ID)
+        status = self._ent(ents, EntityType.STATUS)
+        date_val = self._ent(ents, EntityType.DATE)
+        date_range = self._ent(ents, EntityType.DATE_RANGE)
+        sort = self._ent(ents, EntityType.SORT) or "desc"
+        q = result.normalized_query
 
-    # ---------- Format helpers ----------
-    def fmt_booking(b: dict) -> str:
-        return (
-            f"📦 **Booking #{b.get('id')}**\n"
-            f"• Customer : {b.get('customer_name') or b.get('customer') or 'N/A'}\n"
-            f"• Worker   : {b.get('worker_name') or b.get('worker') or 'N/A'}\n"
-            f"• Service  : {b.get('service') or b.get('service_name') or 'N/A'}\n"
-            f"• Category : {b.get('category') or 'N/A'}\n"
-            f"• Date     : {b.get('booking_date') or b.get('date') or 'N/A'}\n"
-            f"• Time     : {b.get('booking_time') or b.get('time') or 'N/A'}\n"
-            f"• Address  : {b.get('address') or 'N/A'}\n"
-            f"• Amount   : ₹{float(b.get('amount', 0)):,.2f}\n"
-            f"• Payment  : {b.get('payment_status') or 'N/A'}\n"
-            f"• Status   : {b.get('status') or 'N/A'}"
-        )
+        bookings = self.hub.bookings()
 
-    def fmt_worker(w: dict) -> str:
-        return (
-            f"👷 **Worker #{w.get('id')} – {w.get('name')}**\n"
-            f"• Mobile     : {w.get('mobile') or 'N/A'}\n"
-            f"• Email      : {w.get('email') or 'N/A'}\n"
-            f"• Skills     : {w.get('skills') or 'N/A'}\n"
-            f"• Experience : {w.get('experience_years') or w.get('experience') or 'N/A'} yrs\n"
-            f"• Category   : {w.get('category') or 'N/A'}\n"
-            f"• City       : {w.get('city') or 'N/A'}\n"
-            f"• Status     : {w.get('profile_status') or w.get('status') or 'N/A'}\n"
-            f"• KYC Status : {w.get('kyc_status') or 'N/A'}"
-        )
+        # single ID
+        if bid is not None:
+            b = next((x for x in bookings if x.get("id") == bid), None)
+            return fmt_booking(b) if b else f"❌ Booking #{bid} not found."
 
-    def fmt_customer(c: dict) -> str:
-        name = f"{c.get('first_name', '')} {c.get('last_name', '')}".strip() or c.get('name') or 'N/A'
-        return (
-            f"👤 **Customer #{c.get('id')} – {name}**\n"
-            f"• Mobile  : {c.get('phone') or c.get('mobile') or 'N/A'}\n"
-            f"• Email   : {c.get('email') or 'N/A'}\n"
-            f"• City    : {c.get('city') or 'N/A'}\n"
-            f"• Address : {c.get('address') or 'N/A'}\n"
-            f"• Total Bookings : {c.get('total_bookings') or 'N/A'}"
-        )
+        # highest / lowest amount
+        if "highest" in q or "maximum" in q:
+            sorted_b = sorted(bookings, key=lambda x: float(x.get("amount", 0)), reverse=True)
+            return fmt_booking(sorted_b[0]) if sorted_b else "No bookings."
+        if "lowest" in q or "minimum" in q:
+            sorted_b = sorted(bookings, key=lambda x: float(x.get("amount", 0)))
+            return fmt_booking(sorted_b[0]) if sorted_b else "No bookings."
 
-    # ===================== LOGIC =====================
+        items = bookings
+        if status:
+            items = [b for b in items if str(b.get("status", "")).lower() == status]
+        if date_val:
+            items = [b for b in items if str(b.get("booking_date", b.get("date", "")))[:10] == date_val]
+        if date_range:
+            d1, d2 = date_range
+            items = [
+                b for b in items
+                if d1 <= str(b.get("booking_date", b.get("date", "")))[:10] <= d2
+            ]
 
-    # 1. Single Booking by ID
-    if booking_id is not None:
-        b = next((x for x in bookings if x.get("id") == booking_id), None)
-        if b:
-            return {"reply": fmt_booking(b)}
-        return {"reply": f"❌ Booking #{booking_id} not found."}
+        # sort
+        reverse = sort == "desc"
+        items = sorted(items, key=lambda x: x.get("id", 0), reverse=reverse)
 
-    # 2. Single Worker by ID
-    if worker_id is not None:
-        w = next((x for x in workers if x.get("id") == worker_id), None)
-        if w:
-            return {"reply": fmt_worker(w)}
-        return {"reply": f"❌ Worker #{worker_id} not found."}
-
-    # 3. Single Customer by ID
-    if customer_id is not None:
-        c = next((x for x in customers if x.get("id") == customer_id), None)
-        if c:
-            return {"reply": fmt_customer(c)}
-        return {"reply": f"❌ Customer #{customer_id} not found."}
-
-    # 4. Status-based bookings
-    if any(k in msg for k in ["pending booking", "pending bookings"]):
-        items = [b for b in bookings if str(b.get("status", "")).lower() == "pending"]
-        if not items:
-            return {"reply": "No pending bookings found."}
-        lines = [fmt_booking(b) for b in items[:8]]
-        return {"reply": f"🟡 **Pending Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
-
-    if any(k in msg for k in ["completed booking", "completed bookings"]):
-        items = [b for b in bookings if str(b.get("status", "")).lower() == "completed"]
-        if not items:
-            return {"reply": "No completed bookings found."}
-        lines = [fmt_booking(b) for b in items[:8]]
-        return {"reply": f"✅ **Completed Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
-
-    if any(k in msg for k in ["cancelled booking", "cancelled bookings", "cancel booking"]):
-        items = [b for b in bookings if str(b.get("status", "")).lower() in ("cancelled", "canceled")]
-        if not items:
-            return {"reply": "No cancelled bookings found."}
-        lines = [fmt_booking(b) for b in items[:8]]
-        return {"reply": f"❌ **Cancelled Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
-
-    # 5. Today's bookings / revenue
-    if "today" in msg and "booking" in msg:
-        from datetime import date
-        today = date.today().isoformat()
-        items = [b for b in bookings if str(b.get("booking_date", b.get("date", "")))[:10] == today]
-        if not items:
-            return {"reply": "No bookings for today."}
+        title_map = {
+            "pending": "🟡 **Pending Bookings",
+            "completed": "✅ **Completed Bookings",
+            "cancelled": "❌ **Cancelled Bookings",
+        }
+        title = title_map.get(status, "📋 **Bookings")
+        if date_val:
+            title = f"📅 **Bookings on {date_val}"
         lines = [fmt_booking(b) for b in items[:10]]
-        return {"reply": f"📅 **Today's Bookings ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
+        return _list_reply(title, lines, len(items))
 
-    if "today" in msg and "revenue" in msg:
-        from datetime import date
-        today = date.today().isoformat()
-        total = sum(float(b.get("amount", 0)) for b in bookings
-                    if str(b.get("booking_date", b.get("date", "")))[:10] == today)
-        return {"reply": f"💰 **Today's Revenue : ₹{total:,.2f}**"}
+class WorkerHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        ents = result.entities
+        wid = self._ent(ents, EntityType.WORKER_ID)
+        name = self._ent(ents, EntityType.NAME)
+        phone = self._ent(ents, EntityType.PHONE)
+        email = self._ent(ents, EntityType.EMAIL)
+        city = self._ent(ents, EntityType.CITY)
+        skill = self._ent(ents, EntityType.SKILL)
+        status = self._ent(ents, EntityType.STATUS)
+        q = result.normalized_query
 
-    # 6. Monthly / Total revenue
-    if any(k in msg for k in ["monthly revenue", "this month revenue", "month revenue"]):
-        from datetime import date
-        today = date.today()
-        total = sum(float(b.get("amount", 0)) for b in bookings
-                    if str(b.get("booking_date", b.get("date", "")))[:7] == today.strftime("%Y-%m"))
-        return {"reply": f"💰 **This Month's Revenue : ₹{total:,.2f}**"}
+        workers = self.hub.workers()
 
-    if "total revenue" in msg or "revenue" in msg:
-        total = sum(float(b.get("amount", 0)) for b in bookings)
-        return {"reply": f"💰 **Total Revenue : ₹{total:,.2f}**"}
+        if wid is not None:
+            w = next((x for x in workers if x.get("id") == wid), None)
+            return fmt_worker(w) if w else f"❌ Worker #{wid} not found."
 
-    # 7. Pending payments
-    if "pending payment" in msg or "pending payments" in msg:
+        items = workers
+        if name:
+            # fuzzy
+            names = [w.get("name", "") for w in workers]
+            matches = process.extract(name, names, scorer=fuzz.token_set_ratio, limit=10)
+            matched_names = {m[0] for m in matches if m[1] >= 70}
+            items = [w for w in workers if w.get("name") in matched_names]
+        if phone:
+            items = [w for w in items if phone in str(w.get("mobile", ""))]
+        if email:
+            items = [w for w in items if email.lower() in str(w.get("email", "")).lower()]
+        if city:
+            items = [w for w in items if city.lower() in str(w.get("city", "")).lower()]
+        if skill:
+            items = [w for w in items if skill.lower() in str(w.get("skills", "") + str(w.get("category", ""))).lower()]
+        if status:
+            items = [w for w in items if str(w.get("profile_status", w.get("status", ""))).lower() == status]
+
+        if "top" in q or "highest rated" in q:
+            items = items[:5]
+            lines = [f"• {w.get('name')} (ID: {w.get('id')}) – {w.get('city', '')}" for w in items]
+            return "🏆 **Top Workers**\n" + "\n".join(lines)
+
+        if not items:
+            return "No workers found matching your query."
+
+        if len(items) == 1:
+            return fmt_worker(items[0])
+
+        title = "👷 **Workers"
+        if skill:
+            title = f"👷 **{skill.title()} Workers"
+        if city:
+            title = f"👷 **Workers in {city}"
+        if status:
+            title = f"👷 **{status.title()} Workers"
+        lines = [fmt_worker(w) for w in items[:8]]
+        return _list_reply(title, lines, len(items))
+
+class CustomerHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        ents = result.entities
+        cid = self._ent(ents, EntityType.CUSTOMER_ID)
+        name = self._ent(ents, EntityType.NAME)
+        phone = self._ent(ents, EntityType.PHONE)
+        email = self._ent(ents, EntityType.EMAIL)
+
+        customers = self.hub.customers()
+
+        if cid is not None:
+            c = next((x for x in customers if x.get("id") == cid), None)
+            return fmt_customer(c) if c else f"❌ Customer #{cid} not found."
+
+        items = customers
+        if name:
+            def full_name(c):
+                return f"{c.get('first_name', '')} {c.get('last_name', '')}".strip() or c.get("name", "")
+            names = [full_name(c) for c in customers]
+            matches = process.extract(name, names, scorer=fuzz.token_set_ratio, limit=10)
+            matched = {m[0] for m in matches if m[1] >= 70}
+            items = [c for c in customers if full_name(c) in matched]
+        if phone:
+            items = [c for c in items if phone in str(c.get("phone", c.get("mobile", "")))]
+        if email:
+            items = [c for c in items if email.lower() in str(c.get("email", "")).lower()]
+
+        if not items:
+            return "No customers found."
+        if len(items) == 1:
+            return fmt_customer(items[0])
+
+        lines = [fmt_customer(c) for c in items[:8]]
+        return _list_reply("👤 **Customers", lines, len(items))
+
+class RevenueHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        ents = result.entities
+        date_val = self._ent(ents, EntityType.DATE)
+        date_range = self._ent(ents, EntityType.DATE_RANGE)
+        q = result.normalized_query
+        bookings = self.hub.bookings()
+
+        items = bookings
+        if date_val:
+            items = [b for b in items if str(b.get("booking_date", b.get("date", "")))[:10] == date_val]
+        if date_range:
+            d1, d2 = date_range
+            items = [b for b in items if d1 <= str(b.get("booking_date", b.get("date", "")))[:10] <= d2]
+
+        total = sum(float(b.get("amount", 0)) for b in items)
+        if date_val:
+            return f"💰 **Revenue on {date_val} : ₹{total:,.2f}**"
+        if date_range:
+            return f"💰 **Revenue {date_range[0]} → {date_range[1]} : ₹{total:,.2f}**"
+        if "month" in q:
+            return f"💰 **This Month's Revenue : ₹{total:,.2f}**"
+        return f"💰 **Total Revenue : ₹{total:,.2f}**"
+
+class PaymentHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        bookings = self.hub.bookings()
         items = [b for b in bookings if str(b.get("payment_status", "")).lower() in ("pending", "unpaid")]
         if not items:
-            return {"reply": "No pending payments."}
+            return "No pending payments."
         lines = [fmt_booking(b) for b in items[:8]]
-        return {"reply": f"💳 **Pending Payments ({len(items)})**\n\n" + "\n\n────────────────\n\n".join(lines)}
+        return _list_reply("💳 **Pending Payments", lines, len(items))
 
-    # 8. Totals
-    if any(k in msg for k in ["total worker", "total workers", "how many worker"]):
-        return {"reply": f"👷 **Total Workers : {len(workers)}**"}
+class StatisticsHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        q = result.normalized_query
+        if "worker" in q:
+            return f"👷 **Total Workers : {len(self.hub.workers())}**"
+        if "customer" in q:
+            return f"👤 **Total Customers : {len(self.hub.customers())}**"
+        if "booking" in q:
+            return f"📦 **Total Bookings : {len(self.hub.bookings())}**"
+        if "categor" in q:
+            return f"🛠 **Total Categories : {len(self.hub.categories())}**"
+        if "revenue" in q:
+            total = sum(float(b.get("amount", 0)) for b in self.hub.bookings())
+            return f"💰 **Total Revenue : ₹{total:,.2f}**"
+        # full dashboard
+        return (
+            f"📊 **Dashboard Statistics**\n"
+            f"• Workers    : {len(self.hub.workers())}\n"
+            f"• Customers  : {len(self.hub.customers())}\n"
+            f"• Bookings   : {len(self.hub.bookings())}\n"
+            f"• Categories : {len(self.hub.categories())}\n"
+            f"• Revenue    : ₹{sum(float(b.get('amount', 0)) for b in self.hub.bookings()):,.2f}"
+        )
 
-    if any(k in msg for k in ["total booking", "total bookings", "how many booking"]):
-        return {"reply": f"📦 **Total Bookings : {len(bookings)}**"}
+class CategoryHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        cats = self.hub.categories()
+        q = result.normalized_query
+        if "top" in q or "most" in q:
+            top = cats[:5]
+            lines = [f"• {c.get('name') or c.get('category_name')}" for c in top]
+            return "🏆 **Top Categories**\n" + "\n".join(lines)
+        return f"🛠 **Total Categories : {len(cats)}**"
 
-    if any(k in msg for k in ["total customer", "total customers", "how many customer"]):
-        return {"reply": f"👤 **Total Customers : {len(customers)}**"}
+class KycHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        kycs = self.hub.kycs()
+        status = self._ent(result.entities, EntityType.STATUS)
+        if status:
+            total = len([k for k in kycs if str(k.get("kyc_status", "")).lower() == status])
+            emoji = {"pending": "📄", "approved": "✅", "rejected": "❌"}.get(status, "📄")
+            return f"{emoji} **{status.title()} KYC : {total}**"
+        return f"📄 **Total KYC records : {len(kycs)}**"
 
-    if any(k in msg for k in ["total category", "total categories"]):
-        return {"reply": f"🛠 **Total Categories : {len(categories)}**"}
+class NotificationHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        notifs = self.hub.notifications()
+        return f"🔔 **Total Notifications : {len(notifs)}**"
 
-    # 9. Worker status counts
-    if "approved worker" in msg:
-        total = len([w for w in workers if str(w.get("profile_status", "")).lower() == "approved"])
-        return {"reply": f"✅ **Approved Workers : {total}**"}
+class SearchHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        ents = result.entities
+        name = self._ent(ents, EntityType.NAME)
+        phone = self._ent(ents, EntityType.PHONE)
+        email = self._ent(ents, EntityType.EMAIL)
 
-    if "pending worker" in msg:
-        total = len([w for w in workers if str(w.get("profile_status", "")).lower() == "pending"])
-        return {"reply": f"🟡 **Pending Workers : {total}**"}
+        if not any([name, phone, email]):
+            return "Please provide a name, phone or email to search."
 
-    # 10. KYC
-    if "pending kyc" in msg:
-        total = len([k for k in kycs if str(k.get("kyc_status", "")).lower() == "pending"])
-        return {"reply": f"📄 **Pending KYC : {total}**"}
+        results = []
 
-    if "approved kyc" in msg:
-        total = len([k for k in kycs if str(k.get("kyc_status", "")).lower() == "approved"])
-        return {"reply": f"✅ **Approved KYC : {total}**"}
+        # workers
+        workers = self.hub.workers()
+        if name:
+            names = [w.get("name", "") for w in workers]
+            matches = process.extract(name, names, scorer=fuzz.token_set_ratio, limit=5)
+            matched = {m[0] for m in matches if m[1] >= 70}
+            for w in workers:
+                if w.get("name") in matched:
+                    results.append(("Worker", fmt_worker(w)))
+        if phone:
+            for w in workers:
+                if phone in str(w.get("mobile", "")):
+                    results.append(("Worker", fmt_worker(w)))
+        if email:
+            for w in workers:
+                if email.lower() in str(w.get("email", "")).lower():
+                    results.append(("Worker", fmt_worker(w)))
 
-    if "rejected kyc" in msg:
-        total = len([k for k in kycs if str(k.get("kyc_status", "")).lower() == "rejected"])
-        return {"reply": f"❌ **Rejected KYC : {total}**"}
+        # customers
+        customers = self.hub.customers()
+        def full_name(c):
+            return f"{c.get('first_name', '')} {c.get('last_name', '')}".strip() or c.get("name", "")
+        if name:
+            names = [full_name(c) for c in customers]
+            matches = process.extract(name, names, scorer=fuzz.token_set_ratio, limit=5)
+            matched = {m[0] for m in matches if m[1] >= 70}
+            for c in customers:
+                if full_name(c) in matched:
+                    results.append(("Customer", fmt_customer(c)))
+        if phone:
+            for c in customers:
+                if phone in str(c.get("phone", c.get("mobile", ""))):
+                    results.append(("Customer", fmt_customer(c)))
+        if email:
+            for c in customers:
+                if email.lower() in str(c.get("email", "")).lower():
+                    results.append(("Customer", fmt_customer(c)))
 
-    # 11. Top lists (simple)
-    if "top worker" in msg or "top workers" in msg:
-        # count bookings per worker if possible, else just first 5
-        top = workers[:5]
-        lines = [f"• {w.get('name')} (ID: {w.get('id')}) – {w.get('city', '')}" for w in top]
-        return {"reply": "🏆 **Top Workers**\n" + "\n".join(lines)}
+        if not results:
+            return f"No results found for '{name or phone or email}'."
 
-    if "top customer" in msg or "top customers" in msg:
-        top = customers[:5]
-        lines = []
-        for c in top:
-            name = f"{c.get('first_name','')} {c.get('last_name','')}".strip() or c.get('name') or 'N/A'
-            lines.append(f"• {name} (ID: {c.get('id')})")
-        return {"reply": "🏆 **Top Customers**\n" + "\n".join(lines)}
+        # prefer single best match
+        if len(results) == 1:
+            return results[0][1]
 
-    if "top categor" in msg:
-        top = categories[:5]
-        lines = [f"• {c.get('name') or c.get('category_name')}" for c in top]
-        return {"reply": "🏆 **Top Categories**\n" + "\n".join(lines)}
+        body = "\n\n────────────────\n\n".join(r[1] for r in results[:6])
+        return f"🔍 **Search Results ({len(results)})**\n\n{body}"
 
-    # 12. Notifications
-    if "notification" in msg:
-        return {"reply": f"🔔 **Total Notifications : {len(notifications)}**"}
-
-    # ---------- Default help ----------
-    return {
-        "reply": (
+class HelpHandler(BaseHandler):
+    def handle(self, result: IntentResult) -> str:
+        return (
             "🤖 Main aapki madad kar sakta hoon:\n\n"
             "• Booking 15 / Booking ID 15 / Show booking 15\n"
-            "• Worker 20 / Worker ID 20\n"
-            "• Customer 8 / Customer ID 8\n"
+            "• Worker 20 / Worker ID 20 / Worker Rahul\n"
+            "• Customer 8 / Customer ID 8 / Customer Rahul\n"
             "• Pending bookings / Completed bookings / Cancelled bookings\n"
             "• Today's bookings / Today's revenue\n"
             "• Monthly revenue / Total revenue\n"
             "• Pending payments\n"
             "• Top workers / Top customers / Top categories\n"
-            "• Pending KYC / Approved workers\n\n"
+            "• Pending KYC / Approved workers\n"
+            "• Just type a name – I will search everywhere\n\n"
             "Bas natural language mein type kijiye!"
         )
-    }
+
+# ------------------------------------------------------------------
+# 9. HANDLER REGISTRY (extensible – add new intent = one new class)
+# ------------------------------------------------------------------
+HANDLER_MAP = {
+    Intent.BOOKING:       BookingHandler,
+    Intent.WORKER:        WorkerHandler,
+    Intent.CUSTOMER:      CustomerHandler,
+    Intent.REVENUE:       RevenueHandler,
+    Intent.PAYMENT:       PaymentHandler,
+    Intent.STATISTICS:    StatisticsHandler,
+    Intent.CATEGORY:      CategoryHandler,
+    Intent.KYC:           KycHandler,
+    Intent.NOTIFICATION:  NotificationHandler,
+    Intent.SEARCH:        SearchHandler,
+    Intent.HELP:          HelpHandler,
+}
+
+# ------------------------------------------------------------------
+# 10. ORCHESTRATOR
+# ------------------------------------------------------------------
+_extractor = EntityExtractor()
+_detector  = IntentDetector(_extractor)
+_hub       = DataHub()
+
+def process_query(message: str) -> str:
+    if not message or not message.strip():
+        return "Please type a question, e.g. Booking 15, Pending bookings, Today's revenue"
+
+    try:
+        intent_result = _detector.detect(message)
+
+        if intent_result.intent == Intent.UNKNOWN:
+            return (
+                "❓ Samajh nahi aaya. Try:\n"
+                "Booking 15 • Pending bookings • Worker Rahul • Today's revenue • help"
+            )
+
+        # cache
+        entity_map = {e.type.value: e.value for e in intent_result.entities}
+        ck = _cache_key(intent_result.intent.value, entity_map)
+        if ck in _query_cache:
+            return _query_cache[ck]
+
+        handler_cls = HANDLER_MAP.get(intent_result.intent, HelpHandler)
+        handler = handler_cls(_hub)
+        reply = handler.handle(intent_result)
+
+        _query_cache[ck] = reply
+        return reply
+
+    except Exception as e:
+        logger.exception(f"AI Assistant error: {e}")
+        return "⚠️ Something went wrong. Please try again."
+
+# ------------------------------------------------------------------
+# 11. FASTAPI ENDPOINT (100 % compatible with old /chat-ai)
+# ------------------------------------------------------------------
+@router.get("/chat-ai")
+def chat_ai(message: str = Query("", description="Natural language query")):
+    """
+    Enterprise Natural Language Query Engine.
+    Drop-in replacement – same URL, same response shape.
+    """
+    reply = process_query(message)
+    return {"reply": reply}

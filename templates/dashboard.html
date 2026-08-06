@@ -1,1181 +1,1129 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MistriPoint Admin Panel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MistriPoint – Premium Admin Dashboard for Service Marketplace Management" />
+  <meta name="theme-color" content="#3B5BFF" />
+  <title>MistriPoint – Admin Dashboard</title>
 
-    <script>
-    tailwind.config = {
-    darkMode: 'class'
-}
-</script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root {
-            --primary: 234 179 8;
-        }
-        
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-        
-        .sidebar-link {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .sidebar-link:hover {
-            transform: translateX(8px);
-            background: linear-gradient(90deg, #fefce8, #facc15);
-        }
-        
-        .dark .sidebar-link:hover {
-            background: linear-gradient(90deg, #451a03, #ca8a04);
-        }
-        
-        .card-hover {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
-        
-        .table-row {
-            transition: all 0.2s;
-        }
-        
-        .modal {
-            animation: modalPop 0.3s ease;
-        }
-        
-        @keyframes modalPop {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-       /* ========== CHAT FAB ========== */
-.chat-fab {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    border: none;
-    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.45);
-    cursor: pointer;
-    z-index: 9998;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    transition: all 0.25s ease;
-}
-.chat-fab:hover {
-    transform: scale(1.08);
-    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.6);
-}
-.badge-chat {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #ef4444;
-    color: white;
-    font-size: 11px;
-    font-weight: 700;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid white;
-}
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-/* ========== CHAT PANEL ========== */
-.chat-panel {
-    position: fixed;
-    bottom: 100px;
-    right: 28px;
-    width: 380px;
-    max-width: calc(100vw - 24px);
-    height: 560px;
-    max-height: calc(100vh - 140px);
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.18);
-    display: none;
-    flex-direction: column;
-    z-index: 9999;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.4);
-    font-family: system-ui, -apple-system, sans-serif;
-}
-.chat-panel.open {
-    display: flex;
-    animation: chatSlideUp 0.28s ease;
-}
-@keyframes chatSlideUp {
-    from { opacity: 0; transform: translateY(18px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-/* Header */
-.chat-header {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+  <!-- AOS -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
-/* Messages */
-.chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: #f8fafc;
-    scroll-behavior: smooth;
-}
-.chat-bubble {
-    max-width: 85%;
-    padding: 10px 14px;
-    border-radius: 16px;
-    font-size: 14px;
-    line-height: 1.45;
-    position: relative;
-    word-break: break-word;
-}
-.chat-bubble.user {
-    align-self: flex-end;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    border-bottom-right-radius: 4px;
-}
-.chat-bubble.bot {
-    align-self: flex-start;
-    background: white;
-    border: 1px solid #e2e8f0;
-    color: #1e293b;
-    border-bottom-left-radius: 4px;
-}
-.chat-time {
-    font-size: 10px;
-    opacity: 0.7;
-    margin-top: 4px;
-    text-align: right;
-}
-
-/* Typing dots */
-.chat-bubble.typing {
-    background: white;
-    border: 1px solid #e2e8f0;
-    padding: 12px 16px;
-    display: flex;
-    gap: 5px;
-    width: fit-content;
-}
-.chat-bubble.typing span {
-    width: 7px;
-    height: 7px;
-    background: #94a3b8;
-    border-radius: 50%;
-    animation: typingBounce 1.2s infinite ease-in-out;
-}
-.chat-bubble.typing span:nth-child(2) { animation-delay: 0.15s; }
-.chat-bubble.typing span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes typingBounce {
-    0%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-5px); }
-}
-
-/* Quick Replies */
-.chat-quick-replies {
-    display: flex;
-    gap: 8px;
-    padding: 10px 14px;
-    overflow-x: auto;
-    background: #f1f5f9;
-    border-top: 1px solid #e2e8f0;
-}
-.chat-quick-btn {
-    flex-shrink: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.chat-quick-btn:hover {
-    background: #fef3c7;
-    border-color: #f59e0b;
-    color: #92400e;
-}
-
-/* Input Area */
-.chat-input-area {
-    display: flex;
-    gap: 8px;
-    padding: 12px 14px;
-    background: white;
-    border-top: 1px solid #e2e8f0;
-}
-#chatInput {
-    flex: 1;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-size: 14px;
-    outline: none;
-    background: #ffffff !important;   /* white background */
-    color: #1e293b !important;        /* dark text – IMPORTANT */
-    transition: border 0.2s;
-}
-
-#chatInput::placeholder {
-    color: #94a3b8 !important;        /* light gray placeholder */
-}
-
-#chatInput:focus {
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
-}
-.chat-send-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    border: none;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s;
-}
-.chat-send-btn:hover {
-    transform: scale(1.05);
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-    .chat-panel {
-        right: 8px;
-        left: 8px;
-        width: auto;
-        bottom: 80px;
-        height: 70vh;
-    }
-    .chat-fab {
-        bottom: 16px;
-        right: 16px;
-        width: 54px;
-        height: 54px;
-    }
-}
-    </style>
+  <!-- Project CSS -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/responsive.css" />
+  <link rel="stylesheet" href="/static/css/animations.css" />
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-    <div class="flex h-screen overflow-hidden">
+<body>
+  <!-- Page Loader -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-spinner"></div>
+    <div style="font-weight:600;color:var(--text-secondary)">Loading Dashboard...</div>
+  </div>
 
-        <div id="overlay"
-     class="fixed inset-0 bg-black/50 hidden lg:hidden z-40"
-     onclick="toggleSidebar()">
-</div>
-        <!-- Sidebar -->
-       <div id="sidebar"
-class="fixed lg:relative left-0 top-0 z-50 h-screen w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0">
-            <!-- Logo -->
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">M</div>
+  <!-- Background Shapes -->
+  <div class="bg-shapes">
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+  </div>
+
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-wrapper">
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon"><i class="fas fa-tools"></i></div>
+          <span class="logo-text">MistriPoint</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <a href="#dashboard" class="nav-link active" data-section="dashboard">
+            <i class="fas fa-th-large"></i><span>Dashboard</span>
+          </a>
+          <a href="#bookings" class="nav-link" data-section="bookings">
+            <i class="fas fa-calendar-check"></i><span>Bookings</span>
+            <span class="nav-badge">12</span>
+          </a>
+          <a href="#customers" class="nav-link" data-section="customers">
+            <i class="fas fa-users"></i><span>Customers</span>
+          </a>
+          <a href="#workers" class="nav-link" data-section="workers">
+            <i class="fas fa-hard-hat"></i><span>Workers</span>
+            <span class="nav-badge" style="background:var(--success)">8</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Services</div>
+          <a href="#services" class="nav-link">
+            <i class="fas fa-concierge-bell"></i><span>Services</span>
+          </a>
+          <a href="#categories" class="nav-link">
+            <i class="fas fa-layer-group"></i><span>Categories</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Finance</div>
+          <a href="#payments" class="nav-link">
+            <i class="fas fa-credit-card"></i><span>Payments</span>
+          </a>
+          <a href="#revenue" class="nav-link">
+            <i class="fas fa-chart-line"></i><span>Revenue</span>
+          </a>
+          <a href="#invoices" class="nav-link">
+            <i class="fas fa-file-invoice-dollar"></i><span>Invoices</span>
+          </a>
+          <a href="#wallet" class="nav-link">
+            <i class="fas fa-wallet"></i><span>Wallet</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Insights</div>
+          <a href="#reviews" class="nav-link">
+            <i class="fas fa-star"></i><span>Reviews</span>
+          </a>
+          <a href="#analytics" class="nav-link">
+            <i class="fas fa-chart-pie"></i><span>Analytics</span>
+          </a>
+          <a href="#reports" class="nav-link">
+            <i class="fas fa-file-alt"></i><span>Reports</span>
+          </a>
+          <a href="#attendance" class="nav-link">
+            <i class="fas fa-user-clock"></i><span>Attendance</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Communication</div>
+          <a href="#messages" class="nav-link">
+            <i class="fas fa-envelope"></i><span>Messages</span>
+            <span class="nav-badge">5</span>
+          </a>
+          <a href="#chat" class="nav-link">
+            <i class="fas fa-comments"></i><span>Chat</span>
+          </a>
+          <a href="#notifications" class="nav-link">
+            <i class="fas fa-bell"></i><span>Notifications</span>
+          </a>
+          <a href="#support" class="nav-link">
+            <i class="fas fa-headset"></i><span>Support</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">System</div>
+          <a href="#calendar" class="nav-link">
+            <i class="fas fa-calendar-alt"></i><span>Calendar</span>
+          </a>
+          <a href="#roles" class="nav-link">
+            <i class="fas fa-user-shield"></i><span>Roles & Permissions</span>
+          </a>
+          <a href="#users" class="nav-link">
+            <i class="fas fa-user-cog"></i><span>Users</span>
+          </a>
+          <a href="#integrations" class="nav-link">
+            <i class="fas fa-plug"></i><span>Integrations</span>
+          </a>
+          <a href="#logs" class="nav-link">
+            <i class="fas fa-list-alt"></i><span>System Logs</span>
+          </a>
+          <a href="#settings" class="nav-link">
+            <i class="fas fa-cog"></i><span>Settings</span>
+          </a>
+          <a href="#help" class="nav-link">
+            <i class="fas fa-question-circle"></i><span>Help Center</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card" id="sidebarProfile">
+          <img src="https://ui-avatars.com/api/?name=Admin+User&background=3B5BFF&color=fff&size=80" alt="Admin" class="user-avatar" />
+          <div class="user-info sidebar-footer-text">
+            <div class="user-name">Alex Morgan</div>
+            <div class="user-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <div class="main-content">
+      <!-- Top Navbar -->
+      <header class="top-navbar" role="banner">
+        <div class="navbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="#">Home</a>
+            <i class="fas fa-chevron-right" style="font-size:0.65rem"></i>
+            <span class="current">Dashboard</span>
+          </nav>
+        </div>
+
+        <div class="navbar-center">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="search" placeholder="Search bookings, customers, workers..." id="globalSearch" aria-label="Global search" />
+            <span class="search-shortcut">⌘K</span>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <div class="datetime-display">
+            <span class="time" id="liveClock">--:--</span>
+            <span class="date" id="liveDate">--</span>
+          </div>
+
+          <button class="nav-icon-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">
+            <i class="fas fa-expand"></i>
+          </button>
+
+          <button class="nav-icon-btn" id="themeToggle" aria-label="Toggle dark mode" title="Dark mode">
+            <i class="fas fa-moon"></i>
+          </button>
+
+          <div class="dropdown">
+            <button class="nav-icon-btn" id="langBtn" aria-label="Language">
+              <i class="fas fa-globe"></i>
+            </button>
+            <div class="dropdown-menu" id="langMenu">
+              <div class="dropdown-item"><span>🇺🇸</span> English</div>
+              <div class="dropdown-item"><span>🇮🇳</span> Hindi</div>
+              <div class="dropdown-item"><span>🇪🇸</span> Spanish</div>
+              <div class="dropdown-item"><span>🇫🇷</span> French</div>
+            </div>
+          </div>
+
+          <div class="dropdown">
+            <button class="nav-icon-btn" id="msgBtn" aria-label="Messages">
+              <i class="fas fa-envelope"></i>
+              <span class="badge-count">5</span>
+            </button>
+            <div class="dropdown-menu" id="msgMenu" style="width:320px">
+              <div class="dropdown-header">Messages</div>
+              <div class="dropdown-item">
+                <img src="https://ui-avatars.com/api/?name=Sarah+K&background=00C853&color=fff&size=40" class="avatar avatar-sm" alt="" />
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight">MistriPoint</h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+                  <div class="fw-500 fs-sm">Sarah Khan</div>
+                  <div class="fs-xs text-muted">Need reschedule for AC service...</div>
                 </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="flex-1 overflow-y-auto py-6 px-4">
-                <nav class="space-y-1">
-                    <a href="dashboard" onclick="navigateTo('dashboard')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400" id="nav-dashboard">
-                        <i class="fas fa-home w-5"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="all-customers" onclick="navigateTo('customers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-customers">
-                        <i class="fas fa-users w-5"></i>
-                        <span>Customers</span>
-                    </a>
-                    <a href="worker-admin" onclick="navigateTo('workers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-workers">
-                        <i class="fas fa-hard-hat w-5"></i>
-                        <span>Workers</span>
-                    </a>
-                    <a href="all-bookings" onclick="navigateTo('bookings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-bookings">
-                        <i class="fas fa-calendar-check w-5"></i>
-                        <span>Bookings</span>
-                    </a>
-                    <a href="#" onclick="navigateTo('payments')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-payments">
-                        <i class="fas fa-money-bill-wave w-5"></i>
-                        <span>Payments</span>
-                    </a>
-                    <a href="kyc-admin" onclick="navigateTo('kyc')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-kyc">
-                        <i class="fas fa-id-card w-5"></i>
-                        <span>Worker KYC</span>
-                    </a>
-                    <a href="all-skills" onclick="navigateTo('skills')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-skills">
-                        <i class="fas fa-tools w-5"></i>
-                        <span>Skills</span>
-                    </a>
-                    <a href="categories" onclick="navigateTo('categories')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-categories">
-                        <i class="fas fa-layer-group w-5"></i>
-                        <span>Categories</span>
-                    </a>
-                    <a href="notification-admin" onclick="navigateTo('notifications')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-notifications">
-                        <i class="fas fa-bell w-5"></i>
-                        <span>Notifications</span>
-                    </a>
-                    <a href="reviews" onclick="navigateTo('reviews')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-reviews">
-                        <i class="fas fa-star w-5"></i>
-                        <span>Reviews</span>
-                    </a>
-                    <a href="report" onclick="navigateTo('reports')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-reports">
-                        <i class="fas fa-chart-bar w-5"></i>
-                        <span>Reports</span>
-                    </a>
-                    <a href="setting" onclick="navigateTo('settings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-settings">
-                        <i class="fas fa-cog w-5"></i>
-                        <span>Settings</span>
-                    </a>
-                    <a href="admin-profile" onclick="navigateTo('admins')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium" id="nav-admins">
-                        <i class="fas fa-user-shield w-5"></i>
-                        <span>Admins</span>
-                    </a>
-                </nav>
-            </div>
-
-           <!-- Logout -->
-            <div class="p-6 border-t border-gray-200 dark:border-gray-800">
-                <button onclick="logout()" class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white rounded-3xl font-semibold shadow-lg shadow-yellow-500/30 transition-all duration-300 hover:scale-105">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            
-            <!-- Top Header -->
-            <header class="glass border-b border-gray-200 dark:border-gray-800 px-6 py-5 flex items-center justify-between z-30">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden text-3xl text-gray-600 dark:text-gray-400">
-                        <i id="menu-icon" class="fas fa-bars"></i>
-                    </button>
-                    <div class="relative hidden md:block w-96">
-                        <input type="text" id="global-search" onkeyup="globalSearch()" 
-                               class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:border-yellow-400 rounded-3xl py-4 pl-14 pr-6 text-sm focus:outline-none shadow-sm">
-                        <i class="fas fa-search absolute left-6 top-4 text-gray-400"></i>
-                    </div>
+              </div>
+              <div class="dropdown-item">
+                <img src="https://ui-avatars.com/api/?name=Ravi+P&background=FFA726&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                <div>
+                  <div class="fw-500 fs-sm">Ravi Patel</div>
+                  <div class="fs-xs text-muted">Payment received, thank you!</div>
                 </div>
-
-                <div class="flex items-center gap-6">
-                    <!-- Dark Mode Toggle -->
-                    <button onclick="toggleDarkMode()" class="text-xl">
-                        <i id="theme-icon" class="fas fa-moon"></i>
-                    </button>
-
-                    <!-- Notifications -->
-                    <button onclick="window.location.href='/auth/notification-admin'"
-                     class="relative text-xl">
-                        <i class="fas fa-bell"></i>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{{total_notifications}}</span>
-                    </button>
-
-                    <!-- Profile with Dropdown -->
-    <div class="relative group">
-        <div onclick="toggleProfileDropdown()" class="flex items-center gap-3 cursor-pointer">
-            <div class="text-right">
-                <p class="font-semibold text-sm">Nitish Kumar</p>
-                <p class="text-xs text-emerald-400">Super Admin</p>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item justify-between">
+                <span class="text-primary fw-500">View all messages</span>
+              </div>
             </div>
-           <a href="/auth/admin-profile"
-           class="w-9 h-9 bg-yellow-500 text-white rounded-2xl flex items-center justify-center font-bold text-lg hover:bg-yellow-600">NK
-        </a>
-            </header>
-<!-- Content Area -->
-<!-- Content Area -->
-<div class="flex-1 overflow-auto p-4 md:p-8" id="main-content">
-
-    <!-- Dashboard Section -->
-    <div id="section-dashboard">
-
-        <div class="flex flex-col lg:flex-row justify-between lg:items-end items-start gap-4 mb-8">
-
-            <div>
-                <h1 class="text-4xl font-bold">Dashboard</h1>
-                <p class="text-gray-500 dark:text-gray-400">
-                    Welcome back, Nitish! Here's what's happening today.
-                </p>
-            </div>
-
-            <!-- Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-
-                <button
-                    onclick="exportReport()"
-                    class="w-full sm:w-auto px-5 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-3xl flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <i class="fas fa-download"></i>
-                    <span>Export Report</span>
-                <button
-    onclick="refreshDashboard()"
-    class="inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200
-    focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
-    border-2 border-emerald-600 text-emerald-700 bg-transparent
-    hover:bg-emerald-50 px-3 py-1.5 text-sm">
-
-    <i id="refreshIcon" class="fas fa-sync-alt"></i>
-    Refresh
-</button>
-
-            </div>
-
-        </div>
-
-  <!-- Stats Grid - Vibrant Colored Boxes -->
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-    <!-- 1. Total Customers - Blue Theme -->
-    <div class="bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Customers</p>
-                <h2 class="text-5xl font-bold mt-5 text-blue-700 dark:text-blue-200 stat-number">{{ total_customers }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                👥
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +12% this month
-        </p>
-    </div>
-
-    <!-- 2. Total Workers - Emerald Theme -->
-    <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Total Workers</p>
-                <h2 class="text-5xl font-bold mt-5 text-emerald-700 dark:text-emerald-200 stat-number">{{ total_workers }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                🛠️
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +8% this month
-        </p>
-    </div>
-
-    <!-- 3. Total KYC Workers - Teal Theme -->
-    <div class="bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-teal-600 dark:text-teal-400">Total KYC Workers</p>
-                <h2 class="text-5xl font-bold mt-5 text-teal-700 dark:text-teal-200 stat-number">{{ total_kyc_workers }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                <i class="fas fa-id-card"></i>
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +8% this month
-        </p>
-    </div>
-
-    <!-- 4. Total Skills - Purple Theme -->
-    <div class="bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Total Skills</p>
-                <h2 class="text-5xl font-bold mt-5 text-purple-700 dark:text-purple-200 stat-number">{{ total_skills }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                🔧
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +15% this month
-        </p>
-    </div>
-
-    <!-- 5. Total Bookings - Indigo Theme -->
-    <div class="bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Total Bookings</p>
-                <h2 class="text-5xl font-bold mt-5 text-indigo-700 dark:text-indigo-200 stat-number">{{ total_bookings }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                📅
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +23% this month
-        </p>
-    </div>
-
-    <!-- 6. Total Reviews - Pink Theme -->
-    <div class="bg-pink-50 dark:bg-pink-950/60 border border-pink-200 dark:border-pink-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-pink-600 dark:text-pink-400">Total Reviews</p>
-                <h2 class="text-5xl font-bold mt-5 text-pink-700 dark:text-pink-200 stat-number">{{ total_reviews }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-pink-100 dark:bg-pink-900 text-pink-600 dark:text-pink-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                ⭐
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +10% this month
-        </p>
-    </div>
-
-    <!-- 7. Total Notifications - Amber Theme -->
-    <div class="bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-amber-600 dark:text-amber-400">Total Notifications</p>
-                <h2 class="text-5xl font-bold mt-5 text-amber-700 dark:text-amber-200 stat-number">{{ total_notifications }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                🛎️
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +23% this month
-        </p>
-    </div>
-
-    <!-- 8. Total Revenue - Yellow/Orange Theme -->
-    <div class="bg-yellow-50 dark:bg-yellow-950/60 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-8 card-hover shadow-xl">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Total Revenue</p>
-                <h2 class="text-5xl font-bold mt-5 text-yellow-700 dark:text-yellow-200 stat-number">₹{{ total_revenue }}</h2>
-            </div>
-            <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 rounded-3xl flex items-center justify-center text-4xl shadow-inner">
-                ₹
-            </div>
-        </div>
-        <p class="text-emerald-500 text-sm mt-6 flex items-center gap-2">
-            <i class="fas fa-arrow-trend-up"></i> +18% this month
-        </p>
-    </div>
-
-</div>
-
-       <!-- Charts Section - Premium Look -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-
-    <!-- Revenue Trend Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-700 card-hover">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h3 class="font-semibold text-xl">Revenue Trend</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Last 30 Days • ₹ in Thousands</p>
-            </div>
-            <div class="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400 rounded-2xl text-sm font-medium flex items-center gap-2">
-                <i class="fas fa-chart-line"></i>
-                Growth
-            </div>
-        </div>
-        <canvas id="revenueChart" height="145"></canvas>
-    </div>
-
-    <!-- Bookings Status Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-700 card-hover">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h3 class="font-semibold text-xl">Bookings Status</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Current Distribution</p>
-            </div>
-            <div class="px-4 py-2 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-2xl text-sm font-medium flex items-center gap-2">
-                <i class="fas fa-pie-chart"></i>
-                Overview
-            </div>
-        </div>
-        <canvas id="bookingsChart" height="145"></canvas>
-    </div>
-
-</div>
-
-        
-
-        <!-- Recent Bookings -->
-        <div class="bg-white rounded-3xl shadow-lg p-6 mt-8">
-
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Recent Bookings</h2>
-
-        <a href="/auth/all-bookings"
-           class="text-blue-600 hover:underline">
-            View All
-        </a>
-    </div>
-
-    <div class="overflow-x-auto">
-
-        <table class="w-full">
-
-            <thead class="bg-slate-100">
-
-            <tr>
-                <th class="p-4 text-left">ID</th>
-                <th class="p-4 text-left">Customer</th>
-                <th class="p-4 text-left">Worker</th>
-                <th class="p-4 text-left">Service</th>
-                <th class="p-4 text-left">Amount</th>
-                <th class="p-4 text-left">Status</th>
-            </tr>
-
-            </thead>
-
-            <tbody>
-
-            {% for booking in recent_bookings %}
-
-            <tr class="border-b hover:bg-gray-50">
-
-                <td class="p-4">
-                    #{{ booking.id }}
-                </td>
-
-                <td class="p-4">
-                    {{ booking.customer_name }}
-                </td>
-
-                <td class="p-4">
-                    {{ booking.worker_name }}
-                </td>
-
-                <td class="p-4">
-                    {{ booking.service_name }}
-                </td>
-
-                <td class="p-4 font-semibold text-green-600">
-                    ₹{{ booking.amount }}
-                </td>
-
-                <td class="p-4">
-
-                    {% if booking.status=="Completed" %}
-
-                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
-                        Completed
-                    </span>
-
-                    {% elif booking.status=="Pending" %}
-
-                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
-                        Pending
-                    </span>
-
-                    {% else %}
-
-                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">
-                        {{ booking.status }}
-                    </span>
-
-                    {% endif %}
-
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-<!-- ------------------------------------------------------------------------------------------- -->
-
- <div class="bg-white rounded-3xl shadow-lg p-6 mt-8">
-
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Recent Customers</h2>
-
-        <a href="/auth/all-customers"
-           class="text-blue-600 hover:underline">
-            View All
-        </a>
-    </div>
-
-    <div class="overflow-x-auto">
-
-        <table class="w-full">
-            <thead>
-                <tr class="border-b text-left text-sm font-semibold text-gray-600">
-                    <th class="py-4 px-3">ID</th>
-                    <th class="py-4 px-3">Customer Name</th>
-                    <th class="py-4 px-3">Phone</th>
-                    <th class="py-4 px-3">City</th>
-                    <th class="py-4 px-3">Address</th>
-                    <th class="py-4 px-3">Pincode</th>
-                    <th class="py-4 px-3">Status</th>
-                    <th class="py-4 px-3 text-center">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-{% for customer in customers %}
-
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-
-    <td class="py-4 px-3">
-        #{{ customer.id }}
-    </td>
-    
-
-   <td class="p-5">{{ customer["first_name"] or "-" }} {{ customer["last_name"] or "" }}</td>
-
-    <td class="py-4 px-3">
-        {{ customer.phone }}
-    </td>
-
-    <td class="py-4 px-3">
-        {{ customer.city }}
-    </td>
-
-    <td class="py-4 px-3">
-        {{ customer.address }}
-    </td>
-
-    <td class="py-4 px-3">
-        {{ customer.pincode }}
-    </td>
-
-    <td class="py-4 px-3">
-
-        {% if customer.status == "Active" %}
-
-        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
-            Active
-        </span>
-
-        {% else %}
-
-        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs">
-            Inactive
-        </span>
-
-        {% endif %}
-
-    </td>
-
-    <td class="py-4 px-3 text-center">
-
-        <a href="/auth/customer/{{ customer.id }}"
-           class="text-blue-600 hover:text-blue-800 mr-3">
-            <i class="fas fa-eye"></i>
-        </a>
-
-        <a href="/auth/customer/{{ customer.id }}/edit"
-           class="text-yellow-500 hover:text-yellow-600 mr-3">
-            <i class="fas fa-edit"></i>
-        </a>
-
-        <a href="/auth/customer/{{ customer.id }}/delete"
-           onclick="return confirm('Delete this customer?')"
-           class="text-red-600 hover:text-red-700">
-            <i class="fas fa-trash"></i>
-        </a>
-
-    </td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-<!-- ==================== MISTRI POINT AI CHATBOX ==================== -->
-
-<!-- Floating Button -->
-<button class="chat-fab" id="chatFab" onclick="toggleChatbox()" title="Support Chat">
-    <i class="far fa-comment" id="chatFabIcon"></i>
-</button>
-
-<!-- Chat Panel -->
-<div class="chat-panel" id="chatPanel">
-    <!-- Header -->
-    <div class="chat-header">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <i class="fas fa-headset"></i>
-            </div>
-            <div>
-                <div class="font-semibold text-sm">MistriPoint Support</div>
-                <div class="text-xs opacity-90 flex items-center gap-1">
-                    <span class="w-2 h-2 bg-green-400 rounded-full inline-block"></span>
-                    Online
+          </div>
+
+          <div class="dropdown">
+            <button class="nav-icon-btn" id="notifBtn" aria-label="Notifications">
+              <i class="fas fa-bell"></i>
+              <span class="badge-dot"></span>
+            </button>
+            <div class="dropdown-menu" id="notifMenu" style="width:340px">
+              <div class="dropdown-header d-flex justify-between align-center">
+                <span>Notifications</span>
+                <span class="fs-xs text-primary" style="cursor:pointer">Mark all read</span>
+              </div>
+              <div class="dropdown-item">
+                <div class="notification-icon" style="background:var(--success-light);color:var(--success)"><i class="fas fa-check"></i></div>
+                <div>
+                  <div class="fs-sm">Booking #BK-2847 completed</div>
+                  <div class="fs-xs text-muted">2 min ago</div>
                 </div>
+              </div>
+              <div class="dropdown-item">
+                <div class="notification-icon" style="background:var(--warning-light);color:var(--warning)"><i class="fas fa-exclamation"></i></div>
+                <div>
+                  <div class="fs-sm">Worker Rajesh is running late</div>
+                  <div class="fs-xs text-muted">15 min ago</div>
+                </div>
+              </div>
+              <div class="dropdown-item">
+                <div class="notification-icon" style="background:var(--info-light);color:var(--info)"><i class="fas fa-star"></i></div>
+                <div>
+                  <div class="fs-sm">New 5-star review received</div>
+                  <div class="fs-xs text-muted">1 hour ago</div>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item">
+                <span class="text-primary fw-500">View all notifications</span>
+              </div>
             </div>
+          </div>
+
+          <div class="dropdown">
+            <div class="profile-dropdown" id="profileBtn">
+              <img src="https://ui-avatars.com/api/?name=Alex+Morgan&background=3B5BFF&color=fff&size=80" alt="Alex Morgan" class="profile-avatar" />
+              <div class="profile-info">
+                <span class="profile-name">Alex Morgan</span>
+                <span class="profile-status">Online</span>
+              </div>
+              <i class="fas fa-chevron-down" style="font-size:0.7rem;color:var(--text-muted)"></i>
+            </div>
+            <div class="dropdown-menu" id="profileMenu">
+              <div class="dropdown-item"><i class="fas fa-user"></i> My Profile</div>
+              <div class="dropdown-item"><i class="fas fa-cog"></i> Settings</div>
+              <div class="dropdown-item"><i class="fas fa-palette"></i> Theme Customizer</div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item"><i class="fas fa-question-circle"></i> Help Center</div>
+              <div class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Logout</div>
+            </div>
+          </div>
         </div>
-        <button onclick="toggleChatbox()" class="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition">
-            <i class="fas fa-times"></i>
-        </button>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="dashboard-content" id="mainContent">
+        <!-- Page Header -->
+        <div class="page-header" data-aos="fade-down">
+          <div class="page-title">
+            <h1>Dashboard Overview</h1>
+            <p>Welcome back, Alex. Here's what's happening with MistriPoint today.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" id="exportBtn">
+              <i class="fas fa-download"></i> <span>Export</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" id="printBtn">
+              <i class="fas fa-print"></i> <span>Print</span>
+            </button>
+            <button class="btn btn-primary btn-sm btn-ripple" id="quickBookingBtn">
+              <i class="fas fa-plus"></i> <span>Quick Booking</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Assistant Banner -->
+        <div class="ai-banner" data-aos="fade-up">
+          <div class="ai-banner-content">
+            <h3><i class="fas fa-robot"></i> AI Dashboard Assistant</h3>
+            <p>Revenue is up 12.4% this week. 3 workers need attention. Ask me anything about your business.</p>
+          </div>
+          <button class="btn" id="aiAssistBtn"><i class="fas fa-sparkles"></i> Ask AI</button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card" data-aos="fade-up" data-aos-delay="50">
+            <div class="kpi-header">
+              <div class="kpi-icon blue"><i class="fas fa-rupee-sign"></i></div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 12.4%</div>
+            </div>
+            <div class="kpi-value" data-counter="1283500">₹0</div>
+            <div class="kpi-label">Total Revenue</div>
+            <div class="kpi-mini-chart"><canvas id="miniRevenue" height="40"></canvas></div>
+          </div>
+
+          <div class="kpi-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="kpi-header">
+              <div class="kpi-icon green"><i class="fas fa-calendar-check"></i></div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 8.2%</div>
+            </div>
+            <div class="kpi-value" data-counter="847">0</div>
+            <div class="kpi-label">Bookings This Month</div>
+            <div class="kpi-mini-chart"><canvas id="miniBookings" height="40"></canvas></div>
+          </div>
+
+          <div class="kpi-card" data-aos="fade-up" data-aos-delay="150">
+            <div class="kpi-header">
+              <div class="kpi-icon cyan"><i class="fas fa-users"></i></div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 5.7%</div>
+            </div>
+            <div class="kpi-value" data-counter="3248">0</div>
+            <div class="kpi-label">Total Customers</div>
+            <div class="kpi-mini-chart"><canvas id="miniCustomers" height="40"></canvas></div>
+          </div>
+
+          <div class="kpi-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="kpi-header">
+              <div class="kpi-icon orange"><i class="fas fa-hard-hat"></i></div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 3.1%</div>
+            </div>
+            <div class="kpi-value" data-counter="186">0</div>
+            <div class="kpi-label">Active Workers</div>
+            <div class="kpi-mini-chart"><canvas id="miniWorkers" height="40"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Secondary KPIs -->
+        <div class="kpi-grid" style="margin-bottom:28px">
+          <div class="kpi-card" data-aos="fade-up">
+            <div class="kpi-header">
+              <div class="kpi-icon purple"><i class="fas fa-bolt"></i></div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 15%</div>
+            </div>
+            <div class="kpi-value" data-counter="42">0</div>
+            <div class="kpi-label">Today's Bookings</div>
+          </div>
+          <div class="kpi-card" data-aos="fade-up" data-aos-delay="50">
+            <div class="kpi-header">
+              <div class="kpi-icon teal"><i class="fas fa-check-circle"></i></div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 9%</div>
+            </div>
+            <div class="kpi-value" data-counter="1284">0</div>
+            <div class="kpi-label">Completed Jobs</div>
+          </div>
+          <div class="kpi-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="kpi-header">
+              <div class="kpi-icon pink"><i class="fas fa-star"></i></div>
+              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 0.3</div>
+            </div>
+            <div class="kpi-value">4.87</div>
+            <div class="kpi-label">Average Rating</div>
+          </div>
+          <div class="kpi-card" data-aos="fade-up" data-aos-delay="150">
+            <div class="kpi-header">
+              <div class="kpi-icon indigo"><i class="fas fa-wallet"></i></div>
+              <div class="kpi-trend down"><i class="fas fa-arrow-down"></i> 2.1%</div>
+            </div>
+            <div class="kpi-value" data-counter="245800">₹0</div>
+            <div class="kpi-label">Wallet Balance</div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid-sidebar">
+          <div class="card" data-aos="fade-up">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-chart-area text-primary"></i> Revenue Analytics</div>
+              <div class="filter-tabs">
+                <div class="filter-tab active" data-period="week">Week</div>
+                <div class="filter-tab" data-period="month">Month</div>
+                <div class="filter-tab" data-period="year">Year</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:320px">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" data-aos="fade-up" data-aos-delay="100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-chart-pie text-primary"></i> Revenue by Category</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:260px">
+                <canvas id="categoryChart"></canvas>
+              </div>
+              <div class="mt-16">
+                <div class="d-flex justify-between align-center mb-2 fs-sm">
+                  <span><span style="display:inline-block;width:10px;height:10px;background:#3B5BFF;border-radius:50%;margin-right:6px"></span>Plumbing</span>
+                  <span class="fw-600">₹4.2L</span>
+                </div>
+                <div class="d-flex justify-between align-center mb-2 fs-sm">
+                  <span><span style="display:inline-block;width:10px;height:10px;background:#6C63FF;border-radius:50%;margin-right:6px"></span> Electrical</span>
+                  <span class="fw-600">₹3.1L</span>
+                </div>
+                <div class="d-flex justify-between align-center mb-2 fs-sm">
+                  <span><span style="display:inline-block;width:10px;height:10px;background:#00C853;border-radius:50%;margin-right:6px"></span> AC Repair</span>
+                  <span class="fw-600">₹2.8L</span>
+                </div>
+                <div class="d-flex justify-between align-center fs-sm">
+                  <span><span style="display:inline-block;width:10px;height:10px;background:#FFA726;border-radius:50%;margin-right:6px"></span> Others</span>
+                  <span class="fw-600">₹2.4L</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bookings + Performance -->
+        <div class="grid-2">
+          <div class="card" data-aos="fade-up">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-calendar-alt text-primary"></i> Bookings Overview</div>
+              <button class="btn btn-ghost btn-sm">View All</button>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:280px">
+                <canvas id="bookingsChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" data-aos="fade-up" data-aos-delay="100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-user-tie text-primary"></i> Worker Performance</div>
+              <button class="btn btn-ghost btn-sm">Details</button>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:280px">
+                <canvas id="workerChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Bookings Table -->
+        <div class="card" data-aos="fade-up" style="margin-bottom:28px">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-list text-primary"></i> Recent Bookings</div>
+            <div class="d-flex gap-8 align-center">
+              <div class="search-box" style="width:200px">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search..." style="height:36px;font-size:0.8rem" id="tableSearch" />
+              </div>
+              <button class="btn btn-secondary btn-sm"><i class="fas fa-filter"></i> Filter</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table class="table" id="bookingsTable">
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Worker</th>
+                    <th>Date & Time</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="fw-600 text-primary">#BK-2847</span></td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=3B5BFF&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <div class="user-cell-info">
+                          <span class="user-cell-name">Priya Sharma</span>
+                          <span class="user-cell-email">priya.s@email.com</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>AC Repair & Service</td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Ramesh+K&background=00C853&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <span class="user-cell-name">Ramesh K.</span>
+                      </div>
+                    </td>
+                    <td>05 Aug, 10:00 AM</td>
+                    <td class="fw-600">₹1,499</td>
+                    <td><span class="badge badge-success"><span class="badge-dot"></span> Completed</span></td>
+                    <td>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="fw-600 text-primary">#BK-2846</span></td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Amit+Verma&background=6C63FF&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <div class="user-cell-info">
+                          <span class="user-cell-name">Amit Verma</span>
+                          <span class="user-cell-email">amit.v@email.com</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Plumbing – Leak Fix</td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Suresh+P&background=FFA726&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <span class="user-cell-name">Suresh P.</span>
+                      </div>
+                    </td>
+                    <td>05 Aug, 11:30 AM</td>
+                    <td class="fw-600">₹899</td>
+                    <td><span class="badge badge-info"><span class="badge-dot"></span> In Progress</span></td>
+                    <td>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="fw-600 text-primary">#BK-2845</span></td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Neha+Gupta&background=FF4081&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <div class="user-cell-info">
+                          <span class="user-cell-name">Neha Gupta</span>
+                          <span class="user-cell-email">neha.g@email.com</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Electrical Wiring</td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Vikram+S&background=00B8D9&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <span class="user-cell-name">Vikram S.</span>
+                      </div>
+                    </td>
+                    <td>05 Aug, 02:00 PM</td>
+                    <td class="fw-600">₹2,499</td>
+                    <td><span class="badge badge-warning"><span class="badge-dot"></span> Pending</span></td>
+                    <td>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="fw-600 text-primary">#BK-2844</span></td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Rahul+Mehta&background=7C4DFF&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <div class="user-cell-info">
+                          <span class="user-cell-name">Rahul Mehta</span>
+                          <span class="user-cell-email">rahul.m@email.com</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Deep Cleaning</td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Anita+D&background=00BFA5&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <span class="user-cell-name">Anita D.</span>
+                      </div>
+                    </td>
+                    <td>04 Aug, 09:00 AM</td>
+                    <td class="fw-600">₹3,200</td>
+                    <td><span class="badge badge-success"><span class="badge-dot"></span> Completed</span></td>
+                    <td>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="fw-600 text-primary">#BK-2843</span></td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Kavita+J&background=FF4D4F&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <div class="user-cell-info">
+                          <span class="user-cell-name">Kavita Joshi</span>
+                          <span class="user-cell-email">kavita.j@email.com</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Carpentry – Shelf Install</td>
+                    <td>
+                      <div class="user-cell">
+                        <img src="https://ui-avatars.com/api/?name=Manoj+R&background=536DFE&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                        <span class="user-cell-name">Manoj R.</span>
+                      </div>
+                    </td>
+                    <td>04 Aug, 04:30 PM</td>
+                    <td class="fw-600">₹1,850</td>
+                    <td><span class="badge badge-danger"><span class="badge-dot"></span> Cancelled</span></td>
+                    <td>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer d-flex justify-between align-center">
+            <span class="fs-sm text-muted">Showing 1–5 of 847 bookings</span>
+            <div class="pagination">
+              <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">...</button>
+              <button class="page-btn">42</button>
+              <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widgets Row -->
+        <div class="grid-3">
+          <!-- Recent Activity -->
+          <div class="card" data-aos="fade-up">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-stream text-primary"></i> Recent Activity</div>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--success)"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Booking #BK-2847 completed</div>
+                    <div class="timeline-time">2 minutes ago · Ramesh K.</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--info)"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">New customer registered</div>
+                    <div class="timeline-time">18 minutes ago · Kavita Joshi</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--warning)"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Payment pending alert</div>
+                    <div class="timeline-time">45 minutes ago · Invoice #INV-902</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--primary)"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Worker Suresh went online</div>
+                    <div class="timeline-time">1 hour ago</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--secondary)"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">New 5-star review received</div>
+                    <div class="timeline-time">2 hours ago · Priya Sharma</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Latest Reviews -->
+          <div class="card" data-aos="fade-up" data-aos-delay="100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-star text-primary"></i> Latest Reviews</div>
+              <button class="btn btn-ghost btn-sm">All</button>
+            </div>
+            <div class="card-body">
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="user-cell">
+                    <img src="https://ui-avatars.com/api/?name=Priya+S&background=3B5BFF&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                    <span class="user-cell-name">Priya Sharma</span>
+                  </div>
+                  <div class="stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  </div>
+                </div>
+                <p class="review-text">Excellent AC service! Ramesh was professional and fixed everything quickly.</p>
+              </div>
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="user-cell">
+                    <img src="https://ui-avatars.com/api/?name=Amit+V&background=6C63FF&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                    <span class="user-cell-name">Amit Verma</span>
+                  </div>
+                  <div class="stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                  </div>
+                </div>
+                <p class="review-text">Good plumbing work, arrived on time. Would recommend.</p>
+              </div>
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="user-cell">
+                    <img src="https://ui-avatars.com/api/?name=Neha+G&background=FF4081&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                    <span class="user-cell-name">Neha Gupta</span>
+                  </div>
+                  <div class="stars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  </div>
+                </div>
+                <p class="review-text">Fantastic electrical work. Clean and professional.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions + System Health -->
+          <div>
+            <div class="card" data-aos="fade-up" data-aos-delay="150" style="margin-bottom:20px">
+              <div class="card-header">
+                <div class="card-title"><i class="fas fa-bolt text-primary"></i> Quick Actions</div>
+              </div>
+              <div class="card-body">
+                <div class="quick-actions">
+                  <div class="quick-action" data-action="booking">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>New Booking</span>
+                  </div>
+                  <div class="quick-action" data-action="worker">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Worker</span>
+                  </div>
+                  <div class="quick-action" data-action="invoice">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Invoice</span>
+                  </div>
+                  <div class="quick-action" data-action="report">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Report</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" data-aos="fade-up" data-aos-delay="200">
+              <div class="card-header">
+                <div class="card-title"><i class="fas fa-server text-primary"></i> System Health</div>
+              </div>
+              <div class="card-body">
+                <div class="health-item">
+                  <div class="health-label"><i class="fas fa-microchip text-primary"></i> CPU Usage</div>
+                  <div class="health-value">34%</div>
+                </div>
+                <div class="progress" style="margin-bottom:16px"><div class="progress-bar" style="width:34%"></div></div>
+                <div class="health-item">
+                  <div class="health-label"><i class="fas fa-memory text-info"></i> RAM Usage</div>
+                  <div class="health-value">62%</div>
+                </div>
+                <div class="progress" style="margin-bottom:16px"><div class="progress-bar" style="width:62%;background:linear-gradient(90deg,#00B8D9,#00E5FF)"></div></div>
+                <div class="health-item">
+                  <div class="health-label"><i class="fas fa-hdd text-success"></i> Disk Usage</div>
+                  <div class="health-value">48%</div>
+                </div>
+                <div class="progress"><div class="progress-bar" style="width:48%;background:linear-gradient(90deg,#00C853,#00E676)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Workers + Upcoming + Payments -->
+        <div class="grid-3" style="margin-top:0">
+          <div class="card" data-aos="fade-up">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-trophy text-primary"></i> Top Workers</div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrapper">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="user-cell">
+                          <img src="https://ui-avatars.com/api/?name=Ramesh+K&background=00C853&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                          <div class="user-cell-info">
+                            <span class="user-cell-name">Ramesh Kumar</span>
+                            <span class="user-cell-email">AC Technician</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-end">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <div class="fs-xs text-muted">128 jobs</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="user-cell">
+                          <img src="https://ui-avatars.com/api/?name=Suresh+P&background=FFA726&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                          <div class="user-cell-info">
+                            <span class="user-cell-name">Suresh Patel</span>
+                            <span class="user-cell-email">Plumber</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-end">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                        <div class="fs-xs text-muted">97 jobs</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="user-cell">
+                          <img src="https://ui-avatars.com/api/?name=Vikram+S&background=00B8D9&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                          <div class="user-cell-info">
+                            <span class="user-cell-name">Vikram Singh</span>
+                            <span class="user-cell-email">Electrician</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-end">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div>
+                        <div class="fs-xs text-muted">84 jobs</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="user-cell">
+                          <img src="https://ui-avatars.com/api/?name=Anita+D&background=00BFA5&color=fff&size=40" class="avatar avatar-sm" alt="" />
+                          <div class="user-cell-info">
+                            <span class="user-cell-name">Anita Desai</span>
+                            <span class="user-cell-email">Housekeeping</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-end">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <div class="fs-xs text-muted">76 jobs</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" data-aos="fade-up" data-aos-delay="100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-clock text-primary"></i> Upcoming Bookings</div>
+            </div>
+            <div class="card-body">
+              <div class="notification-item">
+                <div class="notification-icon" style="background:var(--primary-light);color:var(--primary)"><i class="fas fa-wrench"></i></div>
+                <div class="notification-content">
+                  <div class="notification-text fw-500">Plumbing – Leak Fix</div>
+                  <div class="notification-time">Today · 11:30 AM · Suresh P.</div>
+                </div>
+                <span class="badge badge-info">Soon</span>
+              </div>
+              <div class="notification-item">
+                <div class="notification-icon" style="background:var(--warning-light);color:var(--warning)"><i class="fas fa-bolt"></i></div>
+                <div class="notification-content">
+                  <div class="notification-text fw-500">Electrical Wiring</div>
+                  <div class="notification-time">Today · 2:00 PM · Vikram S.</div>
+                </div>
+                <span class="badge badge-warning">Pending</span>
+              </div>
+              <div class="notification-item">
+                <div class="notification-icon" style="background:var(--success-light);color:var(--success)"><i class="fas fa-broom"></i></div>
+                <div class="notification-content">
+                  <div class="notification-text fw-500">Deep Cleaning</div>
+                  <div class="notification-time">Tomorrow · 9:00 AM · Anita D.</div>
+                </div>
+                <span class="badge badge-secondary">Scheduled</span>
+              </div>
+              <div class="notification-item">
+                <div class="notification-icon" style="background:var(--info-light);color:var(--info)"><i class="fas fa-snowflake"></i></div>
+                <div class="notification-content">
+                  <div class="notification-text fw-500">AC Gas Refill</div>
+                  <div class="notification-time">Tomorrow · 3:30 PM · Ramesh K.</div>
+                </div>
+                <span class="badge badge-secondary">Scheduled</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" data-aos="fade-up" data-aos-delay="150">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-credit-card text-primary"></i> Latest Payments</div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrapper">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="fw-500 fs-sm">#PAY-9021</div>
+                        <div class="fs-xs text-muted">Priya Sharma</div>
+                      </td>
+                      <td class="text-end">
+                        <div class="fw-600 text-success">+₹1,499</div>
+                        <div class="fs-xs text-muted">UPI</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-500 fs-sm">#PAY-9020</div>
+                        <div class="fs-xs text-muted">Rahul Mehta</div>
+                      </td>
+                      <td class="text-end">
+                        <div class="fw-600 text-success">+₹3,200</div>
+                        <div class="fs-xs text-muted">Card</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-500 fs-sm">#PAY-9019</div>
+                        <div class="fs-xs text-muted">Amit Verma</div>
+                      </td>
+                      <td class="text-end">
+                        <div class="fw-600 text-warning">₹899</div>
+                        <div class="fs-xs text-muted">Pending</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-500 fs-sm">#PAY-9018</div>
+                        <div class="fs-xs text-muted">Neha Gupta</div>
+                      </td>
+                      <td class="text-end">
+                        <div class="fw-600 text-success">+₹2,499</div>
+                        <div class="fs-xs text-muted">Wallet</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- AI Chat Panel -->
+  <div class="ai-chat-panel" id="aiChatPanel" aria-hidden="true">
+    <div class="ai-chat-header">
+      <div class="ai-chat-header-left">
+        <div class="ai-chat-avatar"><i class="fas fa-robot"></i></div>
+        <div>
+          <div class="ai-chat-title">AI Assistant</div>
+          <div class="ai-chat-status"><span class="status-dot"></span> Online</div>
+        </div>
+      </div>
+      <button type="button" class="ai-chat-close" id="aiChatClose" aria-label="Close chat">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
 
-    <!-- Messages -->
-    <div class="chat-messages" id="chatMessages">
-        <div class="chat-bubble bot">
-            👋 Namaste! Main MistriPoint Support Assistant hoon.
-            <div class="chat-time">Just now</div>
+    <div class="ai-chat-messages" id="aiChatMessages">
+      <div class="ai-msg bot">
+        <div class="ai-msg-bubble">
+          Namaste! Main MistriPoint AI Assistant hoon.<br><br>
+          Aap pooch sakte ho:<br>
+          • <strong>Booking 15</strong><br>
+          • <strong>Pending bookings</strong><br>
+          • <strong>Today's revenue</strong><br>
+          • <strong>Total workers</strong><br>
+          • <strong>Worker 20</strong> / <strong>Customer 8</strong>
         </div>
-        <div class="chat-bubble bot">
-            Bookings, Workers, Customers, KYC, payments ya koi bhi sawal poochiye.
-            <div class="chat-time">Just now</div>
-        </div>
+      </div>
     </div>
 
-    <!-- Quick Replies -->
-    <div class="chat-quick-replies">
-        <button class="chat-quick-btn" onclick="sendQuickReply('Pending bookings')">Pending Bookings</button>
-        <button class="chat-quick-btn" onclick="sendQuickReply('Today\'s revenue')">Today's Revenue</button>
-        <button class="chat-quick-btn" onclick="sendQuickReply('Help')">Help</button>
+    <div class="ai-chat-suggestions" id="aiChatSuggestions">
+      <button type="button" class="ai-chip" data-q="Pending bookings">Pending bookings</button>
+      <button type="button" class="ai-chip" data-q="Today's revenue">Today's revenue</button>
+      <button type="button" class="ai-chip" data-q="Total workers">Total workers</button>
+      <button type="button" class="ai-chip" data-q="Top workers">Top workers</button>
     </div>
 
-    <!-- Input -->
-    <div class="chat-input-area">
-    <input 
-        type="text" 
-        id="chatInput" 
-        placeholder="Type message... (e.g. Booking 15)" 
-        autocomplete="off"
-        style="background:#ffffff; color:#1e293b;"
-    >
-    <button class="chat-send-btn" onclick="sendChatMessage()">
+    <form class="ai-chat-input-row" id="aiChatForm">
+      <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Type your question..." autocomplete="off" maxlength="500" />
+      <button type="submit" class="ai-chat-send" id="aiChatSend" aria-label="Send">
         <i class="fas fa-paper-plane"></i>
-    </button>
-</div>
-    
-    <!-- --------------------------------------------------------------------------------------------------------------------------- -->
-   
+      </button>
+    </form>
+  </div>
 
-                    
+  <!-- Floating Chat Button -->
+  <button class="fab-chat" id="fabChat" aria-label="Open AI chat">
+    <i class="fas fa-comment-dots"></i>
+  </button>
 
-    <script>
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav" aria-label="Mobile navigation">
+    <a href="#dashboard" class="bottom-nav-item active"><i class="fas fa-th-large"></i> Home</a>
+    <a href="#bookings" class="bottom-nav-item"><i class="fas fa-calendar-check"></i> Bookings</a>
+    <a href="#workers" class="bottom-nav-item"><i class="fas fa-hard-hat"></i> Workers</a>
+    <a href="#analytics" class="bottom-nav-item"><i class="fas fa-chart-pie"></i> Analytics</a>
+    <a href="#settings" class="bottom-nav-item"><i class="fas fa-cog"></i> More</a>
+  </nav>
 
-        function globalSearch() {
+  <!-- Command Palette -->
+  <div class="command-palette-overlay" id="commandPalette">
+    <div class="command-palette">
+      <input type="text" class="command-input" placeholder="Type a command or search..." id="commandInput" autocomplete="off" />
+      <div class="command-results" id="commandResults">
+        <div class="command-item"><i class="fas fa-plus"></i> New Booking</div>
+        <div class="command-item"><i class="fas fa-user-plus"></i> Add Customer</div>
+        <div class="command-item"><i class="fas fa-hard-hat"></i> Add Worker</div>
+        <div class="command-item"><i class="fas fa-file-invoice"></i> Create Invoice</div>
+        <div class="command-item"><i class="fas fa-chart-line"></i> View Analytics</div>
+        <div class="command-item"><i class="fas fa-download"></i> Export Report</div>
+        <div class="command-item"><i class="fas fa-cog"></i> Settings</div>
+        <div class="command-item"><i class="fas fa-moon"></i> Toggle Dark Mode</div>
+      </div>
+    </div>
+  </div>
 
-    let input = document.getElementById("global-search").value.toLowerCase();
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
 
-    let rows = document.querySelectorAll("table tbody tr");
+  <!-- Quick Booking Modal -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Quick Booking</h3>
+        <button class="modal-close" id="closeBookingModal" aria-label="Close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Customer</label>
+          <select class="form-control">
+            <option>Select customer...</option>
+            <option>Priya Sharma</option>
+            <option>Amit Verma</option>
+            <option>Neha Gupta</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service</label>
+          <select class="form-control">
+            <option>Select service...</option>
+            <option>AC Repair</option>
+            <option>Plumbing</option>
+            <option>Electrical</option>
+            <option>Deep Cleaning</option>
+            <option>Carpentry</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Date</label>
+          <input type="date" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Time</label>
+          <select class="form-control">
+            <option>09:00 AM</option>
+            <option>10:00 AM</option>
+            <option>11:00 AM</option>
+            <option>02:00 PM</option>
+            <option>04:00 PM</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-control" rows="3" style="height:auto;padding:10px 14px" placeholder="Any special instructions..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelBooking">Cancel</button>
+        <button class="btn btn-primary" id="submitBooking">Create Booking</button>
+      </div>
+    </div>
+  </div>
 
-    rows.forEach(row => {
-
-        let text = row.innerText.toLowerCase();
-
-        if (text.includes(input)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-
-    });
-
-}
-        // Tailwind Script
-        function initializeTailwind() {
-            // Already using CDN
-        }
-
-        // Navigation
-        function navigateTo(section) {
-            // Hide all sections
-            document.querySelectorAll('#main-content > div').forEach(div => {
-                div.classList.add('hidden');
-            });
-            
-            // Show target
-            const target = document.getElementById(`section-${section}`);
-            if (target) target.classList.remove('hidden');
-            
-            // Update active nav
-            document.querySelectorAll('.sidebar-link').forEach(link => {
-                link.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/30', 'text-yellow-600', 'dark:text-yellow-400');
-            });
-            
-            const activeNav = document.getElementById(`nav-${section}`);
-            if (activeNav) activeNav.classList.add('bg-yellow-50', 'dark:bg-yellow-900/30', 'text-yellow-600', 'dark:text-yellow-400');
-        }
-function toggleDarkMode() {
-    document.documentElement.classList.toggle("dark");
-
-    const icon = document.getElementById("theme-icon");
-
-    if (document.documentElement.classList.contains("dark")) {
-        icon.classList.replace("fa-moon", "fa-sun");
-        localStorage.setItem("darkMode", "true");
-    } else {
-        icon.classList.replace("fa-sun", "fa-moon");
-        localStorage.setItem("darkMode", "false");
-    }
-}
-
-// Page Load
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('profile-dropdown');
-    if (!e.target.closest('.relative')) {
-        dropdown.classList.add('hidden');
-    }
-});
-
-
-        // Sample Data for Charts
-        let revenueChart, bookingsChart;
-
-        function initCharts() {
-            const revenueCtx = document.getElementById('revenueChart');
-            if (revenueCtx) {
-                revenueChart = new Chart(revenueCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['1 Jul', '5 Jul', '10 Jul', '15 Jul', '20 Jul', '25 Jul', '30 Jul'],
-                        datasets: [{
-                            label: 'Revenue (₹)',
-                            data: [12400, 18900, 15600, 24500, 19800, 31200, 28400],
-                            borderColor: '#eab308',
-                            tension: 0.4,
-                            borderWidth: 3,
-                            pointRadius: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280' } },
-                            x: { grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280' } }
-                        }
-                    }
-                });
-            }
-
-            const bookingsCtx = document.getElementById('bookingsChart');
-            if (bookingsCtx) {
-                bookingsChart = new Chart(bookingsCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
-                        datasets: [{
-                            data: [23, 45, 210, 12],
-                            backgroundColor: ['#eab308', '#3b82f6', '#22c55e', '#ef4444']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        cutout: '70%',
-                        plugins: {
-                            legend: { position: 'bottom' }
-                        }
-                    }
-                });
-            }
-        }
-
-       
-        function showNotifications() {
-            const modal = document.getElementById('notification-modal');
-            modal.classList.toggle('hidden');
-        }
-
-        function showProfileMenu() {
-            alert("Admin Profile Menu\n\n1. Profile Settings\n2. Change Password\n3. Activity Log\n4. Logout");
-        }
-
-       
-            
-    function logout() {
-
-    if (confirm("Are you sure you want to logout?")) {
-
-        alert("✅ Logout Successful!");
-
-        window.location.href = "/auth/logout";
-
-    }
-
-}
-
-
-        function exportReport() {
-            alert("✅ Report exported successfully as Excel & PDF!");
-        }
-
-  function refreshDashboard() {
-    location.reload();
-}
-
-    function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            const overlay = document.getElementById("overlay");
-            const icon = document.getElementById("menu-icon");
-
-            if (sidebar.classList.contains("-translate-x-full")) {
-                sidebar.classList.remove("-translate-x-full");
-                overlay.classList.remove("hidden");
-                icon.classList.replace("fa-bars", "fa-times");
-            } else {
-                sidebar.classList.add("-translate-x-full");
-                overlay.classList.add("hidden");
-                icon.classList.replace("fa-times", "fa-bars");
-            }
-        }
-
-
-
-        // Initialize everything
-        window.onload = function() {
-            // Set dark mode from localStorage
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-icon').classList.remove('fa-moon');
-                document.getElementById('theme-icon').classList.add('fa-sun');
-            }
-            
-            // Initialize charts and data
-            initCharts();
-            populateRecentBookings();
-            
-            // Show dashboard by default
-            navigateTo('dashboard');
-            
-            console.log("%c✅ MistriPoint Admin Panel Loaded Successfully", "color: #eab308; font-size: 14px; font-weight: bold");
-        };
-
- function toggleChatbox() {
-    const panel = document.getElementById('chatPanel');
-    const icon  = document.getElementById('chatFabIcon');
-    const badge = document.getElementById('chatBadge');
-
-    panel.classList.toggle('open');
-
-    if (panel.classList.contains('open')) {
-        icon.className = 'fas fa-times';
-        if (badge) badge.style.display = 'none';
-        document.getElementById('chatInput').focus();
-    } else {
-        icon.className = 'far fa-comment';
-    }
-}
-
-function appendBubble(text, type) {
-    const box = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    div.className = 'chat-bubble ' + type;
-
-    // simple **bold** support
-    let html = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n/g, '<br>');
-
-    const time = new Date().toLocaleTimeString('en-IN', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-
-    div.innerHTML = html + '<div class="chat-time">' + time + '</div>';
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-}
-
-function showTyping() {
-    const box = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    div.id = 'typingIndicator';
-    div.className = 'chat-bubble bot typing';
-    div.innerHTML = '<span></span><span></span><span></span>';
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-}
-
-function hideTyping() {
-    const el = document.getElementById('typingIndicator');
-    if (el) el.remove();
-}
-
-async function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const text  = input.value.trim();
-    if (!text) return;
-
-    appendBubble(text, 'user');
-    input.value = '';
-
-    showTyping();
-
-    try {
-        const response = await fetch(`/auth/chat-ai?message=${encodeURIComponent(text)}`);
-        if (!response.ok) throw new Error('Network error');
-
-        const data = await response.json();
-        hideTyping();
-        appendBubble(data.reply || 'Kuch problem aa gayi.', 'bot');
-    } catch (err) {
-        hideTyping();
-        console.error(err);
-        appendBubble('❌ Server se connection nahi ho paya. Phir se try karein.', 'bot');
-    }
-}
-
-function sendQuickReply(text) {
-    document.getElementById('chatInput').value = text;
-    sendChatMessage();
-}
-
-// Enter key
-document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('chatInput');
-    if (input) {
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendChatMessage();
-            }
-        });
-    }
-});
-
-    </script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="/static/js/script.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/charts.js"></script>
+  
 </body>
 </html>

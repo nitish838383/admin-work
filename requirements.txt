@@ -16,3 +16,7 @@ itsdangerous
 fastapi_mail
 authlib
 httpx
+rapidfuzz
+cachetools
+loguru
+python-dateutil

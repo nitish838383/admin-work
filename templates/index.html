@@ -1,246 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Book trusted local workers instantly - Plumbers, Electricians, Painters, AC Technicians & more.">
-    <title>MistriPoint - Trusted Home Services</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', system_ui, sans-serif;
-        }
-        
-        .logo-font {
-            font-family: 'Space Grotesk', sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MistriPoint – Premium Admin Dashboard for Service Marketplace Management" />
+  <meta name="theme-color" content="#3B5BFF" />
+  <title>MistriPoint – Admin Dashboard</title>
 
-        .hero-bg {
-            background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
-        }
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
 
-        .service-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .service-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 30px 60px -15px rgb(0 0 0 / 0.2);
-        }
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-        .glass {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-        }
-    </style>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- AOS -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+  <!-- Project CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
 </head>
-<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+<body>
+  <!-- Page Loader -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-spinner"></div>
+    <div style="font-weight:600;color:var(--text-secondary)">Loading Dashboard...</div>
+  </div>
 
-    <!-- Navbar -->
-    <nav class="bg-white dark:bg-zinc-900 border-b sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-3xl flex items-center justify-center text-white text-3xl font-bold logo-font">M</div>
-                <h1 class="text-3xl font-bold tracking-tighter logo-font">MistriPoint</h1>
-            </div>
-            
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
-                <a href="#services" class="hover:text-indigo-600 transition-colors">Services</a>
-                <a href="#how" class="hover:text-indigo-600 transition-colors">How it Works</a>
-                <a href="#workers" class="hover:text-indigo-600 transition-colors">Find Workers</a>
-                <a href="#reviews" class="hover:text-indigo-600 transition-colors">Reviews</a>
-            </div>
+  <!-- Background Shapes -->
+  <div class="bg-shapes">
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+  </div>
 
-            <div class="flex items-center gap-4">
-                <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:block"></i>
-                </button>
-<a href="/auth/login"
-   class="px-4 py-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">
-    <i class="fas fa-user md:hidden"></i>
-    <span class="hidden md:inline">Login</span>
-</a>               
-<a href="https://stalwart-lamington-03bc94.netlify.app/"
-   class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-3xl font-semibold transition-all active:scale-95">
-    Book Now
-</a>
-    </nav>
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Hero Section -->
-    <section class="hero-bg text-white min-h-screen flex items-center relative">
-        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-            <div data-aos="fade-right">
-                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2 rounded-3xl text-sm mb-6">
-                    <span class="bg-emerald-400 w-2 h-2 rounded-full animate-pulse"></span>
-                    <span>Now in 120+ Cities</span>
-                </div>
-                
-                <h1 class="text-6xl md:text-7xl font-bold leading-tight tracking-tighter logo-font mb-6">
-                    Hire Trusted <span class="text-emerald-400">Mistri</span><br> in Minutes
-                </h1>
-                <p class="text-xl text-zinc-300 max-w-lg mb-10">
-                    Verified professionals at your doorstep. Instant booking. Transparent pricing.
-                </p>
-
-                <div class="bg-white rounded-3xl p-2 shadow-2xl max-w-xl">
-                    <div class="flex flex-col md:flex-row gap-3">
-                        <input type="text" id="search-input" 
-                               class="flex-1 px-8 py-6 rounded-3xl text-zinc-900 focus:outline-none text-lg"
-                               placeholder="What service do you need?">
-                        <button onclick="searchService()" 
-                                class="bg-zinc-900 hover:bg-black text-white px-12 py-6 rounded-3xl font-semibold flex items-center gap-3">
-                            <i class="fas fa-search"></i>
-                            <span>Find Now</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex gap-8 mt-10 text-sm">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-emerald-400"></i>
-                        <span>Verified Workers</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-clock text-emerald-400"></i>
-                        <span>30 Min Response</span>
-                    </div>
-                </div>
-            </div>
-
-            <div data-aos="fade-left" class="relative">
-                <img src="https://images.unsplash.com/photo-1581578731548-0f0c1b3b3c3c" 
-                     alt="Worker" class="rounded-3xl shadow-2xl">
-                <div class="absolute -bottom-6 -left-6 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-xl">
-                    <p class="text-emerald-600 font-semibold">4.98 ★</p>
-                    <p class="text-sm">Average Rating</p>
-                </div>
-            </div>
+  <div class="app-wrapper">
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon"><i class="fas fa-tools"></i></div>
+          <span class="logo-text">MistriPoint</span>
         </div>
-    </section>
+      </div>
 
-    <!-- Services -->
-    <section id="services" class="py-24 bg-white dark:bg-zinc-900">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-5xl font-bold text-center mb-4 logo-font" data-aos="fade-up">Our Services</h2>
-            <p class="text-center text-zinc-600 dark:text-zinc-400 mb-16">Professional services delivered with trust</p>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="services-grid"></div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <a href="#dashboard" class="nav-link active" data-section="dashboard">
+            <i class="fas fa-th-large"></i><span>Dashboard</span>
+          </a>
+          <a href="#bookings" class="nav-link" data-section="bookings">
+            <i class="fas fa-calendar-check"></i><span>Bookings</span>
+            <span class="nav-badge">12</span>
+          </a>
+          <a href="#customers" class="nav-link" data-section="customers">
+            <i class="fas fa-users"></i><span>Customers</span>
+          </a>
+          <a href="#workers" class="nav-link" data-section="workers">
+            <i class="fas fa-hard-hat"></i><span>Workers</span>
+            <span class="nav-badge" style="background:var(--success)">8</span>
+          </a>
         </div>
-    </section>
 
-    <!-- Stats -->
-    <section class="py-16 bg-zinc-900 text-white">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-10 text-center">
-            <div data-aos="fade-up">
-                <h3 class="text-6xl font-bold text-emerald-400">12,450</h3>
-                <p class="mt-3 text-zinc-400">Verified Mistri</p>
-            </div>
-            <div data-aos="fade-up" data-aos-delay="100">
-                <h3 class="text-6xl font-bold text-emerald-400">89,200</h3>
-                <p class="mt-3 text-zinc-400">Jobs Completed</p>
-            </div>
-            <div data-aos="fade-up" data-aos-delay="200">
-                <h3 class="text-6xl font-bold text-emerald-400">142</h3>
-                <p class="mt-3 text-zinc-400">Cities</p>
-            </div>
-            <div data-aos="fade-up" data-aos-delay="300">
-                <h3 class="text-6xl font-bold text-emerald-400">4.9</h3>
-                <p class="mt-3 text-zinc-400">Rating</p>
-            </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Services</div>
+          <a href="#services" class="nav-link">
+            <i class="fas fa-concierge-bell"></i><span>Services</span>
+          </a>
+          <a href="#categories" class="nav-link">
+            <i class="fas fa-layer-group"></i><span>Categories</span>
+          </a>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-zinc-900 text-zinc-400 py-20">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid md:grid-cols-5 gap-10">
-                <div>
-                    <div class="flex items-center gap-3 text-white mb-6">
-                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl flex items-center justify-center text-3xl font-bold logo-font">M</div>
-                        <span class="text-3xl font-bold logo-font">MistriPoint</span>
-                    </div>
-                    <p class="text-sm">India's most trusted platform for home services.</p>
-                </div>
-                <div class="md:col-span-4 grid grid-cols-2 md:grid-cols-3 gap-8">
-                    <div>
-                        <h4 class="font-semibold text-white mb-4">Company</h4>
-                        <ul class="space-y-3 text-sm">
-                            <li><a href="#" class="hover:text-white">About Us</a></li>
-                            <li><a href="#" class="hover:text-white">Careers</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-white mb-4">Services</h4>
-                        <ul class="space-y-3 text-sm">
-                            <li><a href="#" class="hover:text-white">Plumbing</a></li>
-                            <li><a href="#" class="hover:text-white">Electrical</a></li>
-                            <li><a href="#" class="hover:text-white">AC Repair</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-white mb-4">Get App</h4>
-                        <div class="flex gap-3">
-                            <button class="bg-zinc-800 px-6 py-3 rounded-2xl text-sm">Play Store</button>
-                            <button class="bg-zinc-800 px-6 py-3 rounded-2xl text-sm">App Store</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center text-xs border-t border-zinc-800 mt-16 pt-8">
-                © 2026 MistriPoint Technologies. All Rights Reserved.
-            </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Finance</div>
+          <a href="#payments" class="nav-link">
+            <i class="fas fa-credit-card"></i><span>Payments</span>
+          </a>
+          <a href="#revenue" class="nav-link">
+            <i class="fas fa-chart-line"></i><span>Revenue</span>
+          </a>
+          <a href="#invoices" class="nav-link">
+            <i class="fas fa-file-invoice-dollar"></i><span>Invoices</span>
+          </a>
+          <a href="#wallet" class="nav-link">
+            <i class="fas fa-wallet"></i><span>Wallet</span>
+          </a>
         </div>
-    </footer>
 
-    <script>
-        AOS.init({ duration: 1000, once: true });
-
-        const services = [
-            {icon: "🔧", name: "Plumbing"},
-            {icon: "⚡", name: "Electrical"},
-            {icon: "❄️", name: "AC Service"},
-            {icon: "🎨", name: "Painting"},
-            {icon: "🛠️", name: "Carpentry"},
-            {icon: "🧹", name: "Cleaning"},
-            {icon: "📱", name: "Appliance Repair"},
-            {icon: "🏗️", name: "Renovation"}
-        ];
-
-        function renderServices() {
-            const container = document.getElementById("services-grid");
-            container.innerHTML = services.map(s => `
-                <div class="service-card bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-3xl p-8 text-center">
-                    <div class="text-6xl mb-6">${s.icon}</div>
-                    <h3 class="font-semibold text-xl">${s.name}</h3>
-                </div>
-            `).join('');
-        }
-
-        function searchService() {
-            const query = document.getElementById("search-input").value;
-            if (query) {
-                alert(`Searching for "${query}" near you...`);
-            }
-        }
-
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle("dark");
-        }
-
-        window.onload = () => {
-            renderServices();
-            console.log("%cMistriPoint - Professional Landing Page Loaded", "color: #6366f1; font-weight: bold");
-        };
-       
-    </script>
-</body>
-</html>
+        <div class="nav-section">
+          <div class="nav-section-title">Insights</div>
+          <a href="#reviews" class=
+...
