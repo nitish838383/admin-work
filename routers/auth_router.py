@@ -354,7 +354,8 @@ def dashboard_api(db: Session = Depends(get_db)):
             "total_kyc_workers": total_kyc_workers,
             "total_notifications": total_notifications,
             "total_reviews": total_reviews,
-            "total_revenue": total_revenue
+            "total_revenue": total_revenue,
+            "bookings": bookings,
         }
     }
 
@@ -583,6 +584,10 @@ def dashboard(
             "customers": customers,
             "reviews": reviews,
             "total_revenue": total_revenue,
+            "bookings": bookings,
+            "notifications": notifications,  
+            "workers": workers,
+            "reviews": reviews,
         }
     )
 # ----------------------------------------------------------

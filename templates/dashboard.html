@@ -333,85 +333,87 @@
           <button class="btn" id="aiAssistBtn"><i class="fas fa-sparkles"></i> Ask AI</button>
         </div>
 
-        <!-- KPI Cards -->
-        <div class="kpi-grid">
-          <div class="kpi-card" data-aos="fade-up" data-aos-delay="50">
-            <div class="kpi-header">
-              <div class="kpi-icon blue"><i class="fas fa-rupee-sign"></i></div>
-              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 12.4%</div>
-            </div>
-            <div class="kpi-value" data-counter="1283500">₹0</div>
-            <div class="kpi-label">Total Revenue</div>
-            <div class="kpi-mini-chart"><canvas id="miniRevenue" height="40"></canvas></div>
-          </div>
+       <!-- KPI Cards – REAL API COUNTS (same as your old working dashboard) -->
+<div class="kpi-grid">
+  <div class="kpi-card" data-aos="fade-up" data-aos-delay="50">
+    <div class="kpi-header">
+      <div class="kpi-icon blue"><i class="fas fa-rupee-sign"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +18%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_revenue | default(0) | int }}">₹0</div>
+    <div class="kpi-label">Total Revenue</div>
+    <div class="kpi-mini-chart"><canvas id="miniRevenue" height="40"></canvas></div>
+  </div>
 
-          <div class="kpi-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="kpi-header">
-              <div class="kpi-icon green"><i class="fas fa-calendar-check"></i></div>
-              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 8.2%</div>
-            </div>
-            <div class="kpi-value" data-counter="847">0</div>
-            <div class="kpi-label">Bookings This Month</div>
-            <div class="kpi-mini-chart"><canvas id="miniBookings" height="40"></canvas></div>
-          </div>
+  <div class="kpi-card" data-aos="fade-up" data-aos-delay="100">
+    <div class="kpi-header">
+      <div class="kpi-icon green"><i class="fas fa-calendar-check"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +23%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_bookings | default(0) | int }}">0</div>
+    <div class="kpi-label">Total Bookings</div>
+    <div class="kpi-mini-chart"><canvas id="miniBookings" height="40"></canvas></div>
+  </div>
 
-          <div class="kpi-card" data-aos="fade-up" data-aos-delay="150">
-            <div class="kpi-header">
-              <div class="kpi-icon cyan"><i class="fas fa-users"></i></div>
-              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 5.7%</div>
-            </div>
-            <div class="kpi-value" data-counter="3248">0</div>
-            <div class="kpi-label">Total Customers</div>
-            <div class="kpi-mini-chart"><canvas id="miniCustomers" height="40"></canvas></div>
-          </div>
+  <div class="kpi-card" data-aos="fade-up" data-aos-delay="150">
+    <div class="kpi-header">
+      <div class="kpi-icon cyan"><i class="fas fa-users"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +12%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_customers | default(0) | int }}">0</div>
+    <div class="kpi-label">Total Customers</div>
+    <div class="kpi-mini-chart"><canvas id="miniCustomers" height="40"></canvas></div>
+  </div>
 
-          <div class="kpi-card" data-aos="fade-up" data-aos-delay="200">
-            <div class="kpi-header">
-              <div class="kpi-icon orange"><i class="fas fa-hard-hat"></i></div>
-              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 3.1%</div>
-            </div>
-            <div class="kpi-value" data-counter="186">0</div>
-            <div class="kpi-label">Active Workers</div>
-            <div class="kpi-mini-chart"><canvas id="miniWorkers" height="40"></canvas></div>
-          </div>
-        </div>
+  <div class="kpi-card" data-aos="fade-up" data-aos-delay="200">
+    <div class="kpi-header">
+      <div class="kpi-icon orange"><i class="fas fa-hard-hat"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +8%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_workers | default(0) | int }}">0</div>
+    <div class="kpi-label">Total Workers</div>
+    <div class="kpi-mini-chart"><canvas id="miniWorkers" height="40"></canvas></div>
+  </div>
+</div>
 
-        <!-- Secondary KPIs -->
-        <div class="kpi-grid" style="margin-bottom:28px">
-          <div class="kpi-card" data-aos="fade-up">
-            <div class="kpi-header">
-              <div class="kpi-icon purple"><i class="fas fa-bolt"></i></div>
-              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 15%</div>
-            </div>
-            <div class="kpi-value" data-counter="42">0</div>
-            <div class="kpi-label">Today's Bookings</div>
-          </div>
-          <div class="kpi-card" data-aos="fade-up" data-aos-delay="50">
-            <div class="kpi-header">
-              <div class="kpi-icon teal"><i class="fas fa-check-circle"></i></div>
-              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 9%</div>
-            </div>
-            <div class="kpi-value" data-counter="1284">0</div>
-            <div class="kpi-label">Completed Jobs</div>
-          </div>
-          <div class="kpi-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="kpi-header">
-              <div class="kpi-icon pink"><i class="fas fa-star"></i></div>
-              <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> 0.3</div>
-            </div>
-            <div class="kpi-value">4.87</div>
-            <div class="kpi-label">Average Rating</div>
-          </div>
-          <div class="kpi-card" data-aos="fade-up" data-aos-delay="150">
-            <div class="kpi-header">
-              <div class="kpi-icon indigo"><i class="fas fa-wallet"></i></div>
-              <div class="kpi-trend down"><i class="fas fa-arrow-down"></i> 2.1%</div>
-            </div>
-            <div class="kpi-value" data-counter="245800">₹0</div>
-            <div class="kpi-label">Wallet Balance</div>
-          </div>
-        </div>
+<!-- Secondary KPIs -->
+<div class="kpi-grid" style="margin-bottom:28px">
+  <div class="kpi-card" data-aos="fade-up">
+    <div class="kpi-header">
+      <div class="kpi-icon teal"><i class="fas fa-id-card"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +8%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_kyc_workers | default(0) | int }}">0</div>
+    <div class="kpi-label">Total KYC Workers</div>
+  </div>
 
+  <div class="kpi-card" data-aos="fade-up" data-aos-delay="50">
+    <div class="kpi-header">
+      <div class="kpi-icon purple"><i class="fas fa-tools"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +15%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_skills | default(0) | int }}">0</div>
+    <div class="kpi-label">Total Skills</div>
+  </div>
+
+  <div class="kpi-card" data-aos="fade-up" data-aos-delay="100">
+    <div class="kpi-header">
+      <div class="kpi-icon pink"><i class="fas fa-star"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +10%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_reviews | default(0) | int }}">0</div>
+    <div class="kpi-label">Total Reviews</div>
+  </div>
+
+  <div class="kpi-card" data-aos="fade-up" data-aos-delay="150">
+    <div class="kpi-header">
+      <div class="kpi-icon indigo"><i class="fas fa-bell"></i></div>
+      <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +23%</div>
+    </div>
+    <div class="kpi-value" data-counter="{{ total_notifications | default(0) | int }}">0</div>
+    <div class="kpi-label">Total Notifications</div>
+  </div>
+</div>
         <!-- Charts Row -->
         <div class="grid-sidebar">
           <div class="card" data-aos="fade-up">
@@ -486,504 +488,365 @@
             </div>
           </div>
         </div>
-
-        <!-- Recent Bookings Table -->
-        <div class="card" data-aos="fade-up" style="margin-bottom:28px">
-          <div class="card-header">
-            <div class="card-title"><i class="fas fa-list text-primary"></i> Recent Bookings</div>
-            <div class="d-flex gap-8 align-center">
-              <div class="search-box" style="width:200px">
-                <i class="fas fa-search"></i>
-                <input type="search" placeholder="Search..." style="height:36px;font-size:0.8rem" id="tableSearch" />
-              </div>
-              <button class="btn btn-secondary btn-sm"><i class="fas fa-filter"></i> Filter</button>
-            </div>
-          </div>
-          <div class="card-body" style="padding:0">
-            <div class="table-wrapper">
-              <table class="table" id="bookingsTable">
-                <thead>
-                  <tr>
-                    <th>Booking ID</th>
-                    <th>Customer</th>
-                    <th>Service</th>
-                    <th>Worker</th>
-                    <th>Date & Time</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><span class="fw-600 text-primary">#BK-2847</span></td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=3B5BFF&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <div class="user-cell-info">
-                          <span class="user-cell-name">Priya Sharma</span>
-                          <span class="user-cell-email">priya.s@email.com</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>AC Repair & Service</td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Ramesh+K&background=00C853&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <span class="user-cell-name">Ramesh K.</span>
-                      </div>
-                    </td>
-                    <td>05 Aug, 10:00 AM</td>
-                    <td class="fw-600">₹1,499</td>
-                    <td><span class="badge badge-success"><span class="badge-dot"></span> Completed</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><span class="fw-600 text-primary">#BK-2846</span></td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Amit+Verma&background=6C63FF&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <div class="user-cell-info">
-                          <span class="user-cell-name">Amit Verma</span>
-                          <span class="user-cell-email">amit.v@email.com</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Plumbing – Leak Fix</td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Suresh+P&background=FFA726&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <span class="user-cell-name">Suresh P.</span>
-                      </div>
-                    </td>
-                    <td>05 Aug, 11:30 AM</td>
-                    <td class="fw-600">₹899</td>
-                    <td><span class="badge badge-info"><span class="badge-dot"></span> In Progress</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><span class="fw-600 text-primary">#BK-2845</span></td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Neha+Gupta&background=FF4081&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <div class="user-cell-info">
-                          <span class="user-cell-name">Neha Gupta</span>
-                          <span class="user-cell-email">neha.g@email.com</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Electrical Wiring</td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Vikram+S&background=00B8D9&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <span class="user-cell-name">Vikram S.</span>
-                      </div>
-                    </td>
-                    <td>05 Aug, 02:00 PM</td>
-                    <td class="fw-600">₹2,499</td>
-                    <td><span class="badge badge-warning"><span class="badge-dot"></span> Pending</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><span class="fw-600 text-primary">#BK-2844</span></td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Rahul+Mehta&background=7C4DFF&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <div class="user-cell-info">
-                          <span class="user-cell-name">Rahul Mehta</span>
-                          <span class="user-cell-email">rahul.m@email.com</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Deep Cleaning</td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Anita+D&background=00BFA5&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <span class="user-cell-name">Anita D.</span>
-                      </div>
-                    </td>
-                    <td>04 Aug, 09:00 AM</td>
-                    <td class="fw-600">₹3,200</td>
-                    <td><span class="badge badge-success"><span class="badge-dot"></span> Completed</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><span class="fw-600 text-primary">#BK-2843</span></td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Kavita+J&background=FF4D4F&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <div class="user-cell-info">
-                          <span class="user-cell-name">Kavita Joshi</span>
-                          <span class="user-cell-email">kavita.j@email.com</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Carpentry – Shelf Install</td>
-                    <td>
-                      <div class="user-cell">
-                        <img src="https://ui-avatars.com/api/?name=Manoj+R&background=536DFE&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                        <span class="user-cell-name">Manoj R.</span>
-                      </div>
-                    </td>
-                    <td>04 Aug, 04:30 PM</td>
-                    <td class="fw-600">₹1,850</td>
-                    <td><span class="badge badge-danger"><span class="badge-dot"></span> Cancelled</span></td>
-                    <td>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                      <button class="btn btn-ghost btn-icon btn-sm" title="Edit"><i class="fas fa-edit"></i></button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="card-footer d-flex justify-between align-center">
-            <span class="fs-sm text-muted">Showing 1–5 of 847 bookings</span>
-            <div class="pagination">
-              <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-              <button class="page-btn active">1</button>
-              <button class="page-btn">2</button>
-              <button class="page-btn">3</button>
-              <button class="page-btn">...</button>
-              <button class="page-btn">42</button>
-              <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Widgets Row -->
-        <div class="grid-3">
-          <!-- Recent Activity -->
-          <div class="card" data-aos="fade-up">
-            <div class="card-header">
-              <div class="card-title"><i class="fas fa-stream text-primary"></i> Recent Activity</div>
-            </div>
-            <div class="card-body">
-              <div class="timeline">
-                <div class="timeline-item">
-                  <div class="timeline-dot" style="background:var(--success)"></div>
-                  <div class="timeline-content">
-                    <div class="timeline-title">Booking #BK-2847 completed</div>
-                    <div class="timeline-time">2 minutes ago · Ramesh K.</div>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot" style="background:var(--info)"></div>
-                  <div class="timeline-content">
-                    <div class="timeline-title">New customer registered</div>
-                    <div class="timeline-time">18 minutes ago · Kavita Joshi</div>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot" style="background:var(--warning)"></div>
-                  <div class="timeline-content">
-                    <div class="timeline-title">Payment pending alert</div>
-                    <div class="timeline-time">45 minutes ago · Invoice #INV-902</div>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot" style="background:var(--primary)"></div>
-                  <div class="timeline-content">
-                    <div class="timeline-title">Worker Suresh went online</div>
-                    <div class="timeline-time">1 hour ago</div>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="timeline-dot" style="background:var(--secondary)"></div>
-                  <div class="timeline-content">
-                    <div class="timeline-title">New 5-star review received</div>
-                    <div class="timeline-time">2 hours ago · Priya Sharma</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Latest Reviews -->
-          <div class="card" data-aos="fade-up" data-aos-delay="100">
-            <div class="card-header">
-              <div class="card-title"><i class="fas fa-star text-primary"></i> Latest Reviews</div>
-              <button class="btn btn-ghost btn-sm">All</button>
-            </div>
-            <div class="card-body">
-              <div class="review-item">
-                <div class="review-header">
-                  <div class="user-cell">
-                    <img src="https://ui-avatars.com/api/?name=Priya+S&background=3B5BFF&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                    <span class="user-cell-name">Priya Sharma</span>
-                  </div>
-                  <div class="stars">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                  </div>
-                </div>
-                <p class="review-text">Excellent AC service! Ramesh was professional and fixed everything quickly.</p>
-              </div>
-              <div class="review-item">
-                <div class="review-header">
-                  <div class="user-cell">
-                    <img src="https://ui-avatars.com/api/?name=Amit+V&background=6C63FF&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                    <span class="user-cell-name">Amit Verma</span>
-                  </div>
-                  <div class="stars">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-                  </div>
-                </div>
-                <p class="review-text">Good plumbing work, arrived on time. Would recommend.</p>
-              </div>
-              <div class="review-item">
-                <div class="review-header">
-                  <div class="user-cell">
-                    <img src="https://ui-avatars.com/api/?name=Neha+G&background=FF4081&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                    <span class="user-cell-name">Neha Gupta</span>
-                  </div>
-                  <div class="stars">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                  </div>
-                </div>
-                <p class="review-text">Fantastic electrical work. Clean and professional.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Actions + System Health -->
-          <div>
-            <div class="card" data-aos="fade-up" data-aos-delay="150" style="margin-bottom:20px">
-              <div class="card-header">
-                <div class="card-title"><i class="fas fa-bolt text-primary"></i> Quick Actions</div>
-              </div>
-              <div class="card-body">
-                <div class="quick-actions">
-                  <div class="quick-action" data-action="booking">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>New Booking</span>
-                  </div>
-                  <div class="quick-action" data-action="worker">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Add Worker</span>
-                  </div>
-                  <div class="quick-action" data-action="invoice">
-                    <i class="fas fa-file-invoice"></i>
-                    <span>Invoice</span>
-                  </div>
-                  <div class="quick-action" data-action="report">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Report</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card" data-aos="fade-up" data-aos-delay="200">
-              <div class="card-header">
-                <div class="card-title"><i class="fas fa-server text-primary"></i> System Health</div>
-              </div>
-              <div class="card-body">
-                <div class="health-item">
-                  <div class="health-label"><i class="fas fa-microchip text-primary"></i> CPU Usage</div>
-                  <div class="health-value">34%</div>
-                </div>
-                <div class="progress" style="margin-bottom:16px"><div class="progress-bar" style="width:34%"></div></div>
-                <div class="health-item">
-                  <div class="health-label"><i class="fas fa-memory text-info"></i> RAM Usage</div>
-                  <div class="health-value">62%</div>
-                </div>
-                <div class="progress" style="margin-bottom:16px"><div class="progress-bar" style="width:62%;background:linear-gradient(90deg,#00B8D9,#00E5FF)"></div></div>
-                <div class="health-item">
-                  <div class="health-label"><i class="fas fa-hdd text-success"></i> Disk Usage</div>
-                  <div class="health-value">48%</div>
-                </div>
-                <div class="progress"><div class="progress-bar" style="width:48%;background:linear-gradient(90deg,#00C853,#00E676)"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Top Workers + Upcoming + Payments -->
-        <div class="grid-3" style="margin-top:0">
-          <div class="card" data-aos="fade-up">
-            <div class="card-header">
-              <div class="card-title"><i class="fas fa-trophy text-primary"></i> Top Workers</div>
-            </div>
-            <div class="card-body" style="padding:0">
-              <div class="table-wrapper">
-                <table class="table">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="user-cell">
-                          <img src="https://ui-avatars.com/api/?name=Ramesh+K&background=00C853&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                          <div class="user-cell-info">
-                            <span class="user-cell-name">Ramesh Kumar</span>
-                            <span class="user-cell-email">AC Technician</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="text-end">
-                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                        <div class="fs-xs text-muted">128 jobs</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="user-cell">
-                          <img src="https://ui-avatars.com/api/?name=Suresh+P&background=FFA726&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                          <div class="user-cell-info">
-                            <span class="user-cell-name">Suresh Patel</span>
-                            <span class="user-cell-email">Plumber</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="text-end">
-                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
-                        <div class="fs-xs text-muted">97 jobs</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="user-cell">
-                          <img src="https://ui-avatars.com/api/?name=Vikram+S&background=00B8D9&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                          <div class="user-cell-info">
-                            <span class="user-cell-name">Vikram Singh</span>
-                            <span class="user-cell-email">Electrician</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="text-end">
-                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div>
-                        <div class="fs-xs text-muted">84 jobs</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="user-cell">
-                          <img src="https://ui-avatars.com/api/?name=Anita+D&background=00BFA5&color=fff&size=40" class="avatar avatar-sm" alt="" />
-                          <div class="user-cell-info">
-                            <span class="user-cell-name">Anita Desai</span>
-                            <span class="user-cell-email">Housekeeping</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="text-end">
-                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                        <div class="fs-xs text-muted">76 jobs</div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" data-aos="fade-up" data-aos-delay="100">
-            <div class="card-header">
-              <div class="card-title"><i class="fas fa-clock text-primary"></i> Upcoming Bookings</div>
-            </div>
-            <div class="card-body">
-              <div class="notification-item">
-                <div class="notification-icon" style="background:var(--primary-light);color:var(--primary)"><i class="fas fa-wrench"></i></div>
-                <div class="notification-content">
-                  <div class="notification-text fw-500">Plumbing – Leak Fix</div>
-                  <div class="notification-time">Today · 11:30 AM · Suresh P.</div>
-                </div>
-                <span class="badge badge-info">Soon</span>
-              </div>
-              <div class="notification-item">
-                <div class="notification-icon" style="background:var(--warning-light);color:var(--warning)"><i class="fas fa-bolt"></i></div>
-                <div class="notification-content">
-                  <div class="notification-text fw-500">Electrical Wiring</div>
-                  <div class="notification-time">Today · 2:00 PM · Vikram S.</div>
-                </div>
-                <span class="badge badge-warning">Pending</span>
-              </div>
-              <div class="notification-item">
-                <div class="notification-icon" style="background:var(--success-light);color:var(--success)"><i class="fas fa-broom"></i></div>
-                <div class="notification-content">
-                  <div class="notification-text fw-500">Deep Cleaning</div>
-                  <div class="notification-time">Tomorrow · 9:00 AM · Anita D.</div>
-                </div>
-                <span class="badge badge-secondary">Scheduled</span>
-              </div>
-              <div class="notification-item">
-                <div class="notification-icon" style="background:var(--info-light);color:var(--info)"><i class="fas fa-snowflake"></i></div>
-                <div class="notification-content">
-                  <div class="notification-text fw-500">AC Gas Refill</div>
-                  <div class="notification-time">Tomorrow · 3:30 PM · Ramesh K.</div>
-                </div>
-                <span class="badge badge-secondary">Scheduled</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" data-aos="fade-up" data-aos-delay="150">
-            <div class="card-header">
-              <div class="card-title"><i class="fas fa-credit-card text-primary"></i> Latest Payments</div>
-            </div>
-            <div class="card-body" style="padding:0">
-              <div class="table-wrapper">
-                <table class="table">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="fw-500 fs-sm">#PAY-9021</div>
-                        <div class="fs-xs text-muted">Priya Sharma</div>
-                      </td>
-                      <td class="text-end">
-                        <div class="fw-600 text-success">+₹1,499</div>
-                        <div class="fs-xs text-muted">UPI</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="fw-500 fs-sm">#PAY-9020</div>
-                        <div class="fs-xs text-muted">Rahul Mehta</div>
-                      </td>
-                      <td class="text-end">
-                        <div class="fw-600 text-success">+₹3,200</div>
-                        <div class="fs-xs text-muted">Card</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="fw-500 fs-sm">#PAY-9019</div>
-                        <div class="fs-xs text-muted">Amit Verma</div>
-                      </td>
-                      <td class="text-end">
-                        <div class="fw-600 text-warning">₹899</div>
-                        <div class="fs-xs text-muted">Pending</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="fw-500 fs-sm">#PAY-9018</div>
-                        <div class="fs-xs text-muted">Neha Gupta</div>
-                      </td>
-                      <td class="text-end">
-                        <div class="fw-600 text-success">+₹2,499</div>
-                        <div class="fs-xs text-muted">Wallet</div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+<!-- Recent Bookings -->
+<div class="card" data-aos="fade-up" style="margin-bottom:28px">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fas fa-list text-primary"></i> Recent Bookings
+    </div>
+    <div class="d-flex gap-8 align-center">
+      <div class="search-box" style="width:200px">
+        <i class="fas fa-search"></i>
+        <input type="search" id="tableSearch" placeholder="Search..." style="height:36px;font-size:0.8rem" />
+      </div>
     </div>
   </div>
 
+  <div class="card-body" style="padding:0">
+    <div class="table-wrapper" style="overflow-x:auto">
+      <table class="table" id="bookingsTable" style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="padding:12px 16px;text-align:left">Booking ID</th>
+            <th style="padding:12px 16px;text-align:left">Customer</th>
+            <th style="padding:12px 16px;text-align:left">Service</th>
+            <th style="padding:12px 16px;text-align:left">Worker</th>
+            <th style="padding:12px 16px;text-align:left">Date & Time</th>
+            <th style="padding:12px 16px;text-align:left">Amount</th>
+            <th style="padding:12px 16px;text-align:left">Status</th>
+            <th style="padding:12px 16px;text-align:left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if bookings %}
+            {% for b in bookings[:10] %}
+            <tr style="border-bottom:1px solid #E5E9F5">
+              <td style="padding:12px 16px">
+                <span class="fw-600 text-primary">#BK-{{ b.id }}</span>
+              </td>
+              <td style="padding:12px 16px">
+                {{ b.customer_name or b.customer or 'N/A' }}
+              </td>
+              <td style="padding:12px 16px">
+                {{ b.service_name or b.service or b.category_name or b.category or 'N/A' }}
+              </td>
+              <td style="padding:12px 16px">
+                {{ b.worker_name or b.worker or 'Unassigned' }}
+              </td>
+              <td style="padding:12px 16px">
+                {% set dt = b.booking_date or b.date or b.scheduled_at or '' %}
+                {{ dt[:16]|replace('T', ' ') if dt else 'N/A' }}
+              </td>
+              <td style="padding:12px 16px" class="fw-600">
+                ₹{{ b.amount or 0 }}
+              </td>
+              <td style="padding:12px 16px">
+                {% set st = (b.status or '')|string|lower %}
+                {% if st == 'completed' %}
+                  <span class="badge badge-success">Completed</span>
+                {% elif st == 'pending' %}
+                  <span class="badge badge-warning">Pending</span>
+                {% elif st in ['cancelled','canceled'] %}
+                  <span class="badge badge-danger">Cancelled</span>
+                {% else %}
+                  <span class="badge badge-info">{{ b.status or 'N/A' }}</span>
+                {% endif %}
+              </td>
+              <td style="padding:12px 16px">
+                <button class="btn btn-ghost btn-icon btn-sm" type="button" title="View">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" style="padding:32px;text-align:center;color:#94A3B8">
+                No bookings found
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card-footer d-flex justify-between align-center">
+    <span class="fs-sm text-muted">
+      Showing 1–{{ bookings[:10]|length if bookings else 0 }} of {{ total_bookings or 0 }} bookings
+    </span>
+  </div>
+</div>
+
+
+        <!-- Widgets Row -->
+<div class="grid-3">
+  <!-- Recent Activity (from bookings) -->
+  <div class="card" data-aos="fade-up">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-stream text-primary"></i> Recent Activity</div>
+    </div>
+    <div class="card-body">
+      <div class="timeline">
+        {% if bookings %}
+          {% for b in bookings[:5] %}
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:
+              {% set st = (b.status or '')|lower %}
+              {% if st == 'completed' %}var(--success)
+              {% elif st == 'pending' %}var(--warning)
+              {% elif st in ['cancelled','canceled'] %}var(--danger)
+              {% else %}var(--primary){% endif %}
+            "></div>
+            <div class="timeline-content">
+              <div class="timeline-title">
+                Booking #BK-{{ b.id }} {{ b.status or 'updated' }}
+              </div>
+              <div class="timeline-time">
+                {{ b.customer_name or b.customer or 'Customer' }}
+                · {{ (b.booking_date or b.date or '')[:16]|replace('T', ' ') }}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted" style="padding:8px 0">No recent activity</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Latest Reviews (from reviews API) -->
+  <div class="card" data-aos="fade-up" data-aos-delay="100">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-star text-primary"></i> Latest Reviews</div>
+      <button class="btn btn-ghost btn-sm" type="button">All</button>
+    </div>
+    <div class="card-body">
+      {% if reviews %}
+        {% for r in reviews[:5] %}
+        <div class="review-item">
+          <div class="review-header">
+            <div class="user-cell">
+              <img
+                src="https://ui-avatars.com/api/?name={{ (r.customer_name or r.user_name or r.name or 'U')|urlencode }}&background=3B5BFF&color=fff&size=40"
+                class="avatar avatar-sm"
+                alt=""
+              />
+              <span class="user-cell-name">
+                {{ r.customer_name or r.user_name or r.name or 'Customer' }}
+              </span>
+            </div>
+            <div class="stars">
+              {% set rating = (r.rating or r.stars or 0)|int %}
+              {% for i in range(5) %}
+                {% if i < rating %}
+                  <i class="fas fa-star"></i>
+                {% else %}
+                  <i class="far fa-star"></i>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <p class="review-text">
+            {{ r.comment or r.review or r.message or r.feedback or 'No comment' }}
+          </p>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted" style="padding:8px 0">No reviews yet</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Quick Actions + System Health (static OK) -->
+  <div>
+    <div class="card" data-aos="fade-up" data-aos-delay="150" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-bolt text-primary"></i> Quick Actions</div>
+      </div>
+      <div class="card-body">
+        <div class="quick-actions">
+          <div class="quick-action" data-action="booking">
+            <i class="fas fa-plus-circle"></i>
+            <span>New Booking</span>
+          </div>
+          <div class="quick-action" data-action="worker">
+            <i class="fas fa-user-plus"></i>
+            <span>Add Worker</span>
+          </div>
+          <div class="quick-action" data-action="invoice">
+            <i class="fas fa-file-invoice"></i>
+            <span>Invoice</span>
+          </div>
+          <div class="quick-action" data-action="report">
+            <i class="fas fa-chart-bar"></i>
+            <span>Report</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-aos="fade-up" data-aos-delay="200">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-server text-primary"></i> System Health</div>
+      </div>
+      <div class="card-body">
+        <div class="health-item">
+          <div class="health-label"><i class="fas fa-microchip text-primary"></i> CPU Usage</div>
+          <div class="health-value">34%</div>
+        </div>
+        <div class="progress" style="margin-bottom:16px">
+          <div class="progress-bar" style="width:34%"></div>
+        </div>
+        <div class="health-item">
+          <div class="health-label"><i class="fas fa-memory text-info"></i> RAM Usage</div>
+          <div class="health-value">62%</div>
+        </div>
+        <div class="progress" style="margin-bottom:16px">
+          <div class="progress-bar" style="width:62%;background:linear-gradient(90deg,#00B8D9,#00E5FF)"></div>
+        </div>
+        <div class="health-item">
+          <div class="health-label"><i class="fas fa-hdd text-success"></i> Disk Usage</div>
+          <div class="health-value">48%</div>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" style="width:48%;background:linear-gradient(90deg,#00C853,#00E676)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+       <!-- Top Workers + Upcoming Bookings -->
+<div class="grid-3" style="margin-top:0">
+
+  <!-- Top Workers (from workers API) -->
+  <div class="card" data-aos="fade-up">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-trophy text-primary"></i> Top Workers</div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="table-wrapper">
+        <table class="table">
+          <tbody>
+            {% if workers %}
+              {% for w in workers[:5] %}
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <img
+                      src="https://ui-avatars.com/api/?name={{ (w.name or 'W')|urlencode }}&background=00C853&color=fff&size=40"
+                      class="avatar avatar-sm"
+                      alt=""
+                    />
+                    <div class="user-cell-info">
+                      <span class="user-cell-name">{{ w.name or 'Worker' }}</span>
+                      <span class="user-cell-email">
+                        {{ w.skills or w.category or w.city or 'Worker' }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="fs-xs text-muted">
+                    {{ w.experience_years or w.experience or '—' }} yrs
+                  </div>
+                  <div class="fs-xs text-muted">
+                    {{ w.profile_status or w.status or '' }}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="2" class="text-center text-muted" style="padding:24px">
+                  No workers found
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming Bookings (from bookings API) -->
+  <div class="card" data-aos="fade-up" data-aos-delay="100">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-clock text-primary"></i> Upcoming Bookings</div>
+    </div>
+    <div class="card-body">
+      {% if bookings %}
+        {% for b in bookings[:5] %}
+        <div class="notification-item">
+          <div class="notification-icon" style="background:var(--primary-light);color:var(--primary)">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-text fw-500">
+              {{ b.service_name or b.service or b.category or 'Service' }}
+            </div>
+            <div class="notification-time">
+              {{ (b.booking_date or b.date or '')[:16]|replace('T', ' ') }}
+              · {{ b.worker_name or b.worker or 'Unassigned' }}
+            </div>
+          </div>
+          {% set st = (b.status or '')|lower %}
+          {% if st == 'pending' %}
+            <span class="badge badge-warning">Pending</span>
+          {% elif st == 'completed' %}
+            <span class="badge badge-success">Completed</span>
+          {% elif st in ['cancelled','canceled'] %}
+            <span class="badge badge-danger">Cancelled</span>
+          {% else %}
+            <span class="badge badge-info">{{ b.status or 'Scheduled' }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted" style="padding:8px 0">No upcoming bookings</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Latest Payments – bookings se amount -->
+  <div class="card" data-aos="fade-up" data-aos-delay="150">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-credit-card text-primary"></i> Latest Payments</div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="table-wrapper">
+        <table class="table">
+          <tbody>
+            {% if bookings %}
+              {% for b in bookings[:5] %}
+              <tr>
+                <td>
+                  <div class="fw-500 fs-sm">#PAY-{{ b.id }}</div>
+                  <div class="fs-xs text-muted">{{ b.customer_name or b.customer or 'Customer' }}</div>
+                </td>
+                <td class="text-end">
+                  <div class="fw-600 text-success">+₹{{ b.amount or 0 }}</div>
+                  <div class="fs-xs text-muted">{{ b.payment_status or b.status or '' }}</div>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="2" class="text-center text-muted" style="padding:24px">
+                  No payments
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+         
   <!-- AI Chat Panel -->
   <div class="ai-chat-panel" id="aiChatPanel" aria-hidden="true">
     <div class="ai-chat-header">
