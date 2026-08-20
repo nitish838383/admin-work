@@ -130,6 +130,8 @@ def login_view(
         "admin_id": admin.id,
         "email": admin.email
     })
+
+
 @router.post("/api/login")
 def api_login(
     email: str = Form(...),
@@ -148,6 +150,45 @@ def api_login(
 
     if not verify_password(password, admin.password):
         raise HTTPException(status_code=401, detail="Invalid Password")
+
+    token = create_access_token({
+        "admin_id": admin.id,
+        "email": admin.email
+    })
+
+    return {
+        "success": True,
+        "message": "Login Successful",
+        "token": token,
+        "admin_id": admin.id,
+        "email": admin.email
+    }
+
+from fastapi import Query
+
+@router.get("/api/login")
+def get_login(
+    email: str = Query(...),
+    password: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    email = email.strip().lower()
+
+    admin = db.query(Admin).filter(Admin.email == email).first()
+
+    if not admin:
+        raise HTTPException(
+            status_code=404,
+            detail="Email not found"
+        )
+
+    is_valid = verify_password(password, admin.password)
+
+    if not is_valid:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Password"
+        )
 
     token = create_access_token({
         "admin_id": admin.id,
