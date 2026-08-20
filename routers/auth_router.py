@@ -138,15 +138,15 @@ def api_login(
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
+    email = email.strip().lower()
+
     admin = db.query(Admin).filter(Admin.email == email).first()
 
     if not admin:
         raise HTTPException(status_code=404, detail="Email not found")
 
-    print("Entered Password:", password)
-    print("DB Password:", admin.password)
-
-    print("Verify Result:", verify_password(password, admin.password))
+    if not admin.is_active:
+        raise HTTPException(status_code=403, detail="Account is inactive")
 
     if not verify_password(password, admin.password):
         raise HTTPException(status_code=401, detail="Invalid Password")
@@ -164,7 +164,6 @@ def api_login(
         "email": admin.email
     }
 
-from fastapi import Query
 
 @router.get("/api/login")
 def get_login(
@@ -177,18 +176,13 @@ def get_login(
     admin = db.query(Admin).filter(Admin.email == email).first()
 
     if not admin:
-        raise HTTPException(
-            status_code=404,
-            detail="Email not found"
-        )
+        raise HTTPException(status_code=404, detail="Email not found")
 
-    is_valid = verify_password(password, admin.password)
+    if not admin.is_active:
+        raise HTTPException(status_code=403, detail="Account is inactive")
 
-    if not is_valid:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid Password"
-        )
+    if not verify_password(password, admin.password):
+        raise HTTPException(status_code=401, detail="Invalid Password")
 
     token = create_access_token({
         "admin_id": admin.id,
@@ -202,7 +196,6 @@ def get_login(
         "admin_id": admin.id,
         "email": admin.email
     }
-
 @router.post("/login")
 def login_form(
     request: Request,
