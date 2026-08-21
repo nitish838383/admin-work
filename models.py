@@ -196,7 +196,7 @@ from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP
 from sqlalchemy.sql import func
 from database import Base
 
-class Admin(Base):
+class Admin_App(Base):
     __tablename__ = "app_admins"   # ← yahan change
 
     id = Column(Integer, primary_key=True, index=True)

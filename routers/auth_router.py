@@ -14,6 +14,7 @@ from auth import hash_password
 from fastapi.responses import RedirectResponse
 from datetime import datetime
 import os
+from fastapi import APIRouter, Depends, HTTPException, Form, Query
 from uuid import uuid4
 from config import SECRET_KEY, ALGORITHM
 from schemas import BookingCreate
@@ -41,6 +42,11 @@ router = APIRouter(
 from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
 import os
+from fastapi import Form, Query, Depends, HTTPException, Request
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+
+from models import Admin_App
 
 load_dotenv()
 
@@ -131,7 +137,6 @@ def login_view(
         "email": admin.email
     })
 
-
 @router.post("/api/login")
 def api_login(
     email: str = Form(...),
@@ -140,16 +145,27 @@ def api_login(
 ):
     email = email.strip().lower()
 
-    admin = db.query(Admin).filter(Admin.email == email).first()
+    admin = db.query(Admin_App).filter(
+        Admin_App.email == email
+    ).first()
 
     if not admin:
-        raise HTTPException(status_code=404, detail="Email not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Email not found"
+        )
 
     if not admin.is_active:
-        raise HTTPException(status_code=403, detail="Account is inactive")
+        raise HTTPException(
+            status_code=403,
+            detail="Account is inactive"
+        )
 
     if not verify_password(password, admin.password):
-        raise HTTPException(status_code=401, detail="Invalid Password")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Password"
+        )
 
     token = create_access_token({
         "admin_id": admin.id,
@@ -163,8 +179,6 @@ def api_login(
         "admin_id": admin.id,
         "email": admin.email
     }
-
-
 @router.get("/api/login")
 def get_login(
     email: str = Query(...),
@@ -173,16 +187,27 @@ def get_login(
 ):
     email = email.strip().lower()
 
-    admin = db.query(Admin).filter(Admin.email == email).first()
+    admin = db.query(Admin_App).filter(
+        Admin_App.email == email
+    ).first()
 
     if not admin:
-        raise HTTPException(status_code=404, detail="Email not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Email not found"
+        )
 
     if not admin.is_active:
-        raise HTTPException(status_code=403, detail="Account is inactive")
+        raise HTTPException(
+            status_code=403,
+            detail="Account is inactive"
+        )
 
     if not verify_password(password, admin.password):
-        raise HTTPException(status_code=401, detail="Invalid Password")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Password"
+        )
 
     token = create_access_token({
         "admin_id": admin.id,
@@ -196,6 +221,7 @@ def get_login(
         "admin_id": admin.id,
         "email": admin.email
     }
+
 @router.post("/login")
 def login_form(
     request: Request,
@@ -203,27 +229,27 @@ def login_form(
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    admin = db.query(Admin).filter(Admin.email == email).first()
+    email = email.strip().lower()
+
+    admin = db.query(Admin).filter(
+        Admin.email == email
+    ).first()
 
     if not admin:
         return templates.TemplateResponse(
-    request=request,
-    name="login.html",
-    context={
-        "error": "Email not found!"
-    },
-    status_code=400
-)
+            request=request,
+            name="login.html",
+            context={"error": "Email not found!"},
+            status_code=400
+        )
 
     if not verify_password(password, admin.password):
         return templates.TemplateResponse(
-    request=request,
-    name="login.html",
-    context={
-        "error": "Invalid Password"
-    },
-    status_code=400
-)
+            request=request,
+            name="login.html",
+            context={"error": "Invalid Password"},
+            status_code=400
+        )
 
     token = create_access_token({
         "admin_id": admin.id,
@@ -239,7 +265,7 @@ def login_form(
         key="access_token",
         value=token,
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
 
